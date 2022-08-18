@@ -1,0 +1,13 @@
+namespace: sealed-secrets
+
+priorityClassName: system-cluster-critical
+
+startupProbe:
+  enabled: true
+
+#(TODO): enable once prometheus is installed and configured
+metrics:
+  serviceMonitor:
+    enabled: false
+  dashboards:
+    create: false

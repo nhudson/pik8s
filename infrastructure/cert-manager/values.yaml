@@ -1,0 +1,7 @@
+installCRDs: true
+
+# (TODO): enable once prometheus is installed
+prometheus:
+  enabled: false
+  servicemonitor:
+    enabled: false
