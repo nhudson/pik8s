@@ -4,4 +4,4 @@ resources:
   - sources
   - cert-manager
   - sealed-secrets
-  - nginx-ingress
+  - ingress-nginx
