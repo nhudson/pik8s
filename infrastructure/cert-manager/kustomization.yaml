@@ -3,7 +3,7 @@ kind: Kustomization
 namespace: cert-manager
 resources:
   - namespace.yaml
-  - helmrelease.yaml
+  - release.yaml
   - sealed-secret.yaml
   - clusterissuer.yaml
 configMapGenerator:

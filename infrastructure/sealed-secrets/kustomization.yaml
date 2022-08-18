@@ -3,7 +3,7 @@ kind: Kustomization
 namespace: sealed-secrets
 resources:
   - namespace.yaml
-  - helmrelease.yaml
+  - release.yaml
 configMapGenerator:
   - name: sealed-secrets-values
     files:

@@ -1,0 +1,21 @@
+piVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: nginx
+spec:
+  releaseName: nginx-ingress-controller
+  chart:
+    spec:
+      chart: nginx-ingress-controller
+      sourceRef:
+        kind: HelmRepository
+        name: bitnami
+        namespace: flux-system
+      version: "9.2.28"
+  interval: 1h0m0s
+  install:
+    remediation:
+      retries: 3
+  values:
+    service:
+      type: NodePort
