@@ -4,3 +4,9 @@ namespace: nginx
 resources:
   - namespace.yaml
   - release.yaml
+configMapGenerator:
+  - name: ingress-nginx-values
+    files:
+      - values.yaml=values.yaml
+configurations:
+  - kustomizeconfig.yaml

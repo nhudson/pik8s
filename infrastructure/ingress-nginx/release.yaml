@@ -16,6 +16,6 @@ spec:
   install:
     remediation:
       retries: 3
-  values:
-    service:
-      type: NodePort
+  valuesFrom:
+    - kind: ConfigMap
+      name: cert-manager-values
