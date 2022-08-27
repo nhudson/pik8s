@@ -1,11 +1,6 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:base",
-    "schedule:daily"
-  ]
-  "assignees": ["nhudson"],
-  "reviewers": ["nhudson"],
+  "extends": ["config:base", "schedule:daily"],
   "regexManagers": [
     {
       "fileMatch": "ansible/inventory/pik8s/group_vars/all.yml",
