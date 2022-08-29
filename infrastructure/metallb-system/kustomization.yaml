@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - release.yaml
+  - ipaddresspool.yaml
 configMapGenerator:
   - name: metallb-values
     namespace: metallb-system
