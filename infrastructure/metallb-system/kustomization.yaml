@@ -5,6 +5,7 @@ resources:
   - namespace.yaml
   - release.yaml
   - ipaddresspool.yaml
+  - l2advertisement.yaml
 configMapGenerator:
   - name: metallb-values
     namespace: metallb-system
