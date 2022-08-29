@@ -6,6 +6,7 @@ resources:
   - release.yaml
 configMapGenerator:
   - name: metallb-values
+    namespace: metallb-system
     files:
       - values.yaml=values.yaml
 configurations:

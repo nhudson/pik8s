@@ -17,6 +17,6 @@ spec:
   install:
     remediation:
       retries: 3
-  upgrade:
-    remediation:
-      retries: 3
+  valuesFrom:
+    - kind: ConfigMap
+      name: metallb-values
