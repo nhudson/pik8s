@@ -1,0 +1,12 @@
+---
+- name: Prep k3s cluster
+  hosts: k3s_cluster
+  gather_facts: true
+  become: false
+  any_errors_fatal: true
+  roles:
+    - role: prereq
+    - role: raspberrypi
+    - role: k3s-pre
+    - role: xanmanning.k3s
+    - role: k3s-post

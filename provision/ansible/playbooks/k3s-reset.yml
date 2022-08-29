@@ -1,0 +1,12 @@
+---
+- name: Destroy k3s cluster
+  hosts: k3s_cluster
+  gather_facts: true
+  become: false
+  any_errors_fatal: true
+
+  vars:
+    k3s_state: uninstalled
+
+  roles:
+    - role: xanmanning.k3s
