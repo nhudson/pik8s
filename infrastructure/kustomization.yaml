@@ -4,4 +4,3 @@ resources:
   - sources
   - sealed-secrets
   - cert-manager
-  - metallb-system
