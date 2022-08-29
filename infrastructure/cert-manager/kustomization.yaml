@@ -4,6 +4,7 @@ namespace: cert-manager
 resources:
   - namespace.yaml
   - release.yaml
+  - sealed-secret.yaml
   - clusterissuer.yaml
 configMapGenerator:
   - name: cert-manager-values
