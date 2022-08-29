@@ -3,11 +3,7 @@ kind: Kustomization
 namespace: contour
 resources:
   - namespace.yaml
-  - release.yaml
-configMapGenerator:
-  - name: contour-values
-    namespace: contour
-    files:
-      - values.yaml=values.yaml
-configurations:
-  - kustomizeconfig.yaml
+  - crds.yaml
+  - rbac.yaml
+  - configmap.yaml
+  - contour.yaml
