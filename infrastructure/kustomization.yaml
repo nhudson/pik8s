@@ -5,3 +5,4 @@ resources:
   - sealed-secrets
   - cert-manager
   - metallb-system
+  - contour
