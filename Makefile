@@ -17,6 +17,10 @@ configure-ansible: req-playbook ## Run ansible
 	@echo "Run ansible-playbook"
 	ansible-playbook provision/ansible/playbooks/k3s-install.yml -i provision/ansible/inventory/hosts.yml
 
+reset-ansible: req-playbook
+	@echo "Reset ansible-playbook"
+	ansible-playbook provision/ansible/playbooks/k3s-reset.yml -i provision/ansible/inventory/hosts.yml
+
 req-galaxy:
 	@command -v ansible-galaxy >/dev/null 2>&1 || { echo >&2 "require ansible-galaxy"; exit 1; }
 
