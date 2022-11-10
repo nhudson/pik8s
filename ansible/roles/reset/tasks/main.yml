@@ -35,6 +35,8 @@
     - "{{ systemd_dir }}/k3s-node.service"
     - /etc/rancher/k3s
     - /var/lib/kubelet
+    - /var/lib/rancher
+    - /etc/rancher
     - /var/lib/rancher/k3s
 
 - name: Run daemon_reload
