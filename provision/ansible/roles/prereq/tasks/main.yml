@@ -27,7 +27,7 @@
   when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
 
 - name: Load br_netfilter
-  ansible.builtin.modprobe:
+  community.general.system.modprobe:
     name: br_netfilter
     state: present
   when: ansible_distribution in ['CentOS', 'Red Hat Enterprise Linux']
