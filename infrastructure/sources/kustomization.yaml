@@ -7,5 +7,4 @@ resources:
   - metallb.yaml
   - podinfo.yaml
   - ingress-nginx.yaml
-  - kured.yaml
   - bitnami.yaml
