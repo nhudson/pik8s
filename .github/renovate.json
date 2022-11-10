@@ -10,6 +10,13 @@
       "versioningTemplate": "loose"
     },
     {
+      "fileMatch": "provision/ansible/inventory/group_vars/all.yml",
+      "matchStrings": ["k3s_release_version: (?<currentValue>.*?)\\n"],
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "k3s-io/k3s",
+      "versioningTemplate": "loose"
+    },
+    {
       "fileMatch": ["^\\.github\\/workflows\\/[^/]+\\.ya?ml$"],
       "matchStrings": ["jsonnet-version:\\s(?<currentValue>.*?)\\n"],
       "datasourceTemplate": "github-tags",
