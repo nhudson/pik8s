@@ -9,3 +9,4 @@ resources:
   - ingress-nginx.yaml
   - bitnami.yaml
   - 1password.yaml
+  - nfs-provisioner.yaml
