@@ -6,3 +6,4 @@ resources:
   - cert-manager
   - metallb-system
   - contour
+  - 1password
