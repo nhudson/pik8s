@@ -1,3 +1,6 @@
 ---
 operator:
   create: true
+  token:
+    name: onepassword-token
+    key: token
