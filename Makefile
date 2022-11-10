@@ -15,7 +15,7 @@ install-ansible: req-galaxy ## Install roles via ansible-galaxy
 
 configure-ansible: req-playbook ## Run ansible
 	@echo "Run ansible-playbook"
-	ansible-playbook ansible/site.yml -i ansible/inventory/pik8s/hosts.ini
+	ansible-playbook provision/ansible/playbooks/k3s-install.yml -i provision/ansible/inventory/hosts.yml
 
 req-galaxy:
 	@command -v ansible-galaxy >/dev/null 2>&1 || { echo >&2 "require ansible-galaxy"; exit 1; }
