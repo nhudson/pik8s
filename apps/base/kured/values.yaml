@@ -1,3 +1,0 @@
-configuration:
-  period: "5m"
-  rebootDays: [su, mo, tu, we, th, fr, sa]
