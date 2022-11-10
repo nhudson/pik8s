@@ -5,7 +5,7 @@ resources:
   - namespace.yaml
   - release.yaml
 configMapGenerator:
-  - name: onepassword-values
+  - name: connect-values
     namespace: onepassword
     files:
       - values.yaml=values.yaml
