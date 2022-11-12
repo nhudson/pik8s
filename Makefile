@@ -37,3 +37,8 @@ cluster-bootstrap: cluster-verify
 	sleep 5
 	flux reconcile -n flux-system source git flux-cluster
 	flux reconcile -n flux-system kustomization flux-cluster
+
+reconcile:
+	flux reconcile -n flux-system source git flux-cluster
+	flux reconcile -n flux-system kustomization flux-cluster
+	flux reconcile -n flux-system kustomization apps
