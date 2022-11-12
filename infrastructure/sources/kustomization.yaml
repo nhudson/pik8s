@@ -10,4 +10,4 @@ resources:
   - bitnami.yaml
   - 1password.yaml
   - nfs-provisioner.yaml
-  - weaveworks-kured.yaml
+  - kubereboot.yaml
