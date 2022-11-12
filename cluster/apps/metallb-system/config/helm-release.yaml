@@ -30,7 +30,7 @@ spec:
         kind: L2Advertisement
         metadata:
           name: l2-ip
-          namespace: networking
+          namespace: metallb-system
         spec:
           ipAddressPools:
             - default-pool
@@ -39,7 +39,7 @@ spec:
         kind: IPAddressPool
         metadata:
           name: default-pool
-          namespace: networking
+          namespace: metallb-system
         spec:
           addresses:
             - "${METALLB_LB_RANGE}"
