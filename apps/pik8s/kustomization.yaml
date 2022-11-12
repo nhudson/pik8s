@@ -3,5 +3,3 @@ kind: Kustomization
 resources:
   - ../base/cert-manager
   - ../base/metallb
-  - ../base/nfs-provisioner
-  - ../base/system-update
