@@ -4,14 +4,14 @@ help: ## This help.
 .DEFAULT_GOAL := help
 
 run-yaml-lint:
-	yamllint ansible/
+	yamllint provision/ansible
 
 run-ansible-lint: install-ansible
-	ansible-lint ansible/
+	ansible-lint -c .ansible-lint.yaml provision/ansible
 
 install-ansible: req-galaxy ## Install roles via ansible-galaxy
 	@echo "Installing roles via ansible-galaxy"
-	ansible-galaxy install -r ansible/requirements.yaml -f
+	ansible-galaxy install -r provision/ansible/requirements.yaml -f
 
 configure-ansible: req-playbook ## Run ansible
 	@echo "Run ansible-playbook"

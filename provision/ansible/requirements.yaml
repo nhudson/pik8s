@@ -5,5 +5,6 @@ collections:
   - name: ansible.posix
     version: 1.4.0
 roles:
-  - src: xanmanning.k3s
-    version: v3.3.0
+  # Galaxy v3.3.0 not working: https://github.com/PyratLabs/ansible-role-k3s/issues/196
+  - name: xanmanning.k3s
+    src: https://github.com/PyratLabs/ansible-role-k3s.git

@@ -1,5 +1,5 @@
 ---
-- name: Get absolute path to this Git repository
+- name: Get absolute path to this git repository
   delegate_to: localhost
   become: false
   run_once: true
