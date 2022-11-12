@@ -4,7 +4,7 @@ help: ## This help.
 .DEFAULT_GOAL := help
 
 run-yaml-lint:
-	yamllint provision/ansible
+	yamllint -c .github/linters/.yamllint.yaml provision/ansible
 
 run-ansible-lint: install-ansible
 	ansible-lint -c .github/linters/.ansible-lint provision/ansible
