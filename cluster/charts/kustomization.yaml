@@ -15,3 +15,4 @@ resources:
   - metrics-server-charts.yaml
   - stakater-charts.yaml
   - kubitodev.yaml
+  - csi-driver-nfs.yaml
