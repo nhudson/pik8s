@@ -30,5 +30,5 @@ spec:
     existingSecret: cloudflare-tunnel-secret
     ingress:
       - hostname: "flux-receiver.${SECRET_DOMAIN}"
-        service: https://webhook-receiver.flux-system:80
+        service: http://webhook-receiver.flux-system:80
       - service: http_status:404
