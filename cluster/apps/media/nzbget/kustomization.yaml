@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
   - storage-class.yaml
   - volumes.yaml
+  - helm-release.yaml
