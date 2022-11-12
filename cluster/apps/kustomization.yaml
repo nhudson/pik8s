@@ -6,5 +6,6 @@ resources:
   - flux-system
   - kube-system
   - cert-manager
+  - metallb-system
 #  - networking
 #  - system-upgrade
