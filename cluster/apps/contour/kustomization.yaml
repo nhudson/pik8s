@@ -4,7 +4,3 @@ kind: Kustomization
 namespace: contour
 resources:
   - namespace.yaml
-  - crds.yaml
-  - rbac.yaml
-  - configmap.yaml
-  - contour.yaml
