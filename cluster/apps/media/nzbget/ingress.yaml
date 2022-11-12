@@ -1,0 +1,27 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nzbget
+  namespace: media
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-production"
+    external-dns/is-public: "true"
+    external-dns.alpha.kubernetes.io/target: "nzbget.${SECRET_DOMAIN}"
+spec:
+  ingressClassName: contour
+  rules:
+    - host: "nzbget.${SECRET_DOMAIN}"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nzbget
+                port:
+                  number: 6789
+  tls:
+    - hosts:
+        - "nzbget.${SECRET_DOMAIN}"
+      secretName: nzbget-tls
