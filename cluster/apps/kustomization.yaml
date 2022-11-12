@@ -7,3 +7,4 @@ resources:
   - cert-manager
   - metallb-system
   - contour
+  - cloudflared
