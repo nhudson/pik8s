@@ -18,3 +18,4 @@ xanmanning.k3s*
 .terraform.tfstate*
 terraform.tfstate*
 megalinter-reports
+flux-old
