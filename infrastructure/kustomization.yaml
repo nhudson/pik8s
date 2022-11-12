@@ -3,6 +3,6 @@ kind: Kustomization
 resources:
   - config
   - cert-manager
-  - metallb-system
+#  - metallb-system
   - contour
   - 1password
