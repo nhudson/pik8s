@@ -34,5 +34,6 @@ cluster-bootstrap: cluster-verify
 	kubectl apply --kustomize cluster/bootstrap
 	kubectl -n flux-system create secret generic sops-age --from-file=age.agekey=$${SOPS_AGE_KEY_FILE}
 	kubectl apply --kustomize cluster/flux/flux-system/
+	sleep 5
 	flux reconcile -n flux-system source git flux-cluster
 	flux reconcile -n flux-system kustomization flux-cluster
