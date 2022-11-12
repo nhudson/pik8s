@@ -7,7 +7,7 @@ run-yaml-lint:
 	yamllint provision/ansible
 
 run-ansible-lint: install-ansible
-	ansible-lint -c .ansible-lint.yaml provision/ansible
+	ansible-lint -c .github/linters/.ansible-lint provision/ansible
 
 install-ansible: req-galaxy ## Install roles via ansible-galaxy
 	@echo "Installing roles via ansible-galaxy"
@@ -26,3 +26,13 @@ req-galaxy:
 
 req-playbook:
 	@command -v ansible-playbook >/dev/null 2>&1 || { echo >&2 "require ansible-playbook"; exit 1; }
+
+cluster-verify:
+	flux check --pre
+
+cluster-bootstrap: cluster-verify
+	kubectl apply --kustomize cluster/bootstrap
+	kubectl -n flux-system create secret generic sops-age --from-file=age.agekey=$${SOPS_AGE_KEY_FILE}
+	kubectl apply --kustomize cluster/flux/flux-system/
+	flux reconcile -n flux-system source git flux-cluster
+	flux reconcile -n flux-system kustomization flux-cluster

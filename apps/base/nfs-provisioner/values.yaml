@@ -1,4 +1,0 @@
----
-nfs:
-  server: 192.168.6.5
-  path: /pool-01
