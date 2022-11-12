@@ -8,3 +8,4 @@ resources:
   - metallb-system
   - contour
   - cloudflared
+  - media

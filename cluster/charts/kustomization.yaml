@@ -16,3 +16,4 @@ resources:
   - stakater-charts.yaml
   - kubitodev.yaml
   - csi-driver-nfs.yaml
+  - k8s-at-home.yaml
