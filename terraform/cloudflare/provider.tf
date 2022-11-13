@@ -1,1 +1,2 @@
+provider "random" {}
 provider "cloudflare" {}

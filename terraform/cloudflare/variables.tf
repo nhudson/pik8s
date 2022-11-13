@@ -9,9 +9,3 @@ variable "cloudflare_zone_id_nhudson_dev" {
   type        = string
   sensitive   = true
 }
-
-variable "pik8s_tunnel_secret" {
-  description = "Argo tunnel secret to access tunnel"
-  type        = string
-  sensitive   = true
-}
