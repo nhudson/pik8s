@@ -16,3 +16,30 @@ resource "cloudflare_record" "pik8s-github-webhook-cname" {
   value   = cloudflare_argo_tunnel.pik8s-github-webhook.cname
   zone_id = var.cloudflare_zone_id_nhudson_dev
 }
+
+resource "cloudflare_record" "nhudson_dev_nas" {
+  name    = "nas"
+  proxied = false
+  ttl     = 1
+  type    = "A"
+  value   = "192.168.6.5"
+  zone_id = var.cloudflare_zone_id_nhudson_dev
+}
+
+resource "cloudflare_record" "nhudson_dev_sonarr" {
+  name    = "sonarr"
+  proxied = false
+  ttl     = 1
+  type    = "A"
+  value   = "192.168.6.220"
+  zone_id = var.cloudflare_zone_id_nhudson_dev
+}
+
+resource "cloudflare_record" "nhudson_dev_nzbget" {
+  name    = "sonarr"
+  proxied = false
+  ttl     = 1
+  type    = "A"
+  value   = "192.168.6.220"
+  zone_id = var.cloudflare_zone_id_nhudson_dev
+}
