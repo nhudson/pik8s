@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: nzbget-config
+  name: media-config
   namespace: media
 spec:
   accessModes:
@@ -10,7 +10,7 @@ spec:
   resources:
     requests:
       storage: 1Gi
-  storageClassName: nzbget-config
+  storageClassName: media-config
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
