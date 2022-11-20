@@ -22,7 +22,7 @@ spec:
     persistence:
       config:
         enabled: true
-        existingClaim: nzbget-config
+        existingClaim: media-config
       media:
         enabled: true
         type: pvc

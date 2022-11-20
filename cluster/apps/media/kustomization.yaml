@@ -5,3 +5,5 @@ resources:
   - namespace.yaml
   - storage-class.yaml
   - volumes.yaml
+  - nzbget
+  - sonarr
