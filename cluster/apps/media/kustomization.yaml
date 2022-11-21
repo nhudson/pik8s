@@ -5,3 +5,4 @@ resources:
   - namespace.yaml
   - volumes.yaml
   - nzbget
+  - sonarr

@@ -24,8 +24,7 @@ spec:
         existingClaim: local-config
       media:
         enabled: true
-        type: pvc
-        existingClaim: media-sonarr
-        mountPath: /media
+        type: hostPath
+        hostPath: /mnt/tv
     nodeSelector:
       kubernetes.io/arch: amd64
