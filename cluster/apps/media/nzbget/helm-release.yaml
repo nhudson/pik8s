@@ -26,6 +26,6 @@ spec:
       media:
         enabled: true
         type: hostPath
-        hostPath: /media/tv
+        hostPath: /mnt/tv
     nodeSelector:
       kubernetes.io/arch: amd64
