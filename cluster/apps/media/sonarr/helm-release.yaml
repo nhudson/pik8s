@@ -18,6 +18,8 @@ spec:
       repository: ghcr.io/k8s-at-home/sonarr
       tag: v3.0.9.1549
       pullPolicy: Always
+    securityContext:
+      privileged: true
     persistence:
       config:
         enabled: true
