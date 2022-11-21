@@ -27,3 +27,5 @@ spec:
         type: pvc
         existingClaim: media-volume
         mountPath: /media
+    nodeSelector:
+      kubernetes.io/arch: amd64
