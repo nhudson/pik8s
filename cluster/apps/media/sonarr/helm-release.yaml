@@ -19,7 +19,7 @@ spec:
       tag: v3.0.9.1549
       pullPolicy: Always
     securityContext:
-      privileged: true
+      runAsUser: 568
     persistence:
       config:
         enabled: true
