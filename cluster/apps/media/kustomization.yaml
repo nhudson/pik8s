@@ -6,4 +6,3 @@ resources:
   - storage-class.yaml
   - volumes.yaml
   - nzbget
-  - sonarr
