@@ -24,3 +24,16 @@ spec:
     requests:
       storage: 8Ti
   storageClassName: media
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: local-config
+  namespace: media
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: local-path
