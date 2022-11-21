@@ -34,3 +34,10 @@ mountOptions:
   - hard
   - noatime
   - nodiratime
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: local-storage
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer

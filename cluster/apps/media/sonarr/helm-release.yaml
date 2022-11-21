@@ -25,7 +25,7 @@ spec:
       media:
         enabled: true
         type: pvc
-        existingClaim: media-volume
+        existingClaim: media-sonarr
         mountPath: /media
     nodeSelector:
       kubernetes.io/arch: amd64
