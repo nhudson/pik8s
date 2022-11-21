@@ -22,7 +22,7 @@ spec:
     persistence:
       config:
         enabled: true
-        existingClaim: media-config
+        existingClaim: local-config
       media:
         enabled: true
         type: pvc
