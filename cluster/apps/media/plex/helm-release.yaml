@@ -16,29 +16,39 @@ spec:
         namespace: flux-system
   values:
     image:
-      repository: lscr.io/linuxserver/plex
-      tag: 1.29.2
+      repository: plexinc/pms-docker
+      tag: 1.29.2.6364-6d72b0cf6
       pullPolicy: IfNotPresent
     env:
       TZ: America/Chicago
-      PLEX_CLAIM: "claim-uT78_rUxptJVJnQKuW_7"
       VERSION: latest
       PGID: "\x35\x36\x38"
       PUID: "\x35\x36\x38"
+      PLEX_GID: "\x35\x36\x38"
+      PLEX_UID: "\x35\x36\x38"
+      CHANGE_CONFIG_DIR_OWNERSHIP: false
+      ALLOWED_NETWORKS: 192.168.6.0/24,192.168.86.0/24
+      NVIDIA_DRIVER_CAPABILITIES: all
     securityContext:
       runAsUser: 568
     persistence:
       config:
         enabled: true
         existingClaim: local-config
-      tv:
+      data:
         enabled: true
         type: hostPath
-        hostPath: /mnt/tv
-      movies:
+        hostPath: /mnt
+      transcode:
         enabled: true
         type: hostPath
-        hostPath: /mnt/movies
+        hostPath: /mnt/transcode
     nodeSelector:
       kubernetes.io/arch: amd64
     hostNetwork: true
+    resources:
+      limits:
+        nvidia.com/gpu: 1
+      requests:
+        cpu: 2
+        memory: 3000mi
