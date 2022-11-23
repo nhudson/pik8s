@@ -22,5 +22,5 @@ spec:
       retries: 5
   values:
     nodeSelector:
-      nvidia.com/gpu: true
+      nvidia.com/gpu: "true"
     runtimeClassName: nvidia
