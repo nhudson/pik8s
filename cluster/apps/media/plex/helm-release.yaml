@@ -18,7 +18,7 @@ spec:
     image:
       repository: ghcr.io/k8s-at-home/plex
       tag: v1.29.2.6364-6d72b0cf6
-      pullPolicy: IfNotPreset
+      pullPolicy: IfNotPresent
     env:
       TZ: America/Chicago
     securityContext:
