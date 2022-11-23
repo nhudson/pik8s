@@ -16,22 +16,27 @@ spec:
         namespace: flux-system
   values:
     image:
-      repository: ghcr.io/k8s-at-home/plex
-      tag: v1.29.2.6364-6d72b0cf6
+      repository: lscr.io/linuxserver/plex
+      tag: 1.29.2
       pullPolicy: IfNotPresent
     env:
       TZ: America/Chicago
-      PLEX_CLAIM: "claim-__3FuVDoBFTTyv-Wcsuu"
+      PLEX_CLAIM: "claim-uT78_rUxptJVJnQKuW_7"
+      VERSION: latest
     securityContext:
       runAsUser: 568
     persistence:
       config:
         enabled: true
         existingClaim: local-config
-      media:
+      tv:
         enabled: true
         type: hostPath
         hostPath: /mnt/tv
+      movies:
+        enabled: true
+        type: hostPath
+        hostPath: /mnt/movies
     nodeSelector:
       kubernetes.io/arch: amd64
     hostNetwork: true
