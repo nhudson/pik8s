@@ -21,7 +21,7 @@ spec:
       pullPolicy: IfNotPresent
     env:
       TZ: America/Chicago
-      PLEX_CLAIM: "claim-FcRb5TKyzsgjxCgy5iT1"
+      PLEX_CLAIM: "claim-__3FuVDoBFTTyv-Wcsuu"
     securityContext:
       runAsUser: 568
     persistence:
