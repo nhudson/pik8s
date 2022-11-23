@@ -1,0 +1,8 @@
+---
+- name: Install/Configure NVIDIA
+  hosts: k3s_cluster
+  gather_facts: true
+  become: false
+  any_errors_fatal: true
+  roles:
+    - nvidia

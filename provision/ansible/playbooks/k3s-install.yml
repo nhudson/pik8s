@@ -5,6 +5,7 @@
   become: false
   any_errors_fatal: true
   roles:
+    - role: nvidia
     - role: prereq
     - role: raspberrypi
     - role: k3s-pre

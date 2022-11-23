@@ -1,0 +1,60 @@
+---
+- name: Install nvidia container runtime
+  block:
+    - name: GPG for NVIDIA Releases
+      ansible.builtin.get_url:
+        url: https://nvidia.github.io/libnvidia-container/gpgkey
+        dest: /etc/apt/trusted.gpg.d/nvidia.asc
+
+    - name: NVIDIA Repo
+      ansible.builtin.apt_repository:
+        repo: deb [signed-by=/etc/apt/trusted.gpg.d/nvidia.asc] "{{ item }}" /
+        state: present
+        filename: nvidia-container-runtime
+      with_items:
+        - https://nvidia.github.io/libnvidia-container/stable/debian11/$(ARCH)
+        - https://nvidia.github.io/libnvidia-container/experimental/debian11/$(ARCH)
+  when:
+    - k3s_nvidia is defined
+    - k3s_nvidia
+
+- name: Install nvidia drivers
+  ansible.builtin.apt:
+    name:
+      - nvidia-driver
+      - nvidia-modprobe
+      - nvidia-container-runtime
+    state: present
+    update_cache: true
+  when:
+    - k3s_nvidia is defined
+    - k3s_nvidia
+
+- name: Disable nouveau driver on boot
+  ansible.builtin.copy:
+    content: |
+      blacklist nouveau
+      options nouveau modeset=0
+    dest: "/etc/modprobe.d/blacklist-nvidia-nouveau.conf"
+  when:
+    - k3s_nvidia is defined
+    - k3s_nvidia
+
+- name: Unload nouveau kernel module
+  community.general.modprobe:
+    name: "nouveau"
+    state: absent
+  when:
+    - k3s_nvidia is defined
+    - k3s_nvidia
+
+- name: Enable required kernel modules
+  community.general.modprobe:
+    name: "{{ item }}"
+  with_items:
+  - ipmi_devintf
+  - nvidia
+  - nvidia-uvm
+  when:
+    - k3s_nvidia is defined
+    - k3s_nvidia
