@@ -43,3 +43,12 @@ resource "cloudflare_record" "nhudson_dev_nzbget" {
   value   = "192.168.6.220"
   zone_id = var.cloudflare_zone_id_nhudson_dev
 }
+
+resource "cloudflare_record" "nhudson_dev_plex" {
+  name    = "plex"
+  proxied = false
+  ttl     = 1
+  type    = "A"
+  value   = "192.168.6.220"
+  zone_id = var.cloudflare_zone_id_nhudson_dev
+}

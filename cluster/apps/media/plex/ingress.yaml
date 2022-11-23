@@ -2,16 +2,16 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: nzbget
+  name: plex
   namespace: media
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-production"
     external-dns/is-public: "true"
-    external-dns.alpha.kubernetes.io/target: "media.${SECRET_DOMAIN}"
+    external-dns.alpha.kubernetes.io/target: "plex.${SECRET_DOMAIN}"
 spec:
   ingressClassName: contour
   rules:
-    - host: "media.${SECRET_DOMAIN}"
+    - host: "plex.${SECRET_DOMAIN}"
       http:
         paths:
           - path: /
@@ -23,5 +23,5 @@ spec:
                   number: 32400
   tls:
     - hosts:
-        - "media.${SECRET_DOMAIN}"
-      secretName: media-plex-tls
+        - "plex.${SECRET_DOMAIN}"
+      secretName: plex-tls
