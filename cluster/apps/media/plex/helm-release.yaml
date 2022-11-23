@@ -23,6 +23,8 @@ spec:
       TZ: America/Chicago
       PLEX_CLAIM: "claim-uT78_rUxptJVJnQKuW_7"
       VERSION: latest
+      PGID: "\x35\x36\x38"
+      PUID: "\x35\x36\x38"
     securityContext:
       runAsUser: 568
     persistence:
