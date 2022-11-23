@@ -19,18 +19,21 @@ spec:
       repository: plexinc/pms-docker
       tag: 1.29.2.6364-6d72b0cf6
       pullPolicy: IfNotPresent
+    readiness:
+      enabled: false
     env:
       TZ: America/Chicago
       VERSION: latest
-      PGID: "\x35\x36\x38"
-      PUID: "\x35\x36\x38"
-      PLEX_GID: "\x35\x36\x38"
-      PLEX_UID: "\x35\x36\x38"
+      PGID: "\x30"
+      PUID: "\x30"
+      PLEX_GID: "\x30"
+      PLEX_UID: "\x30"
+      PLEX_CLAIM: "claim-ZrVzhbS47TEsKRFmHbbq"
       CHANGE_CONFIG_DIR_OWNERSHIP: false
       ALLOWED_NETWORKS: 192.168.6.0/24,192.168.86.0/24
       NVIDIA_DRIVER_CAPABILITIES: all
     securityContext:
-      runAsUser: 568
+      runAsUser: 0
     persistence:
       config:
         enabled: true
@@ -44,11 +47,11 @@ spec:
         type: hostPath
         hostPath: /mnt/transcode
     nodeSelector:
-      kubernetes.io/arch: amd64
-    hostNetwork: true
+      nvidia.com/gpu: "true"
+    hostNetwork: tue
     resources:
       limits:
         nvidia.com/gpu: 1
       requests:
         cpu: 2
-        memory: 3000mi
+        memory: 3000Mi

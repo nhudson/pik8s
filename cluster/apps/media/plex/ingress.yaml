@@ -24,4 +24,4 @@ spec:
   tls:
     - hosts:
         - "plex.${SECRET_DOMAIN}"
-      secretName: plex-tls
+      secretName: nzbget-tls
