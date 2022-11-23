@@ -48,7 +48,7 @@ spec:
         hostPath: /mnt/transcode
     nodeSelector:
       nvidia.com/gpu: "true"
-    hostNetwork: tue
+    hostNetwork: true
     resources:
       limits:
         nvidia.com/gpu: 1
