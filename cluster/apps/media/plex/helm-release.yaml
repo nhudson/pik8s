@@ -30,7 +30,7 @@ spec:
       CHANGE_CONFIG_DIR_OWNERSHIP: false
       ALLOWED_NETWORKS: 192.168.6.0/24,192.168.86.0/24,10.42.0.0/16,10.43.0.0/16
       NVIDIA_DRIVER_CAPABILITIES: all
-      ADVERTISE_IP: http://plex.nhudson.dev:32400
+      ADVERTISE_IP: http://plex.nhudson.dev
     securityContext:
       runAsUser: 0
     persistence:
@@ -56,3 +56,39 @@ spec:
         externalTrafficPolicy: Local
         annotations:
           metallb.universe.tf/address-pool: default-pool
+        ports:
+          pms-udp:
+            enabled: true
+            port: 32400
+            protocol: UDP
+            targetPort: 32400
+      dnla-tcp:
+        enabled: true
+        type: NodePort
+        ports:
+          dnla-tcp:
+            enabled: true
+            port: 32469
+            protocol: TCP
+            targetPort: 32469
+        externalTrafficPolicy: Local
+      dnla-udp:
+        enabled: true
+        type: NodePort
+        ports:
+          dnla-udp:
+            enabled: true
+            port: 1900
+            protocol: UDP
+            targetPort: 1900
+        externalTrafficPolicy: Local
+      discovery-udp:
+        enabled: true
+        type: NodePort
+        ports:
+          discovery-udp:
+            enabled: true
+            port: 5353
+            protocol: UDP
+            targetPort: 5353
+        externalTrafficPolicy: Local
