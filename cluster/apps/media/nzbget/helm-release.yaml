@@ -20,7 +20,7 @@ spec:
       tag: v21.1
       pullPolicy: Always
     securityContext:
-      runAsUser: 568
+      runAsUser: 0
     persistence:
       config:
         enabled: true

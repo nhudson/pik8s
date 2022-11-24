@@ -16,19 +16,17 @@ spec:
         namespace: flux-system
   values:
     image:
-      repository: plexinc/pms-docker
-      tag: 1.29.2.6364-6d72b0cf6
+      repository: ghcr.io/k8s-at-home/plex
+      tag: v1.29.2.6364-6d72b0cf6
       pullPolicy: IfNotPresent
     readiness:
       enabled: false
     env:
       TZ: America/Chicago
-      VERSION: latest
       PGID: "\x30"
       PUID: "\x30"
       PLEX_GID: "\x30"
       PLEX_UID: "\x30"
-      PLEX_CLAIM: "claim-ZrVzhbS47TEsKRFmHbbq"
       CHANGE_CONFIG_DIR_OWNERSHIP: false
       ALLOWED_NETWORKS: 192.168.6.0/24,192.168.86.0/24
       NVIDIA_DRIVER_CAPABILITIES: all
@@ -48,10 +46,7 @@ spec:
         hostPath: /mnt/transcode
     nodeSelector:
       nvidia.com/gpu: "true"
-    hostNetwork: true
+    dnsPolicy: default
     resources:
       limits:
         nvidia.com/gpu: 1
-      requests:
-        cpu: 2
-        memory: 3000Mi
