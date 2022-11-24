@@ -16,8 +16,8 @@ spec:
         namespace: flux-system
   values:
     image:
-      repository: ghcr.io/k8s-at-home/plex
-      tag: v1.29.2.6364-6d72b0cf6
+      repository: plexinc/pms-docker
+      tag: 1.29.2.6364-6d72b0cf6
       pullPolicy: IfNotPresent
     readiness:
       enabled: false
@@ -28,8 +28,9 @@ spec:
       PLEX_GID: "\x30"
       PLEX_UID: "\x30"
       CHANGE_CONFIG_DIR_OWNERSHIP: false
-      ALLOWED_NETWORKS: 192.168.6.0/24,192.168.86.0/24
+      ALLOWED_NETWORKS: 192.168.6.0/24,192.168.86.0/24,10.42.0.0/16,10.43.0.0/16
       NVIDIA_DRIVER_CAPABILITIES: all
+      ADVERTISE_IP: http://plex.nhudson.dev:32400
     securityContext:
       runAsUser: 0
     persistence:
@@ -50,3 +51,8 @@ spec:
     resources:
       limits:
         nvidia.com/gpu: 1
+    service:
+      type: LoadBalancer
+      externalTrafficPolicy: Local
+      annotations:
+        metallb.universe.tf/address-pool: default-pool
