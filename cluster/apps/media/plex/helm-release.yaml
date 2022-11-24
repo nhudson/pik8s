@@ -51,7 +51,8 @@ spec:
       limits:
         nvidia.com/gpu: 1
     service:
-      type: LoadBalancer
-      externalTrafficPolicy: Local
-      annotations:
-        metallb.universe.tf/address-pool: default-pool
+      main:
+        type: LoadBalancer
+        externalTrafficPolicy: Local
+        annotations:
+          metallb.universe.tf/address-pool: default-pool
