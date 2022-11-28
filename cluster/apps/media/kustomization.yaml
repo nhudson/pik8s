@@ -7,4 +7,3 @@ resources:
   - volumes.yaml
   - nzbget
   - sonarr
-  - plex
