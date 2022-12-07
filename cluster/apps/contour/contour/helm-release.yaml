@@ -39,6 +39,6 @@ spec:
       image:
         registry: docker.io
         repository: envoyproxy/envoy
-        tag: v1.24.0
+        tag: v1.24.1
     ingress:
       enabled: true
