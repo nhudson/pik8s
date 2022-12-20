@@ -25,7 +25,7 @@ spec:
   values:
     image:
       repository: cloudflare/cloudflared
-      tag: "2022.11.1"
+      tag: "2022.12.0"
     tunnelID: ${CLOUDFLARE_TUNNEL_ID}
     existingSecret: cloudflare-tunnel-secret
     ingress:
