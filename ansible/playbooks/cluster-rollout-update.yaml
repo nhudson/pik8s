@@ -12,7 +12,7 @@
         seconds: 5
   tasks:
     - name: Details
-      ansible.builtin.command: "k0s kubectl get node {{ inventory_hostname }} -o json"
+      ansible.builtin.command: "k3s kubectl get node {{ inventory_hostname }} -o json"
       register: kubectl_get_node
       delegate_to: "{{ groups['master'][0] }}"
       failed_when: false
@@ -28,14 +28,14 @@
         - name: Cordon
           kubernetes.core.k8s_drain:
             name: "{{ inventory_hostname }}"
-            kubeconfig: /var/lib/k0s/pki/admin.conf
+            kubeconfig: /etc/rancher/k3s/k3s.yaml
             state: cordon
           delegate_to: "{{ groups['master'][0] }}"
 
         - name: Drain
           kubernetes.core.k8s_drain:
             name: "{{ inventory_hostname }}"
-            kubeconfig: /var/lib/k0s/pki/admin.conf
+            kubeconfig: /etc/rancher/k3s/k3s.yaml
             state: drain
             delete_options:
               delete_emptydir_data: true
@@ -66,6 +66,6 @@
         - name: Uncordon
           kubernetes.core.k8s_drain:
             name: "{{ inventory_hostname }}"
-            kubeconfig: /var/lib/k0s/pki/admin.conf
+            kubeconfig: /etc/rancher/k3s/k3s.yaml
             state: uncordon
           delegate_to: "{{ groups['master'][0] }}"
