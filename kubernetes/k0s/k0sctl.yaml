@@ -1,0 +1,158 @@
+---
+apiVersion: k0sctl.k0sproject.io/v1beta1
+kind: Cluster
+metadata:
+  name: home-kubernetes
+spec:
+  hosts:
+    - role: controller+worker
+      ssh:
+        address: "192.168.6.50"
+        user: "root"
+      installFlags:
+        - --disable-components=metrics-server
+        - --no-taints
+        - --kubelet-extra-args="--image-gc-low-threshold=50 --image-gc-high-threshold=60"
+      files:
+        - name: bootstrap-scripts
+          src: scripts
+      hooks:
+        apply:
+          before:
+            - bash ~/apply-system.sh "pik8s01"
+            - bash ~/apply-kube-vip.sh
+        reset:
+          before:
+            - bash ~/reset-cilium.sh
+          after:
+            - bash ~/reset-system.sh
+    - role: worker
+      ssh:
+        address: "192.168.6.51"
+        user: "root"
+      installFlags:
+        - --kubelet-extra-args="--image-gc-low-threshold=50 --image-gc-high-threshold=60"
+      files:
+        - name: bootstrap-scripts
+          src: scripts
+      hooks:
+        apply:
+          before:
+            - bash ~/apply-system.sh "pik8s02"
+        reset:
+          before:
+            - bash ~/reset-cilium.sh
+          after:
+            - bash ~/reset-system.sh
+    - role: worker
+      ssh:
+        address: "192.168.6.52"
+        user: "root"
+      installFlags:
+        - --kubelet-extra-args="--image-gc-low-threshold=50 --image-gc-high-threshold=60"
+      files:
+        - name: bootstrap-scripts
+          src: scripts
+      hooks:
+        apply:
+          before:
+            - bash ~/apply-system.sh "pik8s03"
+        reset:
+          before:
+            - bash ~/reset-cilium.sh
+          after:
+            - bash ~/reset-system.sh
+    - role: worker
+      ssh:
+        address: "192.168.6.53"
+        user: "root"
+      installFlags:
+        - --kubelet-extra-args="--image-gc-low-threshold=50 --image-gc-high-threshold=60"
+      files:
+        - name: bootstrap-scripts
+          src: scripts
+      hooks:
+        apply:
+          before:
+            - bash ~/apply-system.sh "thrawn"
+        reset:
+          before:
+            - bash ~/reset-cilium.sh
+          after:
+            - bash ~/reset-system.sh
+  k0s:
+    # renovate: datasource=github-releases depName=k0sproject/k0s
+    version: v1.29.1+k0s.0
+    dynamicConfig: false
+    config:
+      spec:
+        telemetry:
+          enabled: false
+        controllerManager:
+          extraArgs:
+            bind-address: "0.0.0.0"
+        scheduler:
+          extraArgs:
+            bind-address: "0.0.0.0"
+        storage:
+          etcd:
+            extraArgs:
+              listen-metrics-urls: http://0.0.0.0:2381
+        api:
+          sans:
+            - "192.168.6.40"
+            - "nhudson.dev"
+        network:
+          podCIDR: "10.69.0.0/16"
+          serviceCIDR: "10.96.0.0/16"
+          provider: custom
+          kubeProxy:
+            disabled: true
+          nodeLocalLoadBalancing:
+            enabled: true
+            type: EnvoyProxy
+        extensions:
+          helm:
+            repositories:
+              - name: cilium
+                url: https://helm.cilium.io
+            charts:
+              - name: cilium
+                chartname: cilium/cilium
+                # renovate: datasource=helm depName=cilium repository=https://helm.cilium.io
+                version: 1.15.0
+                namespace: kube-system
+                values: |2
+                  autoDirectNodeRoutes: true
+                  bpf:
+                    masquerade: true
+                  cluster:
+                    name: home-kubernetes
+                    id: 1
+                  containerRuntime:
+                    integration: containerd
+                    socketPath: /var/run/k0s/containerd.sock
+                  endpointRoutes:
+                    enabled: true
+                  hubble:
+                    enabled: false
+                  ipam:
+                    mode: kubernetes
+                  ipv4NativeRoutingCIDR: "10.69.0.0/16"
+                  k8sServiceHost: localhost
+                  k8sServicePort: 7443
+                  kubeProxyReplacement: true
+                  kubeProxyReplacementHealthzBindAddr: 0.0.0.0:10256
+                  l2announcements:
+                    enabled: true
+                  loadBalancer:
+                    algorithm: maglev
+                    mode: dsr
+                  localRedirectPolicy: true
+                  operator:
+                    replicas: 1
+                    rollOutPods: true
+                  rollOutCiliumPods: true
+                  routingMode: native
+                  securityContext:
+                    privileged: true
