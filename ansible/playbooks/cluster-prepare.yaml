@@ -60,7 +60,7 @@
             mode: '0644'
             dest: /etc/resolv.conf
             content: |
-              search nhudson.dev
+              search .
               nameserver 1.1.1.1
               nameserver 9.9.9.9
 
