@@ -1,12 +1,12 @@
 ---
 kubernetes:
   children:
-    master:
+    controllers:
       hosts:
         "pik8s01":
           ansible_user: "root"
           ansible_host: "192.168.6.50"
-    worker:
+    workers:
       hosts:
         "pik8s02":
           ansible_user: "root"
