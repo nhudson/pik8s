@@ -6,9 +6,11 @@ resources:
   - ./cilium.yaml
   - ./csi-driver-nfs.yaml
   - ./external-dns.yaml
+  - ./grafana.yaml
   - ./ingress-nginx.yaml
   - ./k8s-gateway.yaml
   - ./jetstack.yaml
   - ./metrics-server.yaml
   - ./openebs.yaml
+  - ./prometheus-community.yaml
   - ./stakater.yaml
