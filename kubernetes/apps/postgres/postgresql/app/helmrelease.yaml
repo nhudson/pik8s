@@ -1,0 +1,130 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: &app postgresql
+  namespace: postgres
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 2.5.0
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 30m
+  maxHistory: 3
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  dependsOn:
+    - name: openebs
+      namespace: openebs-system
+  values:
+    controllers:
+      main:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          main:
+            image:
+              repository: postgres
+              tag: 16.1-alpine@sha256:17eb369d9330fe7fbdb2f705418c18823d66322584c77c2b43cc0e1851d01de7
+            env:
+              POSTGRES_DB: "app"
+              POSTGRES_USER: "postgres"
+              POSTGRES_PASSWORD: "${POSTGRES_ADMIN_PASSWORD}"
+              PGDATA: /data/pgdata
+            resources:
+              requests:
+                cpu: 200m
+                memory: 200Mi
+              limits:
+                cpu: 500m
+                memory: 1024Mi
+            securityContext:
+              runAsUser: 70
+              runAsGroup: 70
+              fsGroup: 70
+          secondary:
+            nameOverride: metrics
+            image:
+              repository: quay.io/prometheuscommunity/postgres-exporter
+              tag: v0.15.0
+            env:
+              DATA_SOURCE_URI: "localhost:5432?sslmode=disable"
+              DATA_SOURCE_USER: postgres
+              DATA_SOURCE_PASS: "${POSTGRES_ADMIN_PASSWORD}"
+            resources:
+              requests:
+                cpu: 10m
+                memory: 100Mi
+              limits:
+                cpu: 50m
+                memory: 300Mi
+
+    defaultPodOptions:
+      securityContext:
+        runAsUser: 70
+        runAsGroup: 70
+        fsGroup: 70
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values: ["amd64"]
+              topologyKey: kubernetes.io/hostname
+
+    service:
+      main:
+        ports:
+          http:
+            port: 5432
+            protocol: TCP
+      secondary:
+        nameOverride: metrics
+        controller: main
+        ports:
+          metrics:
+            port: &metricsPort 9187
+            protocol: TCP
+
+    persistence:
+      data:
+        enabled: true
+        accessMode: ReadWriteOnce
+        storageClass: openebs-hostpath
+        size: 1Gi
+
+    serviceMonitor:
+      secondary:
+        nameOverride: metrics
+        enabled: true
+        labels:
+          app.kubernetes.io/name: postgres-exporter
+          app.kubernetes.io/instance: *app
+        selector:
+          matchLabels:
+            app.kubernetes.io/instance: *app
+            app.kubernetes.io/name: *app
+            app.kubernetes.io/service: postgresql-metrics
+        endpoints:
+          - port: metrics
+            interval: 4m
+            scrapeTimeout: 90s
+            path: /metrics
+
