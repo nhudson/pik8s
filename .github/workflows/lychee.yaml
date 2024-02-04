@@ -26,7 +26,7 @@ jobs:
         uses: lycheeverse/lychee-action@v1
         id: lychee
         with:
-          token: "${{ secrets.GITHUB_TOKEN }}"
+          token: "${{ secrets.GH_TOKEN }}"
           args: --verbose --no-progress --exclude-mail './**/*.md'
           output: "${{ env.LYCHEE_OUTPUT }}"
           debug: true
