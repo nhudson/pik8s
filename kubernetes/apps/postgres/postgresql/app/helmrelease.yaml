@@ -42,8 +42,12 @@ spec:
             env:
               POSTGRES_DB: "app"
               POSTGRES_USER: "postgres"
-              POSTGRES_PASSWORD: "${POSTGRES_ADMIN_PASSWORD}"
               PGDATA: /data/pgdata
+              POSTGRES_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    name: postgresql-secret
+                    key: POSTGRES_PASSWORD
             resources:
               requests:
                 cpu: 200m
