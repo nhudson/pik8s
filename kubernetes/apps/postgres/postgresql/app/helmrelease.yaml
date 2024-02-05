@@ -46,7 +46,7 @@ spec:
               POSTGRES_PASSWORD:
                 valueFrom:
                   secretKeyRef:
-                    name: postgresql-secret
+                    name: postgres-secret
                     key: POSTGRES_PASSWORD
             resources:
               requests:
@@ -70,7 +70,7 @@ spec:
               DATA_SOURCE_PASS:
                 valueFrom:
                   secretKeyRef:
-                    name: postgresql-secret
+                    name: postgres-secret
                     key: POSTGRES_PASSWORD
             resources:
               requests:
