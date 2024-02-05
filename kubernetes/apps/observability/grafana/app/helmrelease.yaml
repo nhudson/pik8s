@@ -34,9 +34,8 @@ spec:
     env:
       GF_EXPLORE_ENABLED: true
       GF_SERVER_ROOT_URL: "https://grafana.${SECRET_DOMAIN}"
-    envFrom:
-      - secretRef:
-          name: grafana-env-secret
+    envFromSecrets:
+      - name: grafana-env-secret
     grafana.ini:
       analytics:
         check_for_updates: false
