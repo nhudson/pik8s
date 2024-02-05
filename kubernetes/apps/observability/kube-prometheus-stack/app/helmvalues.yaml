@@ -9,7 +9,7 @@ data:
       enabled: true
     cleanPrometheusOperatorObjectNames: true
     alertmanager:
-      enabled: true
+      enabled: false
       fullnameOverride: alertmanager
       ingress:
         enabled: true
@@ -23,6 +23,17 @@ data:
         tls:
           - hosts:
               - alertmanager.${SECRET_DOMAIN}
+      alertmanagerSpec:
+        replicas: 1
+        useExistingSecret: true
+        configSecret: alertmanager-secret
+        storage:
+          volumeClaimTemplate:
+            spec:
+              storageClassName: local-hostpath
+              resources:
+                requests:
+                  storage: 1Gi
       config:
         global:
           resolve_timeout: 5m
