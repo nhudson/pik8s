@@ -1,0 +1,27 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: plex
+  namespace: media
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-production"
+    external-dns/is-public: "true"
+    external-dns.alpha.kubernetes.io/target: "plex.${SECRET_DOMAIN}"
+spec:
+  ingressClassName: contour
+  rules:
+    - host: "plex.${SECRET_DOMAIN}"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: plex
+                port:
+                  number: 32400
+  tls:
+    - hosts:
+        - "plex.${SECRET_DOMAIN}"
+      secretName: plex-tls

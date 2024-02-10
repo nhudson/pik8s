@@ -1,0 +1,94 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: plex
+  namespace: media
+spec:
+  interval: 1h
+  chart:
+    spec:
+      # registryUrl=https://k8s-at-home.com/charts/
+      chart: plex
+      version: 6.4.3
+      sourceRef:
+        kind: HelmRepository
+        name: k8s-at-home
+        namespace: flux-system
+  values:
+    image:
+      repository: plexinc/pms-docker
+      tag: 1.29.2.6364-6d72b0cf6
+      pullPolicy: IfNotPresent
+    readiness:
+      enabled: false
+    env:
+      TZ: America/Chicago
+      PGID: "\x30"
+      PUID: "\x30"
+      PLEX_GID: "\x30"
+      PLEX_UID: "\x30"
+      CHANGE_CONFIG_DIR_OWNERSHIP: false
+      ALLOWED_NETWORKS: 192.168.6.0/24,192.168.86.0/24,10.42.0.0/16,10.43.0.0/16
+      NVIDIA_DRIVER_CAPABILITIES: all
+      ADVERTISE_IP: http://plex.nhudson.dev
+    securityContext:
+      runAsUser: 0
+    persistence:
+      config:
+        enabled: true
+        existingClaim: local-config
+      data:
+        enabled: true
+        type: hostPath
+        hostPath: /mnt
+      transcode:
+        enabled: true
+        type: hostPath
+        hostPath: /mnt/transcode
+    nodeSelector:
+      nvidia.com/gpu: "true"
+    resources:
+      limits:
+        nvidia.com/gpu: 1
+    service:
+      main:
+        type: LoadBalancer
+        externalTrafficPolicy: Local
+        annotations:
+          metallb.universe.tf/address-pool: default-pool
+        ports:
+          pms-udp:
+            enabled: true
+            port: 32400
+            protocol: UDP
+            targetPort: 32400
+      dnla-tcp:
+        enabled: true
+        type: NodePort
+        ports:
+          dnla-tcp:
+            enabled: true
+            port: 32469
+            protocol: TCP
+            targetPort: 32469
+        externalTrafficPolicy: Local
+      dnla-udp:
+        enabled: true
+        type: NodePort
+        ports:
+          dnla-udp:
+            enabled: true
+            port: 1900
+            protocol: UDP
+            targetPort: 1900
+        externalTrafficPolicy: Local
+      discovery-udp:
+        enabled: true
+        type: NodePort
+        ports:
+          discovery-udp:
+            enabled: true
+            port: 5353
+            protocol: UDP
+            targetPort: 5353
+        externalTrafficPolicy: Local

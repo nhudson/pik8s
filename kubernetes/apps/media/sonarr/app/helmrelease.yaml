@@ -1,0 +1,170 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2beta2.json
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: sonarr
+  namespace: media
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 2.5.0
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+
+  values:
+    controllers:
+      main:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          main:
+            image:
+              repository: ghcr.io/onedr0p/sonarr-develop
+              tag: 4.0.1.1047
+            env:
+              COMPlus_EnableDiagnostics: 0
+              SONARR__AUTHENTICATION_REQUIRED: DisabledForLocalAddresses
+              SONARR__INSTANCE_NAME: Sonarr
+              SONARR__LOG_LEVEL: info
+              SONARR__PORT: &port 8989
+              SONARR__THEME: dark
+              SONARR__POSTGRES_HOST: postgresql.postgres.svc.cluster.local
+              SONARR__POSTGRES_MAIN_DB: sonarr-main
+              SONARR__POSTGRES_LOG_DB: sonarr-log
+              SONARR__POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD}
+              SONARR__POSTGRES_PORT: 5432
+              SONARR__POSTGRES_USER: postgres
+              SONARR__API_KEY: ${API_KEY_SONARR}
+              TZ: ${TIMEZONE}
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /ping
+                    port: *port
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+              startup:
+                enabled: false
+            securityContext:
+              runAsUser: 0
+            resources:
+              requests:
+                cpu: 10m
+                memory: 400M
+              limits:
+                memory: 1024M
+
+          secondary:
+            image:
+              repository: ghcr.io/onedr0p/exportarr
+              tag: v1.6.1
+            env:
+              PORT: &metricsPort 9707
+              URL: "http://{{ .Release.Name }}.{{ .Release.Namespace }}.svc.cluster.local:8989"
+              APIKEY: ${API_KEY_SONARR}
+            args: ["sonarr"]
+            resources:
+              requests:
+                cpu: 10m
+                memory: 100Mi
+              limits:
+                memory: 125Mi
+
+        pod:
+          securityContext:
+            runAsUser: 0
+
+    defaultPodOptions:
+      securityContext:
+        runAsUser: 0
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values: ["amd64"]
+              topologyKey: kubernetes.io/hostname
+
+    service:
+      main:
+        ports:
+          http:
+            port: *port
+      secondary:
+        nameOverride: metrics
+        controller: main
+        ports:
+          metrics:
+            port: *metricsPort
+
+    ingress:
+      main:
+        enabled: true
+        className: internal
+        annotations:
+          nginx.ingress.kubernetes.io/configuration-snippet: |
+            proxy_set_header Accept-Encoding "";
+            sub_filter '</head>' '<link rel="stylesheet" type="text/css" href="https://theme-park.dev/css/base/sonarr/dark.css"></head>';
+            sub_filter_once on;
+        hosts:
+          - host: &host "sonarr.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                service:
+                  name: main
+                  port: http
+              - path: /metrics
+                pathType: Prefix
+                service:
+                  name: secondary
+                  port: metrics
+        tls:
+          - hosts:
+              - *host
+
+    persistence:
+      media:
+        enabled: true
+        type: hostPath
+        hostPath: /mnt/tv
+
+    serviceMonitor:
+      secondary:
+        enabled: true
+        labels:
+          app.kubernetes.io/name: sonarr
+          app.kubernetes.io/instance: sonarr-metrics
+        selector:
+          matchLabels:
+            app.kubernetes.io/instance: sonarr
+            app.kubernetes.io/name: sonarr
+            app.kubernetes.io/service: sonarr-metrics
+        endpoints:
+          - port: metrics
+            interval: 4m
+            scrapeTimeout: 90s
+            path: /metrics
