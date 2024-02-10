@@ -134,22 +134,22 @@ spec:
                 service:
                   name: main
                   port: http
-              - path: /metrics
-                pathType: Prefix
-                service:
-                  name: secondary
-                  port: metrics
+              # - path: /metrics
+              #   pathType: Prefix
+              #   service:
+              #     name: secondary
+              #     port: metrics
           - host: &customhost "sabnzbd.${SECRET_DOMAIN}"
             paths:
               - path: /
                 service:
                   name: main
                   port: http
-              - path: /metrics
-                pathType: Prefix
-                service:
-                  name: secondary
-                  port: metrics
+              # - path: /metrics
+              #   pathType: Prefix
+              #   service:
+              #     name: secondary
+              #     port: metrics
         tls:
           - hosts:
               - *host
