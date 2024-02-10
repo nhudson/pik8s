@@ -5,6 +5,6 @@ resources:
   - ./namespace.yaml
   - ./volumes.yaml
   - ./sabnzbd/ks.yaml
-  # - ./prowlarr/ks.yaml
+  - ./prowlarr/ks.yaml
   # - ./sonarr/ks.yaml
   # - ./radarr/ks.yaml

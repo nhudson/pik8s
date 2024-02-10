@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: prowlarr-env
+    namespace: media
+type: Opaque
+data:
+    PROWLARR__API_KEY: ENC[AES256_GCM,data:CJd/9S7MFx2vGMxG5Z2a27tOtKdIs4uVrKywvhLFW4/VKUUt7ya2lqx08M4=,iv:0Dfq6KZ9YJTBK0yYGWe1p0hZc7MCERBkKcWJndGXcQc=,tag:iD2cCixwcEQ0tm8XxFfcAQ==,type:str]
+    PROWLARR__POSTGRES_PASSWORD: ENC[AES256_GCM,data:+LDVGpUO4hShlB1Z,iv:V9Jwcwfd34B/Xc7MIeKg/prgwiTs39V/fVVCJFx2vP0=,tag:ypfvLYnfacojV2A0418KhA==,type:str]
+    APIKEY: ENC[AES256_GCM,data:QkOR5KDE/cZjg3l4wGf247uzLKgSWdCUa/1hwFP5O6sQy6/y8viXFB+o/b4=,iv:3dSKLMrr24duTdEmRy9+F3Mm5kHIE8s2lrYugAJ4O54=,tag:9fxU2qeF4Oy8C/6SmUPqMg==,type:str]
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age:
+        - recipient: age1hdtw306drrkxw3t74w8adz0y9rqy7c9ralkcql7yz5773pp7wahsqg98rd
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBxandVcG4zYVJ4dmMzdGE5
+            cjI4TnNRMHhDYVFXbi9VdGJZK3B2S1JaS2dZCld1UmEzeSs4WmgwL3FFNkFTOVg2
+            WHFlbzkxYk03azEwcjRicXFDOC95S0kKLS0tIGtJeTlMbEdKMDJhTStnTnBDNWwx
+            TFNRejFEcU1xNUh0VXYvaE8xellPcHMKBmy6XEr1NOwSsZDPpJ+y6MEnzbVufwGu
+            pbonEZkR5DkFIN0cOtNvge8bL+ucyHW+WsMZKHqEBu/4II6knQ7zAw==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2024-02-10T02:58:23Z"
+    mac: ENC[AES256_GCM,data:4SyWIDAmXR6nIEuJH5DGYATPE5Vck6xFbXqFsR8yIbfnvbLRYUhY9Eo1lVs+eAhF0pOZBe1DM1s2zr3WcqhpW7Bs7odEEaHZqhTSXmT400Ygwpj/svC3LgwGIRBAdVO5RHOcvqBU4tJFV6jKqkPxQzgalGUymORu2JEvwM5KR84=,iv:j+mGwiz6Xf1AF4RhNBuXTIIw1T4AB683J5f865jA4ZQ=,tag:9UgmlZwvw6vKi+ALeEdhpQ==,type:str]
+    pgp: []
+    encrypted_regex: ^(data|stringData)$
+    version: 3.8.1

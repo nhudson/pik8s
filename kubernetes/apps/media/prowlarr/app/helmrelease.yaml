@@ -38,7 +38,6 @@ spec:
               tag: 1.13.2.4250
             env:
               TZ: "${TIMEZONE}"
-              PROWLARR__API_KEY: ${API_KEY_PROWLARR}
               PROWLARR__INSTANCE_NAME: Prowlarr
               PROWLARR__PORT: &port 8080
               PROWLARR__LOG_LEVEL: info
@@ -46,9 +45,10 @@ spec:
               PROWLARR__POSTGRES_HOST: postgresql.postgres.svc.cluster.local
               PROWLARR__POSTGRES_MAIN_DB: prowlarr-main
               PROWLARR__POSTGRES_LOG_DB: prowlarr-log
-              PROWLARR__POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD}
-              PROWLARR__POSTGRES_USER: postgres
+              PROWLARR__POSTGRES_USER: prowlarr
               PROWLARR__POSTGRES_PORT: 5432
+            envFrom:
+              - secret: prowlarr-env
             resources:
               requests:
                 cpu: 100m
@@ -78,8 +78,9 @@ spec:
             env:
               PORT: &metricsPort 9707
               URL: "http://{{ .Release.Name }}.{{ .Release.Namespace }}.svc.cluster.local:8080"
-              APIKEY: ${API_KEY_PROWLARR}
               PROWLARR__BACKFILL: true
+            envFrom:
+              - secret: prowlarr-env
             args: ["prowlarr"]
 
             resources:
