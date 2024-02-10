@@ -171,11 +171,11 @@ spec:
         kubernetes-pods:
           url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-views-pods.json
           datasource: Prometheus
-        kubernetes-volumes:
-          # renovate: depName="K8s / Storage / Volumes / Cluster"
-          gnetId: 11454
-          revision: 14
-          datasource: Prometheus
+        # kubernetes-volumes:
+        #   # renovate: depName="K8s / Storage / Volumes / Cluster"
+        #   gnetId: 11454
+        #   revision: 14
+        #   datasource: Prometheus
       nginx:
         nginx:
           url: https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/grafana/dashboards/nginx.json
@@ -191,7 +191,7 @@ spec:
           url: https://raw.githubusercontent.com/onedr0p/exportarr/master/examples/grafana/dashboard2.json
           datasource: Prometheus
       prometheus:
-        prometheus:
+        prometheus-dashboard:
           # renovate: depName="Prometheus"
           gnetId: 19105
           revision: 3
