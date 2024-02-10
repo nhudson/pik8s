@@ -69,22 +69,22 @@ spec:
               limits:
                 memory: 3Gi
 
-          # secondary:
-          #   image:
-          #     repository: ghcr.io/onedr0p/exportarr
-          #     tag: v1.6.1@sha256:60cf3d44aa0b7dea2a65160b2e2e373c1ae38cd6b12a45fe81b8afa45ac31c22
-          #   env:
-          #     PORT: &metricsPort 9707
-          #     URL: "http://{{ .Release.Name }}.{{ .Release.Namespace }}.svc.cluster.local:80"
-          #     APIKEY: ${API_KEY_SABNZBD}
-          #   args: ["sabnzbd"]
-          #
-          #   resources:
-          #     requests:
-          #       cpu: 10m
-          #       memory: 100Mi
-          #     limits:
-          #       memory: 125Mi
+          secondary:
+            image:
+              repository: ghcr.io/onedr0p/exportarr
+              tag: v1.6.1@sha256:60cf3d44aa0b7dea2a65160b2e2e373c1ae38cd6b12a45fe81b8afa45ac31c22
+            env:
+              PORT: &metricsPort 9707
+              URL: "http://{{ .Release.Name }}.{{ .Release.Namespace }}.svc.cluster.local:80"
+              APIKEY: ${API_KEY_SABNZBD}
+            args: ["sabnzbd"]
+
+            resources:
+              requests:
+                cpu: 10m
+                memory: 100Mi
+              limits:
+                memory: 125Mi
         pod:
           securityContext:
             runAsUser: 0
