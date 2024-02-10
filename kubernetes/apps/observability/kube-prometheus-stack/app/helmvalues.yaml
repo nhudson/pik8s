@@ -9,28 +9,22 @@ data:
       enabled: true
     cleanPrometheusOperatorObjectNames: true
     alertmanager:
-      enabled: false
-      fullnameOverride: alertmanager
       ingress:
         enabled: true
-        ingressClassName: internal
-        annotations:
-          hajimari.io/appName: Prometheus
-          hajimari.io/icon: simple-icons:prometheus
         pathType: Prefix
+        ingressClassName: internal
         hosts:
-          - alertmanager.${SECRET_DOMAIN}
+          - &host alertmanager.nhudson.dev
         tls:
           - hosts:
-              - alertmanager.${SECRET_DOMAIN}
+              - *host
       alertmanagerSpec:
         replicas: 1
         useExistingSecret: true
-        configSecret: alertmanager-secret
         storage:
           volumeClaimTemplate:
             spec:
-              storageClassName: local-hostpath
+              storageClassName: openebs-hostpath
               resources:
                 requests:
                   storage: 1Gi

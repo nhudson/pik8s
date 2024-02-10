@@ -5,34 +5,14 @@ metadata:
     namespace: observability
 type: Opaque
 data:
-    GF_DATABASE_HOST: ENC[AES256_GCM,data:HX0pxD1d3NYRb5/Ke0G+yAKCwqJ5QNLKONBFfOFNoBmW+JSHJQCZqDcG+ZsuDMXAZAHQvvT9Row=,iv:KyAfF6J0QrgMHQFlD3UuZ9+3r3BylGgF4PWr9DWR2uY=,tag:Z4/cv+lV9Jzx8yBPSwcpOQ==,type:str]
-    GF_DATABASE_NAME: ENC[AES256_GCM,data:CqqmDpnAkIF9FCT5,iv:QwOMMoatdOJMvtorEc3LTAHtm9xqezxgYhDJuNxskQY=,tag:/cWyjC5UwQgszkVpvsXqwA==,type:str]
-    GF_DATABASE_PASSWORD: ENC[AES256_GCM,data:HWHe42Ialuy+sXq3,iv:95hV6Lh3aL6rYuivp1UPvlGd35zRYmtBxrxt8qX2mD0=,tag:BsMzipEoZcJNuOEyzo3v5g==,type:str]
-    GF_DATABASE_SSL_MODE: ENC[AES256_GCM,data:/Bx5NGjrjn6jsTmD,iv:HTcpmogHObKJC1URK0aO+Jt2evcGSifLWL8cAzB09H4=,tag:2opddeW9PfPHm2Dcq8zuYg==,type:str]
-    GF_DATABASE_TYPE: ENC[AES256_GCM,data:jOYeu8IpX+8FB9/O,iv:5qye8/Se82unYSxYOLIG+mHesV6PknaBJH2AKNrf2t8=,tag:pn34lsf8Ltl5HbxC54kFsA==,type:str]
-    GF_DATABASE_USER: ENC[AES256_GCM,data:dfOUSNj5PRAmo4vX,iv:/JwjvwVjKApNGEUWZzxi+adSmQiQC5KMZ19+nz63o0o=,tag:px2JeMxOBH+N7WkL4ukk7Q==,type:str]
-    INIT_POSTGRES_DBNAME: ENC[AES256_GCM,data:0VHMPga6mQv6GWg/,iv:44eYyuytMD4DJM+/3h8ez4IsPjdRrtpc58BdWWTQtU0=,tag:4mKskEWJCmJJftD5bMfEJQ==,type:str]
-    INIT_POSTGRES_HOST: ENC[AES256_GCM,data:ssXUbdFdhY1LdVCtce1OW+LwjiRxUGxXq733fMZdwj/xwyANksETUrV1ghVB9osv+KmzDg==,iv:AHxr7yQmmJQYhf8oMGCq0YmLJYiFuSlzGpchyluwPeI=,tag:NqZxTw+ux0NsLndl0/sTQQ==,type:str]
-    INIT_POSTGRES_PASS: ENC[AES256_GCM,data:vPU2MwZE0kfi26RO,iv:A0oMSddT/i6ogpNnEK4WyAOyoMvBtJCNCzbXyU/R8PU=,tag:pagHj7gM//zWKPzpwc96Nw==,type:str]
-    INIT_POSTGRES_SUPER_PASS: ENC[AES256_GCM,data:YWJh242kpE+BFqcU,iv:kWyZ2do47ZfSk3yixllBn5AOb3UDLQVyfh779/rITR0=,tag:mBRp6/F/3hrGy7yhRl938A==,type:str]
-    INIT_POSTGRES_USER: ENC[AES256_GCM,data:Yhz3C9KDW8Iedpk4,iv:4fBB1fDpcJ9dbkC/fYz3dUheTxz2wBSDSDai34+4k9Y=,tag:J4Mj0y4CvIxh5jftHQnNvw==,type:str]
-sops:
-    kms: []
-    gcp_kms: []
-    azure_kv: []
-    hc_vault: []
-    age:
-        - recipient: age1hdtw306drrkxw3t74w8adz0y9rqy7c9ralkcql7yz5773pp7wahsqg98rd
-          enc: |
-            -----BEGIN AGE ENCRYPTED FILE-----
-            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBIOTdjTEh0TmpwSXU2bklU
-            VlAvdVNZMDBSK1IyTElHWnpZTWNucmtFdm1FCngydUtEMTE5SDJ0LzFDMm5DTUti
-            OTFKS1lybXpOTEQzNjNiQlZ2ZTdTMHcKLS0tIHJvV1lKeUIreHRLaEpuVmRaU3FD
-            WmtWejkwRUxxa3pmUmdLVmZoUjAvWmsKYfEvOF3nPerS3Nyi89FdWNEcZ0J2jgUO
-            lZGwB4m0a+Q97lEg9OFab+Mtkx2amMY77M2x9HAaTbj8yDWEpdqLSg==
-            -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2024-02-05T18:35:36Z"
-    mac: ENC[AES256_GCM,data:cOa6qbElIPDG9+j5IR0CUZZubzQAxDPXXTmg8UklJvtdwpvcDCmsDiI+QclZR0OGtVV+ZBdVkN1gPvC/gMk2MGyZ1EI32IsyoKtBhEvS31ZYEWcy8a6JgqeD+aiPcc6j5sPT8ck5wrVsKu78vUQlwvWPG4u6mKX4LWxaUj6FEaY=,iv:TxN7zHVll9Y6o7J4BXMYxMEkidsXohmHdyLmuiVov1g=,tag:5o+vAFHStaOEndjQvyNeZQ==,type:str]
-    pgp: []
-    encrypted_regex: ^(data|stringData)$
-    version: 3.8.1
+  GF_DATABASE_HOST: cG9zdGdyZXNxbC5wb3N0Z3Jlcy5zdmMuY2x1c3Rlci5sb2NhbDo1NDMy
+  GF_DATABASE_NAME: Z3JhZmFuYQ==
+  GF_DATABASE_PASSWORD: Z3JhZmFuYQ==
+  GF_DATABASE_SSL_MODE: ZGlzYWJsZQ==
+  GF_DATABASE_TYPE: cG9zdGdyZXM=
+  GF_DATABASE_USER: Z3JhZmFuYQ==
+  INIT_POSTGRES_DBNAME: cG9zdGdyZXM=
+  INIT_POSTGRES_HOST: cG9zdGdyZXNxbC5wb3N0Z3Jlcy5zdmMuY2x1c3Rlci5sb2NhbA==
+  INIT_POSTGRES_PASS: cG9zdGdyZXM=
+  INIT_POSTGRES_SUPER_PASS: cG9zdGdyZXM=
+  INIT_POSTGRES_USER: cG9zdGdyZXM=
