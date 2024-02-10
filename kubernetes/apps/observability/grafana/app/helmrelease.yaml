@@ -190,12 +190,12 @@ spec:
         all-media:
           url: https://raw.githubusercontent.com/onedr0p/exportarr/master/examples/grafana/dashboard2.json
           datasource: Prometheus
-      observability:
-        prometheus:
-          # renovate: depName="Prometheus"
-          gnetId: 19105
-          revision: 3
-          datasource: Prometheus
+      # observability:
+      #   prometheus:
+      #     # renovate: depName="Prometheus"
+      #     gnetId: 19105
+      #     revision: 3
+      #     datasource: Prometheus
     sidecar:
       dashboards:
         enabled: true
