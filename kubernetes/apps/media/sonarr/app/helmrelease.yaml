@@ -45,11 +45,10 @@ spec:
               SONARR__POSTGRES_HOST: postgresql.postgres.svc.cluster.local
               SONARR__POSTGRES_MAIN_DB: sonarr-main
               SONARR__POSTGRES_LOG_DB: sonarr-log
-              SONARR__POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD}
               SONARR__POSTGRES_PORT: 5432
-              SONARR__POSTGRES_USER: postgres
-              SONARR__API_KEY: ${API_KEY_SONARR}
               TZ: ${TIMEZONE}
+            envFrom:
+              - secret: sonarr-env
             probes:
               liveness: &probes
                 enabled: true
@@ -81,7 +80,8 @@ spec:
             env:
               PORT: &metricsPort 9707
               URL: "http://{{ .Release.Name }}.{{ .Release.Namespace }}.svc.cluster.local:8989"
-              APIKEY: ${API_KEY_SONARR}
+            envFrom:
+              - secret: sonarr-env
             args: ["sonarr"]
             resources:
               requests:

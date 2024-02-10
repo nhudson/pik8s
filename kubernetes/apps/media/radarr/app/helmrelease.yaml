@@ -44,12 +44,11 @@ spec:
               RADARR__POSTGRES_HOST: postgresql.postgres.svc.cluster.local
               RADARR__POSTGRES_MAIN_DB: radarr-main
               RADARR__POSTGRES_LOG_DB: radarr-log
-              RADARR__POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD}
               RADARR__POSTGRES_PORT: 5432
-              RADARR__POSTGRES_USER: postgres
-              RADARR__API_KEY: ${API_KEY_RADARR}
               TP_ADDON: radarr-darker
               TZ: ${TIMEZONE}
+            envFrom:
+              - secret: radarr-env
             probes:
               liveness: &probes
                 enabled: true
@@ -81,7 +80,8 @@ spec:
             env:
               PORT: &metricsPort 9707
               URL: "http://{{ .Release.Name }}.{{ .Release.Namespace }}.svc.cluster.local:7878"
-              APIKEY: ${API_KEY_RADARR}
+            envFrom:
+              - secret: radarr-env
             args: ["radarr"]
             resources:
               requests:

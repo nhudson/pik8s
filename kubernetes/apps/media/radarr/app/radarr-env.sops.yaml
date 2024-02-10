@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: radarr-env
+    namespace: media
+type: Opaque
+data:
+    RADARR__POSTGRES_PASSWORD: ENC[AES256_GCM,data:ARDl1+8LXBa/44w1,iv:dqPjYV7lUCiDOZA9cAYVwJ1eTbjT0a+dUfS03MArAcg=,tag:UPmfpgVMDn3YlxBFciGXmA==,type:str]
+    RADARR__POSTGRES_USER: ENC[AES256_GCM,data:sHwa859tQNemC6f3,iv:HJHDD329+OY/pWyJ/ocJeZ7+BKjqJ5GhR7f97Ismitc=,tag:0txfm5tD2j9jw2qRKszsgw==,type:str]
+    RADARR__API_KEY: ENC[AES256_GCM,data:3aH7xE9le0ofc3CPHW5kbA9a61jo2xMe+Xd05C+xGA3dO7ah8/BqY59Fxwk=,iv:Y+v3TRfvw3VuSI6somlBsL4YcHnDJszAvLIRW2d0958=,tag:X3Pg/6rnpPE+p29pMU5M+w==,type:str]
+    APIKEY: ENC[AES256_GCM,data:bKhbgDy8DXLD90Fao8CVNahBnLjY2zYRgcNc3QbiGsaq5JUAzRbA0rRy0dk=,iv:8rN4BIyKVN2+m6/xeGhI0mPKtalpCYoObEGDGyIed1U=,tag:F4su4sFu3dGRC32rW5UFKg==,type:str]
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age:
+        - recipient: age1hdtw306drrkxw3t74w8adz0y9rqy7c9ralkcql7yz5773pp7wahsqg98rd
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSB2Y3AwbC9oNkt2ZTNtSjJX
+            RzRjSmc5TFVXVEx2K1IyaGV5U2Vhd0g4ajI4CmhEcDVVbnFmOWdZR2o2ZkNtM1Bl
+            bFFzWEx1OVJRbjM1d3ZTcFFwMG1TSEkKLS0tIDdVZGtkVDVpelNzeDNqdHZyS2dv
+            enhNbFUvT3ZYU2NHOHgwYVFlcnZaR00Kza7lhMxeQHPTqNYgzk17WOAgpxKs4VNQ
+            xM7ozEpauKw0BLcXKkG+T5ayz9r2dJobEthu8xoBQyz+XXd4AalYDA==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2024-02-10T03:17:52Z"
+    mac: ENC[AES256_GCM,data:Dlbf0NwthakKuk4hifSMYauXzE+Jwt7j93+J7jSL7wZmEs8kSOBks/jM2aYnL8mmpnAeCIkOK/BBfsAQ4HiY2wQ3O752a990M4qEUx57aaHtaLaVA55mV/UyPJDupzt7Awyl4Id9CuKysvHNWMVZRi8sIfyt4XeZVhzW3fzdaLg=,iv:R5dS81c4f3PNUbpTEznUzvPuyzenJoxJ+sLFo2lTCP0=,tag:RqZhGfnV5ZTEHHHc/YOQtg==,type:str]
+    pgp: []
+    encrypted_regex: ^(data|stringData)$
+    version: 3.8.1
