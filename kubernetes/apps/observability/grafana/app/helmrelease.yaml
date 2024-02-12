@@ -101,6 +101,14 @@ spec:
             editable: true
             options:
               path: /var/lib/grafana/dashboards/media
+          - name: postgres
+            orgId: 1
+            folder: PostgreSQL
+            type: file
+            disableDeletion: false
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/postgres
     datasources:
       datasources.yaml:
         apiVersion: 1
@@ -189,6 +197,10 @@ spec:
           datasource: Prometheus
         all-media:
           url: https://raw.githubusercontent.com/onedr0p/exportarr/master/examples/grafana/dashboard2.json
+          datasource: Prometheus
+      postgres:
+        postgres:
+          url: https://raw.githubusercontent.com/prometheus-community/postgres_exporter/master/postgres_mixin/dashboards/postgres-overview.json
           datasource: Prometheus
       # observability:
       #   prometheus:
