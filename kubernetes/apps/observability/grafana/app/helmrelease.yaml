@@ -33,8 +33,8 @@ spec:
       existingSecret: grafana-admin-secret
     serviceAccount:
       # Broken by Helm chart version 7.3.2.
-      automountServiceAccountToken: true
-      create: default
+      autoMount: true
+      create: true
     env:
       GF_EXPLORE_ENABLED: true
       GF_SERVER_ROOT_URL: "https://grafana.${SECRET_DOMAIN}"
