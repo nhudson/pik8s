@@ -69,7 +69,7 @@ spec:
               requests:
                 cpu: 300m
               limits:
-                memory: 3Gi
+                memory: 5Gi
 
           secondary:
             image:
