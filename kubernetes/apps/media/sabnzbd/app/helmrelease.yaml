@@ -170,7 +170,7 @@ spec:
         enabled: true
         type: hostPath
         hostPath: /mnt/movies
-      mediadownload:
+      download:
         enabled: true
         type: hostPath
         hostPath: /mnt/pvc

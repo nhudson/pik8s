@@ -155,7 +155,7 @@ spec:
         enabled: true
         type: hostPath
         hostPath: /mnt/movies
-      mediadownload:
+      pvc:
         enabled: true
         type: hostPath
         hostPath: /mnt/pvc
