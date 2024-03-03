@@ -159,9 +159,6 @@ spec:
               - *customhost
 
     persistence:
-      download:
-        enabled: true
-        existingClaim: nas-download
       config:
         enabled: true
         existingClaim: sab-config
