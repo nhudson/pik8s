@@ -155,6 +155,10 @@ spec:
         enabled: true
         type: hostPath
         hostPath: /mnt/movies
+      mediadownload:
+        enabled: true
+        type: hostPath
+        hostPath: /mnt/pvc
 
     serviceMonitor:
       secondary:

@@ -159,6 +159,9 @@ spec:
               - *customhost
 
     persistence:
+      download:
+        enabled: true
+        existingClaim: nas-download
       config:
         enabled: true
         existingClaim: sab-config
@@ -170,6 +173,10 @@ spec:
         enabled: true
         type: hostPath
         hostPath: /mnt/movies
+      mediadownload:
+        enabled: true
+        type: hostPath
+        hostPath: /mnt/pvc
 
     serviceMonitor:
       secondary:
