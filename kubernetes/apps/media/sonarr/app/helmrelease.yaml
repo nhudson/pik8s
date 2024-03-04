@@ -70,8 +70,6 @@ spec:
               requests:
                 cpu: 10m
                 memory: 400M
-              limits:
-                memory: 1024M
 
           secondary:
             image:
