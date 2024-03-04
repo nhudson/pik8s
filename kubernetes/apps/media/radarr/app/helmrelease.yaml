@@ -158,7 +158,7 @@ spec:
       pvc:
         enabled: true
         type: hostPath
-        hostPath: /mnt/pvc
+        hostPath: /mnt/transcode
 
     serviceMonitor:
       secondary:
