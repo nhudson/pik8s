@@ -1,0 +1,19 @@
+---
+kubernetes:
+  children:
+    controllers:
+      hosts:
+        "pik8s01":
+          ansible_user: "nhudson"
+          ansible_host: "192.168.6.50"
+    workers:
+      hosts:
+        "pik8s02":
+          ansible_user: "nhudson"
+          ansible_host: "192.168.6.51"
+        "pik8s03":
+          ansible_user: "nhudson"
+          ansible_host: "192.168.6.52"
+        "thrawn":
+          ansible_user: "nhudson"
+          ansible_host: "192.168.6.53"
