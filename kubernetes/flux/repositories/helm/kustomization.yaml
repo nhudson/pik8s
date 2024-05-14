@@ -14,3 +14,4 @@ resources:
   - ./prometheus-community-charts.yaml
   - ./grafana-charts.yaml
   - ./csi-driver-nfs.yaml
+  - ./descheduler.yaml
