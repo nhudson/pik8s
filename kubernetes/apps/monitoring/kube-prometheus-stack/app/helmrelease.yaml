@@ -47,11 +47,12 @@ spec:
         useExistingSecret: true
         configSecret: alertmanager-secret
         storage:
-          spec:
-            storageClassName: nfs
-            resources:
-              requests:
-                storage: 1Gi
+          volumeClaimTemplate:
+            spec:
+              storageClassName: nfs
+              resources:
+                requests:
+                  storage: 1Gi
     kubelet:
       enabled: true
       serviceMonitor:
