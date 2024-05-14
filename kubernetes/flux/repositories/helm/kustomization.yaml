@@ -11,3 +11,6 @@ resources:
   - ./metrics-server.yaml
   - ./openebs.yaml
   - ./stakater.yaml
+  - ./prometheus-community-charts.yaml
+  - ./grafana-charts.yaml
+  - ./csi-driver-nfs.yaml
