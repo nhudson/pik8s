@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: alertmanager-secret
+    namespace: monitoring
+type: Opaque
+data:
+    alertmanager.yml: ENC[AES256_GCM,data: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,iv:iW0mOqhQUf5fKzFqYMvy9tEn4LO79oO3ugZ6tmNBLXU=,tag:fSw8ay5ol92cCHJ39YQ6mg==,type:str]
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age:
+        - recipient: age1epzwhsd46ezg2h7fdkqq3sexwk2v5re8smauah0f9hhug96d7pyqajt4ds
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBnRWtuckhUUXdPVnlSeXdl
+            clg0cWFHK1RQQnVkbloxRUFuSnNWUjBMRzE4CjFvRm9PYThIRzJDS05KL25RSkVy
+            VytQTGczaWsrekNTZzAycStESWRoNDQKLS0tIFVOM0ljczgvSmhOTGU0N3g3enJV
+            bnVVNERINGZpa3lQaUlTaC9Pc1U0eVUKzhTU4DpmROQNdvPwvYR1jyMwGG15sqYd
+            bghNUOz2HdaznwoDtdw/a6R5q/jYHy0zMn2jBt4P4TVud8cH8JD95w==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2024-05-14T12:55:38Z"
+    mac: ENC[AES256_GCM,data:hkwuh5rQ8OfpTWl2ILnyvL00vz8aVllScMoLfCZ8Rww1piYnpIMy+8efDlwtCbqySLNFjMJIkgrpggL8n3XXw3Y9yrStjCo/UMFDMShiIfXrXM9tO4UHOAosfC6ecBzRPmy2iP2OzeWykZDS48knYPHj7smxWtERRROK159jmFU=,iv:9nUXXT77cHLR7Z/YxBx+POQTGMz2m8zijLOlKwpKqhg=,tag:mu3g3rcuXASsOLJY9Fq3ug==,type:str]
+    pgp: []
+    encrypted_regex: ^(data|stringData)$
+    version: 3.8.1
