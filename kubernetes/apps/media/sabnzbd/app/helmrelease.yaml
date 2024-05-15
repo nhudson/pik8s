@@ -126,23 +126,23 @@ spec:
               - path: /
                 service:
                   name: main
-                  port: http
+                  port: *port
               - path: /metrics
                 pathType: Prefix
                 service:
                   name: secondary
-                  port: metrics
+                  port: *metricsPort
           - host: &customhost "sabnzbd.${SECRET_DOMAIN}"
             paths:
               - path: /
                 service:
                   name: main
-                  port: http
+                  gnort: *port
               - path: /metrics
                 pathType: Prefix
                 service:
                   name: secondary
-                  port: metrics
+                  port: *metricsPort
         tls:
           - hosts:
               - *host
