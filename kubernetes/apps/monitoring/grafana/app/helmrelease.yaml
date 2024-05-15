@@ -125,7 +125,7 @@ spec:
             type: prometheus
             uid: prometheus
             access: proxy
-            url: http://kube-prometheus-stack-prometheus.observability.svc.cluster.local:9090
+            url: http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090
             jsonData:
               prometheusType: Prometheus
             isDefault: true
@@ -133,7 +133,7 @@ spec:
             type: alertmanager
             uid: alertmanager
             access: proxy
-            url: http://alertmanager-operated.observability.svc.cluster.local:9093
+            url: http://alertmanager-operated.monitoring.svc.cluster.local:9093
             jsonData:
               implementation: prometheus
     dashboards:
