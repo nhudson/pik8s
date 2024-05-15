@@ -1,11 +1,31 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: prowlarr-env
-  namespace: media
+    name: prowlarr-env
+    namespace: media
 type: Opaque
 data:
-  PROWLARR__API_KEY: VVllaGhpYW5OcFZUdm9IYVZHTUI=
-  PROWLARR__POSTGRES_PASSWORD: cG9zdGdyZXM=
-  PROWLARR__POSTGRES_USER: cG9zdGdyZXM=
-  APIKEY: VVllaGhpYW5OcFZUdm9IYVZHTUI=
+    PROWLARR__API_KEY: ENC[AES256_GCM,data:hZOPyPTW6dMxHDmMxBSpdOH7wJKbTEVuXzMxFw==,iv:0DbcgHplHiXyerAoyaEMP7YXyaDRdL1nXqCprbX8/iU=,tag:dMbEdC3wgaDVjecJZGfQhQ==,type:str]
+    PROWLARR__POSTGRES_PASSWORD: ENC[AES256_GCM,data:OmYoqT3MYFS4mu1P,iv:ztZ9McImPRBozCkQM+6fmAQmXnlzwyEgX4RCu9VYmV0=,tag:AyPIKeJ6cuBrr5OdXneeRQ==,type:str]
+    PROWLARR__POSTGRES_USER: ENC[AES256_GCM,data:OX2gd7bcGglSoV0z,iv:qgMSexhHZ8gBKCknpeaazue0mjP0l5iqLxTzV1QEYb8=,tag:u9AtesStU/Jt7hAs0htoFQ==,type:str]
+    APIKEY: ENC[AES256_GCM,data:s3TBRHwPm2ONWpQhSVOoTxq8WDIkXHtDIk9Mhw==,iv:EROGGDf6luwzo1EdvRN41A/bV5J3I+45EfS8m47Lbow=,tag:XwUkQbb24VvMMku27F/xmw==,type:str]
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age:
+        - recipient: age1epzwhsd46ezg2h7fdkqq3sexwk2v5re8smauah0f9hhug96d7pyqajt4ds
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSB3WkJvTXhMOTdrbUJIOE1n
+            Q1VpYmFLbVhUUzIyNDBjLzUwNUIzMExVOEJBClZWQ2s5N0lHSnNhYkxPUERvMERs
+            dmNMY2pUUEJtamRnaUl4RFFYMzZZdm8KLS0tIE5IMDdhbml0QTg4czZpWVBOaGtU
+            QUJoSG90K1VKVksvWXIvNjltYnBtWkUKsyq7Jq0N94wlMY3eU1OGwLJ0F67k1nXx
+            RQzQMSW1Xp53a1x0J8fZve8Tu11ArxPecD7N8ZeMsocQzws4NpASJA==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2024-05-15T20:43:31Z"
+    mac: ENC[AES256_GCM,data:p43fURj2Z6vc2G7/XtQVy4GAkRHKMicxPG+l0B8kgMdiPMbqWJSFVNfXHHuv+akYU43DZ/vJxEr8L+2yk9/ifXiE0EE0TPvgxm48LAP9LIrDIyj472CnZOHb2CdJfnu/Up4qWNuIqDtyDV5jAHEFHHXCinxPy1KyHsdtVMXmRN8=,iv:lkpgBOXDatr6oXbJhQBhzmvNkoeT8HymlHXV88Rpj54=,tag:9O8pGHgA/ZJlzv9U8LweyA==,type:str]
+    pgp: []
+    encrypted_regex: ^(data|stringData)$
+    version: 3.8.1
