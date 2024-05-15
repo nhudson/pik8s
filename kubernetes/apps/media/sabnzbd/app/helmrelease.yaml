@@ -137,7 +137,7 @@ spec:
               - path: /
                 service:
                   name: main
-                  gnort: *port
+                  port: *port
               - path: /metrics
                 pathType: Prefix
                 service:
