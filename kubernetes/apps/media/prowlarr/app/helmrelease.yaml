@@ -1,0 +1,152 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2beta2.json
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: &app prowlarr
+  namespace: media
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 3.1.0
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  maxHistory: 3
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    controllers:
+      main:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          main:
+            image:
+              repository: ghcr.io/onedr0p/prowlarr-nightly
+              tag: 1.18.0.4513
+            env:
+              TZ: "${TIMEZONE}"
+              PROWLARR__INSTANCE_NAME: Prowlarr
+              PROWLARR__PORT: &port 8080
+              PROWLARR__LOG_LEVEL: info
+              PROWLARR__THEME: dark
+              PROWLARR__POSTGRES_HOST: postgresql.postgres.svc.cluster.local
+              PROWLARR__POSTGRES_MAIN_DB: prowlarr-main
+              PROWLARR__POSTGRES_LOG_DB: prowlarr-log
+              PROWLARR__POSTGRES_PORT: 5432
+            envFrom:
+              - secret: prowlarr-env
+            resources:
+              requests:
+                cpu: 100m
+                memory: 100Mi
+              limits:
+                memory: 500Mi
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /ping
+                    port: *port
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+              startup:
+                enabled: false
+
+          secondary:
+            image:
+              repository: ghcr.io/onedr0p/exportarr
+              tag: v2.0.1
+            env:
+              PORT: &metricsPort 9707
+              URL: "http://{{ .Release.Name }}.{{ .Release.Namespace }}.svc.cluster.local:8080"
+              PROWLARR__BACKFILL: true
+            envFrom:
+              - secret: prowlarr-env
+            args: ["prowlarr"]
+
+            resources:
+              requests:
+                cpu: 10m
+                memory: 100Mi
+              limits:
+                memory: 125Mi
+
+    service:
+      main:
+        controller: main
+        ports:
+          http:
+            port: *port
+      secondary:
+        nameOverride: metrics
+        controller: main
+        ports:
+          metrics:
+            port: *metricsPort
+
+    ingress:
+      main:
+        enabled: true
+        className: internal
+        annotations:
+          nginx.ingress.kubernetes.io/configuration-snippet: |
+            proxy_set_header Accept-Encoding "";
+            sub_filter '</head>' '<link rel="stylesheet" type="text/css" href="https://theme-park.dev/css/base/sabnzbd/dark.css"></head>';
+            sub_filter_once on;
+        hosts:
+          - host: &host "{{ .Release.Name }}.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                service:
+                  name: main
+                  port: http
+              - path: /metrics
+                pathType: Prefix
+                service:
+                  name: secondary
+                  port: metrics
+        tls:
+          - hosts:
+              - *host
+
+    persistence:
+      config:
+        enabled: true
+        type: emptyDir
+      tmp:
+        type: emptyDir
+
+    serviceMonitor:
+      secondary:
+        enabled: true
+        labels:
+          app.kubernetes.io/name: prowlarr
+          app.kubernetes.io/instance: prowlarr-metrics
+        selector:
+          matchLabels:
+            app.kubernetes.io/instance: prowlarr
+            app.kubernetes.io/name: prowlarr
+            app.kubernetes.io/service: prowlarr-metrics
+        endpoints:
+          - port: metrics
+            interval: 4m
+            scrapeTimeout: 90s
+            path: /metrics

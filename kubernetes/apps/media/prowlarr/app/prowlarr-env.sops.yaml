@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: prowlarr-env
+  namespace: media
+type: Opaque
+data:
+  PROWLARR__API_KEY: VVllaGhpYW5OcFZUdm9IYVZHTUI=
+  PROWLARR__POSTGRES_PASSWORD: cG9zdGdyZXM=
+  PROWLARR__POSTGRES_USER: cG9zdGdyZXM=
+  APIKEY: VVllaGhpYW5OcFZUdm9IYVZHTUI=
