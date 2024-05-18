@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: sonarr-env
+    namespace: media
+type: Opaque
+data:
+    SONARR__API_KEY: ENC[AES256_GCM,data:oJlL0Lcbw/9zievu/1mRbyQdT/ihlGxZrI5pWA==,iv:UzkpEiIG5bzEMnWUM+5H8yLe8MCTb0XJWI/6KcELr8o=,tag:tMiBULKCGmNb6PMHN/pmVQ==,type:str]
+    SONARR__POSTGRES_PASSWORD: ENC[AES256_GCM,data:fGD14c54/Zy/WVc6,iv:WutGponEL9ePTFVFxcz3nFHMXowUU46Oa6uXdntpgtc=,tag:W+FRIc7YzMA5pXgTAsCLkQ==,type:str]
+    SONARR__POSTGRES_USER: ENC[AES256_GCM,data:l3C0plI4kKJzrfuw,iv:3+g3wbh+coA3FzVYsLZiwnbIxjbNzT704XqOTKc8CQc=,tag:bJHZsVBWBzRqmCJYR9eWCg==,type:str]
+    APIKEY: ENC[AES256_GCM,data:QNP4993CtZpzu0hR3K23o3G6EwKgkd1LZE0wkw==,iv:xLMiQqRauYEAg70Kg3mJRWdJGaFHxllVK84r4y5XUsI=,tag:kstOa3NJg3bvS1Y+hBesCQ==,type:str]
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age:
+        - recipient: age1epzwhsd46ezg2h7fdkqq3sexwk2v5re8smauah0f9hhug96d7pyqajt4ds
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSAxWnRJOFVhWHZpYzdWUGpx
+            QkZiazVxaWh6TUF1RTN4b1EvSTZDNm1pSWowCmdYbWVyZEc5KzdFWTJSK2FuVWdM
+            bTZtdXVUb2txRjFzazdHU1pndERYT3MKLS0tIHlESUg1SW5RTzVVTFN1WEF3Tjkz
+            Ty8vSlBTaXJBZDlmQS9rTXZjMnZwYlUK0kdyZUYECLz58+aaf78x4qzRWiLskaSc
+            emdMUR9JyIiXenC3NbW5j834+4QwCLtyj+kVf9Fqs62CBIvdN+53qw==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2024-05-18T22:03:21Z"
+    mac: ENC[AES256_GCM,data:7U8GhSzASn/BCfWSzG6yotS8nXdSzLOmTLW5njYxrZGNF6tu6VjRmYCxg1h5G1E1mMeybWq3Lknl+arm1heuvoFOKAw7cX8L6UVmjXimsiTi3ZZLaQldFbbzQRCv6K+6JnxiFXRlrPnzzdG2W/dginB4Q3rRKax52zan0aiErP4=,iv:lSfILQIVqYggqsWzeROCnIk7dzxWPkGgkRr1p1TkyzU=,tag:ssjX5mtd1WBZQqNb8lCt4A==,type:str]
+    pgp: []
+    encrypted_regex: ^(data|stringData)$
+    version: 3.8.1
