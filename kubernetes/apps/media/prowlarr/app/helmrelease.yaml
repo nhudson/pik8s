@@ -116,12 +116,12 @@ spec:
             paths:
               - path: /
                 service:
-                  name: main
+                  name: prowlarr-main
                   port: 80
               - path: /metrics
                 pathType: Prefix
                 service:
-                  name: secondary
+                  name: prowlarr-metrics
                   port: *metricsPort
         tls:
           - hosts:
