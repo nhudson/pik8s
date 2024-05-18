@@ -117,7 +117,7 @@ spec:
               - path: /
                 service:
                   name: prowlarr-main
-                  port: 80
+                  port: *port
               - path: /metrics
                 pathType: Prefix
                 service:
