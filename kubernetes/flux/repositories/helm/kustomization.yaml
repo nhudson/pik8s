@@ -15,3 +15,4 @@ resources:
   - ./grafana-charts.yaml
   - ./csi-driver-nfs.yaml
   - ./descheduler.yaml
+  - ./cloudnative-pg-charts.yaml
