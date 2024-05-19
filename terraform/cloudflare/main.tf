@@ -14,3 +14,9 @@ resource "cloudflare_r2_bucket" "loki" {
   name       = "loki"
   location   = local.r2_location
 }
+
+resource "cloudflare_r2_bucket" "psqlbackups" {
+  account_id = local.account_id
+  name       = "postgres-backups"
+  location   = local.r2_location
+}
