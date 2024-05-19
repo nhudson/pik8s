@@ -162,7 +162,7 @@ spec:
             app.kubernetes.io/name: radarr
             app.kubernetes.io/service: radarr-metrics
         endpoints:
-          - port: *metricsPort
+          - port: metrics
             interval: 4m
             scrapeTimeout: 90s
             path: /metrics

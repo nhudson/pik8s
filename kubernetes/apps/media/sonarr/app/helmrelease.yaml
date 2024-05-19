@@ -156,7 +156,7 @@ spec:
             app.kubernetes.io/name: sonarr
             app.kubernetes.io/service: sonarr-metrics
         endpoints:
-          - port: *metricsPort
+          - port: metrics
             interval: 4m
             scrapeTimeout: 90s
             path: /metrics
