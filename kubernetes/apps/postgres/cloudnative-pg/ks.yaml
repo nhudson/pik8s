@@ -10,9 +10,6 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  dependsOn:
-    - name: csi-driver-nfs
-      namespace: storage
   path: ./kubernetes/apps/postgres/cloudnative-pg/app
   prune: true
   sourceRef:
