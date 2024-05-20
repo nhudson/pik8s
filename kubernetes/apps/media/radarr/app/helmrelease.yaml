@@ -151,10 +151,9 @@ spec:
         hostPath: /mnt/transcode
       config:
         enabled: true
-        type: persistentVolumeClaim
+        accessMode: ReadWriteOnce
         storageClass: nfs
         size: 1Gi
-        retain: true
 
     serviceMonitor:
       secondary:
