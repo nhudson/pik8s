@@ -35,7 +35,7 @@ spec:
       wal:
         compression: snappy
         maxParallel: 8
-      destinationPath: s3://postges-backups/
+      destinationPath: s3://postgres-backups/
       endpointURL: https://${SECRET_CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com
       serverName: *name
       s3Credentials:
