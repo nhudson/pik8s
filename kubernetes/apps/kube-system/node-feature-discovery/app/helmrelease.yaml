@@ -45,11 +45,15 @@ spec:
                 attribute: "version"
           custom:
             - name: "intel-gpu"
+              labels:
+                feature.node.kubernetes.io/intel-gpu: "true"
               matchOn:
                 - pciId:
                     vendor: "8086"
                     class: "03"
             - name: "nvidia-gpu"
+              labels:
+                feature.node.kubernetes.io/nvidia-gpu: "true"
               matchOn:
                 - pciId:
                     vendor: "10de"
