@@ -112,19 +112,22 @@ spec:
           - hosts: [*host]
             secretName: "{{ .Release.Name }}-tls"
     persistence:
+      tmp:
+        type: emptyDir
+      transcode:
+        enabled: true
+        type: hostPath
+        hostPath: /mnt/transcode
+      tv:
+        enabled: true
+        type: hostPath
+        hostPath: /mnt/tv
+      movies:
+        enabled: true
+        type: hostPath
+        hostPath: /mnt/movies
       config:
         enabled: true
         accessMode: ReadWriteOnce
         storageClass: nfs
         size: 1Gi
-      tmp:
-        type: emptyDir
-      transcode:
-        type: emptyDir
-      media:
-        type: nfs
-        server: nas.nhudson.dev
-        path: /pool-01
-        globalMounts:
-          - path: /media
-            readOnly: false
