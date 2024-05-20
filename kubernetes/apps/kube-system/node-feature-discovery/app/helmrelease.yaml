@@ -28,14 +28,33 @@ spec:
     worker:
       config:
         core:
-          sources: ["pci", "system", "usb", "kernel", "custom"]
+          sources:
+            - pci
+            - system
+            - usb
+            - kernel
+            - custom
         sources:
-          usb:
-            deviceClassWhitelist: ["02", "03", "0e", "ef", "fe", "ff"]
-            deviceLabelFields: ["class", "vendor", "device"]
           pci:
-            deviceClassWhitelist: ["02", 0200", "0207", "03", "0300", "0302"]
-            deviceLabelFields: ["vendor", "device"]
+            deviceClassWhitelist:
+              - "03"
+              - "0300"
+              - "0302"
+            deviceLabelFields:
+              - vendor
+              - device
+          usb:
+            deviceClassWhitelist:
+              - "02"
+              - "03"
+              - "0e"
+              - "ef"
+              - "fe"
+              - "ff"
+            deviceLabelFields:
+              - class
+              - vendor
+              - device
           system:
             attributeWhitelist:
               - "architecture"
@@ -46,17 +65,17 @@ spec:
           custom:
             - name: "intel-gpu"
               labels:
-                feature.node.kubernetes.io/intel-gpu: "true"
+                feature.node.kubernetes.io/custom-intel-gpu: "true"
               matchOn:
                 - pciId:
                     vendor: "8086"
-                    class: "03"
+                    device: "3e9b"
             - name: "nvidia-gpu"
               labels:
-                feature.node.kubernetes.io/nvidia-gpu: "true"
+                feature.node.kubernetes.io/custom-nvidia-gpu: "true"
               matchOn:
                 - pciId:
                     vendor: "10de"
-                    class: "03"
+                    device: "1f91"
     prometheus:
       enable: true
