@@ -28,7 +28,7 @@ spec:
     worker:
       config:
         core:
-          sources: ["pci", "system", "usb", "kernel"]
+          sources: ["pci", "system", "usb", "kernel", "custom"]
         sources:
           usb:
             deviceClassWhitelist: ["02", "03", "0e", "ef", "fe", "ff"]
@@ -36,9 +36,6 @@ spec:
           pci:
             deviceClassWhitelist: ["02", 0200", "0207", "03", "0300", "0302"]
             deviceLabelFields: ["vendor", "device"]
-            vendorLabelMapping:
-              8086: "intel"
-              10de: "nvidia"
           system:
             attributeWhitelist:
               - "architecture"
@@ -46,5 +43,16 @@ spec:
             attributeMapping:
               - name: "Kernel version"
                 attribute: "version"
+          custom:
+            - name: "intel-gpu"
+              matchOn:
+                - pciId:
+                    vendor: "8086"
+                    class: "03"
+            - name: "nvidia-gpu"
+              matchOn:
+                - pciId:
+                    vendor: "10de"
+                    class: "03"
     prometheus:
       enable: true

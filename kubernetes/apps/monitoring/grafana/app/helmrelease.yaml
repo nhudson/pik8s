@@ -23,9 +23,9 @@ spec:
       retries: 3
   uninstall:
     keepHistory: false
-  dependsOn:
-    - name: cloudnative-pg-cluster
-      namespace: flux-system
+  # dependsOn:
+  #   - name: cloudnative-pg-cluster
+  #     namespace: flux-system
   values:
     deploymentStrategy:
       type: Recreate
