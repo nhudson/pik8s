@@ -24,8 +24,8 @@ spec:
   uninstall:
     keepHistory: false
   dependsOn:
-    - name: postgresql
-      namespace: postgres
+    - name: cloudnative-pg-cluster
+      namespace: flux-system
   values:
     deploymentStrategy:
       type: Recreate
@@ -140,19 +140,19 @@ spec:
       default:
         cloudflared:
           gnetId: 17457 # https://grafana.com/grafana/dashboards/17457?tab=revisions
-          revision: 6
           datasource:
             - { name: DS_PROMETHEUS, value: Prometheus }
         external-dns:
           gnetId: 15038 # https://grafana.com/grafana/dashboards/15038?tab=revisions
-          revision: 1
           datasource: Prometheus
         cert-manager:
           url: https://raw.githubusercontent.com/monitoring-mixins/website/master/assets/cert-manager/dashboards/cert-manager.json
           datasource: Prometheus
         node-exporter-full:
           gnetId: 1860 # https://grafana.com/grafana/dashboards/1860?tab=revisions
-          revision: 31
+          datasource: Prometheus
+        node-feature-discovery:
+          url: https://raw.githubusercontent.com/kubernetes-sigs/node-feature-discovery/master/examples/grafana-dashboard.json
           datasource: Prometheus
       flux:
         flux-cluster:
@@ -205,6 +205,9 @@ spec:
       postgres:
         postgres:
           url: https://raw.githubusercontent.com/prometheus-community/postgres_exporter/master/postgres_mixin/dashboards/postgres-overview.json
+          datasource: Prometheus
+        cloudnative-pg:
+          gnetId: 20417 # https://grafana.com/grafana/dashboards/20417-cloudnativepg/
           datasource: Prometheus
       # observability:
       #   prometheus:
