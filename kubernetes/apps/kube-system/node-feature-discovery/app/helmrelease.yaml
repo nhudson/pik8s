@@ -31,7 +31,6 @@ spec:
           sources:
             - pci
             - system
-            - usb
             - kernel
         sources:
           pci:
@@ -41,19 +40,6 @@ spec:
               - "0302"
             deviceLabelFields:
               - vendor
-              - device
-          usb:
-            deviceClassWhitelist:
-              - "02"
-              - "03"
-              - "0e"
-              - "ef"
-              - "fe"
-              - "ff"
-            deviceLabelFields:
-              - class
-              - vendor
-              - device
           system:
             attributeWhitelist:
               - "architecture"
