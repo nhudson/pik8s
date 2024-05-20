@@ -41,7 +41,7 @@ spec:
               RADARR__INSTANCE_NAME: radarr
               RADARR__LOG_LEVEL: info
               RADARR__PORT: &port 7878
-              RADARR__POSTGRES_HOST: postgresql-main.postgres.svc.cluster.local
+              RADARR__POSTGRES_HOST: cnpg-postgres-rw.postgres.svc.cluster.local
               RADARR__POSTGRES_MAIN_DB: radarr-main
               RADARR__POSTGRES_LOG_DB: radarr-log
               RADARR__POSTGRES_PORT: 5432

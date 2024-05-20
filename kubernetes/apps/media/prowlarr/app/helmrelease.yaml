@@ -42,7 +42,7 @@ spec:
               PROWLARR__PORT: &port 8080
               PROWLARR__LOG_LEVEL: info
               PROWLARR__THEME: dark
-              PROWLARR__POSTGRES_HOST: postgresql-main.postgres.svc.cluster.local
+              PROWLARR__POSTGRES_HOST: cnpg-postgres-rw.postgres.svc.cluster.local
               PROWLARR__POSTGRES_MAIN_DB: prowlarr-main
               PROWLARR__POSTGRES_LOG_DB: prowlarr-log
               PROWLARR__POSTGRES_PORT: 5432

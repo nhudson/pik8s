@@ -42,7 +42,7 @@ spec:
               SONARR__LOG_LEVEL: info
               SONARR__PORT: &port 8989
               SONARR__THEME: dark
-              SONARR__POSTGRES_HOST: postgresql-main.postgres.svc.cluster.local
+              SONARR__POSTGRES_HOST: cnpg-postgres-rw.postgres.svc.cluster.local
               SONARR__POSTGRES_MAIN_DB: sonarr-main
               SONARR__POSTGRES_LOG_DB: sonarr-log
               SONARR__POSTGRES_PORT: 5432
