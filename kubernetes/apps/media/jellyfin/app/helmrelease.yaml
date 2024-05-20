@@ -113,7 +113,10 @@ spec:
             secretName: "{{ .Release.Name }}-tls"
     persistence:
       config:
-        existingClaim: jellyfin
+        enabled: true
+        accessMode: ReadWriteOnce
+        storageClass: nfs
+        size: 1Gi
       tmp:
         type: emptyDir
       transcode:
