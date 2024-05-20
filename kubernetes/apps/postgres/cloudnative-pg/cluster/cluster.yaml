@@ -1,0 +1,47 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/postgresql.cnpg.io/cluster_v1.json
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: &name cnpg-postgres
+spec:
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:16.3-1
+  primaryUpdateStrategy: unsupervised
+  storage:
+    size: 10Gi
+    storageClass: nfs
+  superuserSecret:
+    name: &secret cloudnative-pg-secret
+  enableSuperuserAccess: true
+  bootstrap:
+    initdb:
+      database: app
+      owner: app
+  resources:
+    requests:
+      cpu: 200m
+      memory: 200Mi
+    limits:
+      cpu: 500m
+      memory: 1024Mi
+  monitoring:
+    enablePodMonitor: true
+  backup:
+    retentionPolicy: 5d
+    barmanObjectStore:
+      data:
+        compression: snappy
+      wal:
+        compression: snappy
+        maxParallel: 8
+      destinationPath: s3://postges-backups/
+      endpointURL: https://${SECRET_CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com
+      serverName: *name
+      s3Credentials:
+        accessKeyId:
+          name: *secret
+          key: aws-access-key-id
+        secretAccessKey:
+          name: *secret
+          key: aws-secret-access-key
