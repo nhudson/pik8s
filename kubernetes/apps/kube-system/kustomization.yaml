@@ -8,3 +8,4 @@ resources:
   - ./reloader/ks.yaml
   - ./kube-vip/ks.yaml
   - ./descheduler/ks.yaml
+  - ./node-feature-discovery/ks.yaml

@@ -16,3 +16,5 @@ resources:
   - ./csi-driver-nfs.yaml
   - ./descheduler.yaml
   - ./cloudnative-pg-charts.yaml
+  - ./nvidia.yaml
+  - ./intel.yaml
