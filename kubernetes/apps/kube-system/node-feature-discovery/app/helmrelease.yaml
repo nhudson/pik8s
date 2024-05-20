@@ -33,7 +33,6 @@ spec:
             - system
             - usb
             - kernel
-            - custom
         sources:
           pci:
             deviceClassWhitelist:
@@ -62,20 +61,5 @@ spec:
             attributeMapping:
               - name: "Kernel version"
                 attribute: "version"
-          custom:
-            - name: "intel-gpu"
-              labels:
-                feature.node.kubernetes.io/custom-intel-gpu: "true"
-              matchOn:
-                - pciId:
-                    vendor: "8086"
-                    device: "3e9b"
-            - name: "nvidia-gpu"
-              labels:
-                feature.node.kubernetes.io/custom-nvidia-gpu: "true"
-              matchOn:
-                - pciId:
-                    vendor: "10de"
-                    device: "1f91"
     prometheus:
       enable: true
