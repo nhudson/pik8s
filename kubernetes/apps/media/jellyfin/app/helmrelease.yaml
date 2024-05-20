@@ -115,9 +115,10 @@ spec:
       tmp:
         type: emptyDir
       transcode:
-        enabled: true
-        type: hostPath
-        hostPath: /mnt/transcode
+        type: emptyDir
+        # enabled: true
+        # type: hostPath
+        # hostPath: /mnt/transcode
       tv:
         enabled: true
         type: hostPath
