@@ -143,6 +143,12 @@ spec:
         enabled: true
         type: hostPath
         hostPath: /mnt/transcode
+      config:
+        enabled: true
+        type: persistentVolumeClaim
+        storageClass: nfs
+        size: 1Gi
+        retain: true
 
     serviceMonitor:
       secondary:
