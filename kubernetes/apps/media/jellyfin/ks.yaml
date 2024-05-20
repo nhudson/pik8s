@@ -24,5 +24,3 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      #GATUS_URL_PATH: /web/index.html
-      # VOLSYNC_CAPACITY: 75Gi
