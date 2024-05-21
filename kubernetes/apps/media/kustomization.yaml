@@ -7,4 +7,4 @@ resources:
   - ./prowlarr/ks.yaml
   - ./sonarr/ks.yaml
   - ./radarr/ks.yaml
-  # - ./jellyfin/ks.yaml
+  - ./jellyfin/ks.yaml

@@ -37,15 +37,16 @@ spec:
         containers:
           app:
             image:
-              repository: jellyfin/jellyfin
-              tag: 10.8.13-1
+              repository: linuxserver/jellyfin
+              tag: 10.9.2
               pullPolicy: IfNotPresent
             env:
               DOTNET_SYSTEM_IO_DISABLEFILELOCKING: "true"
               JELLYFIN_FFmpeg__probesize: 50000000
               JELLYFIN_FFmpeg__analyzeduration: 50000000
-              JELLYFIN_PublishedServerUrl: https://{{ .Release.Name }}.${SECRET_PUBLIC_DOMAIN}
-              TZ: America/New_York
+              JELLYFIN_PublishedServerUrl: https://{{ .Release.Name }}.${SECRET_DOMAIN}
+              NVIDIA_VISIBLE_DEVICES: "all"
+              TZ: America/Chicago
             probes:
               liveness: &probes
                 enabled: true
@@ -62,9 +63,7 @@ spec:
               startup:
                 enabled: false
             securityContext:
-              allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: true
-              capabilities: { drop: ["ALL"] }
+              runAsUser: 0
             resources:
               requests:
                 gpu.intel.com/i915: 1
@@ -80,12 +79,7 @@ spec:
             intel.feature.node.kubernetes.io/gpu: "true"
             nvidia.feature.node.kubernetes.io/gpu: "true"
           securityContext:
-            runAsUser: 568
-            runAsGroup: 568
-            runAsNonRoot: true
-            fsGroup: 568
-            fsGroupChangePolicy: OnRootMismatch
-            supplementalGroups: [44, 10000]
+            runAsUser: 0
     service:
       app:
         controller: jellyfin
