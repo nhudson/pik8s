@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: descheduler
-      version: 0.29.0
+      version: 0.30.0
       sourceRef:
         kind: HelmRepository
         name: descheduler
@@ -30,34 +30,46 @@ spec:
     deschedulerPolicyAPIVersion: descheduler/v1alpha2
     deschedulerPolicy:
       profiles:
-        - name: Default
+        - name: default
           pluginConfig:
             - name: DefaultEvictor
               args:
-                evictFailedBarePods: true
+                ignorePvcPods: true
                 evictLocalStoragePods: true
-                evictSystemCriticalPods: true
-                nodeFit: true
-            - name: RemovePodsViolatingInterPodAntiAffinity
+            - name: RemoveDuplicates
+            - name: RemovePodsHavingTooManyRestarts
+              args:
+                podRestartThreshold: 100
+                includingInitContainers: true
             - name: RemovePodsViolatingNodeAffinity
               args:
                 nodeAffinityType:
                   - requiredDuringSchedulingIgnoredDuringExecution
             - name: RemovePodsViolatingNodeTaints
+            - name: RemovePodsViolatingInterPodAntiAffinity
             - name: RemovePodsViolatingTopologySpreadConstraint
+            - name: LowNodeUtilization
               args:
-                constraints:
-                  - DoNotSchedule
-                  - ScheduleAnyway
+                thresholds:
+                  cpu: 20
+                  memory: 20
+                  pods: 20
+                targetThresholds:
+                  cpu: 50
+                  memory: 50
+                  pods: 50
           plugins:
             balance:
               enabled:
+                - RemoveDuplicates
                 - RemovePodsViolatingTopologySpreadConstraint
+                - LowNodeUtilization
             deschedule:
               enabled:
-                - RemovePodsViolatingInterPodAntiAffinity
-                - RemovePodsViolatingNodeAffinity
+                - RemovePodsHavingTooManyRestarts
                 - RemovePodsViolatingNodeTaints
+                - RemovePodsViolatingNodeAffinity
+                - RemovePodsViolatingInterPodAntiAffinity
     service:
       enabled: true
     serviceMonitor:
