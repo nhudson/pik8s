@@ -34,7 +34,7 @@ spec:
           main:
             image:
               repository: ghcr.io/onedr0p/sonarr-develop
-              tag: 4.0.5.1719
+              tag: 4.0.5.1740
             env:
               COMPlus_EnableDiagnostics: 0
               SONARR__AUTHENTICATION_REQUIRED: DisabledForLocalAddresses
