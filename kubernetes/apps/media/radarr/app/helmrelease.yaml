@@ -34,7 +34,7 @@ spec:
           main:
             image:
               repository: ghcr.io/onedr0p/radarr-nightly
-              tag: 5.8.0.8890
+              tag: 5.8.0.8897
             env:
               COMPlus_EnableDiagnostics: 0
               RADARR__AUTHENTICATION_REQUIRED: DisabledForLocalAddresses
