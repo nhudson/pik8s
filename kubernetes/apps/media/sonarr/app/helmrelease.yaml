@@ -71,23 +71,6 @@ spec:
                 cpu: 10m
                 memory: 400M
 
-          secondary:
-            image:
-              repository: ghcr.io/onedr0p/exportarr
-              tag: v2.0.1
-            env:
-              PORT: &metricsPort 9707
-              URL: "http://{{ .Release.Name }}.{{ .Release.Namespace }}.svc.cluster.local:8989"
-            envFrom:
-              - secret: sonarr-env
-            args: ["sonarr"]
-            resources:
-              requests:
-                cpu: 10m
-                memory: 100Mi
-              limits:
-                memory: 125Mi
-
         pod:
           securityContext:
             runAsUser: 0
@@ -102,12 +85,6 @@ spec:
         ports:
           http:
             port: *port
-      secondary:
-        nameOverride: metrics
-        controller: main
-        ports:
-          metrics:
-            port: *metricsPort
 
     ingress:
       main:
@@ -125,11 +102,6 @@ spec:
                 service:
                   name: sonarr-main
                   port: *port
-              - path: /metrics
-                pathType: Prefix
-                service:
-                  name: sonarr-metrics
-                  port: *metricsPort
         tls:
           - hosts:
               - *host
@@ -148,20 +120,3 @@ spec:
         accessMode: ReadWriteOnce
         storageClass: nfs
         size: 1Gi
-
-    serviceMonitor:
-      secondary:
-        enabled: true
-        labels:
-          app.kubernetes.io/name: sonarr
-          app.kubernetes.io/instance: sonarr-metrics
-        selector:
-          matchLabels:
-            app.kubernetes.io/instance: sonarr
-            app.kubernetes.io/name: sonarr
-            app.kubernetes.io/service: sonarr-metrics
-        endpoints:
-          - port: metrics
-            interval: 4m
-            scrapeTimeout: 90s
-            path: /metrics
