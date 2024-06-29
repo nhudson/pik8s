@@ -35,7 +35,7 @@ spec:
           main:
             image:
               repository: ghcr.io/onedr0p/prowlarr-nightly
-              tag: 1.20.0.4590
+              tag: 1.20.0.4580
             env:
               TZ: "${TIMEZONE}"
               PROWLARR__INSTANCE_NAME: Prowlarr
@@ -56,7 +56,7 @@ spec:
                 memory: 500Mi
             probes:
               liveness: &probes
-                enabled: false
+                enabled: true
                 custom: true
                 spec:
                   httpGet:
@@ -70,24 +70,24 @@ spec:
               startup:
                 enabled: false
 
-          # secondary:
-          #   image:
-          #     repository: ghcr.io/onedr0p/exportarr
-          #     tag: v2.0.1
-          #   env:
-          #     PORT: &metricsPort 9707
-          #     URL: "http://{{ .Release.Name }}.{{ .Release.Namespace }}.svc.cluster.local:8080"
-          #     PROWLARR__BACKFILL: true
-          #   envFrom:
-          #     - secret: prowlarr-env
-          #   args: ["prowlarr"]
-          #
-          #   resources:
-          #     requests:
-          #       cpu: 10m
-          #       memory: 100Mi
-          #     limits:
-          #       memory: 125Mi
+          secondary:
+            image:
+              repository: ghcr.io/onedr0p/exportarr
+              tag: v2.0.1
+            env:
+              PORT: &metricsPort 9707
+              URL: "http://{{ .Release.Name }}.{{ .Release.Namespace }}.svc.cluster.local:8080"
+              PROWLARR__BACKFILL: true
+            envFrom:
+              - secret: prowlarr-env
+            args: ["prowlarr"]
+
+            resources:
+              requests:
+                cpu: 10m
+                memory: 100Mi
+              limits:
+                memory: 125Mi
 
     service:
       main:
@@ -95,12 +95,12 @@ spec:
         ports:
           http:
             port: *port
-      # secondary:
-      #   nameOverride: metrics
-      #   controller: main
-      #   ports:
-      #     metrics:
-      #       port: *metricsPort
+      secondary:
+        nameOverride: metrics
+        controller: main
+        ports:
+          metrics:
+            port: *metricsPort
 
     ingress:
       main:
@@ -118,11 +118,11 @@ spec:
                 service:
                   name: prowlarr-main
                   port: *port
-              # - path: /metrics
-              #   pathType: Prefix
-              #   service:
-              #     name: prowlarr-metrics
-              #     port: *metricsPort
+              - path: /metrics
+                pathType: Prefix
+                service:
+                  name: prowlarr-metrics
+                  port: *metricsPort
         tls:
           - hosts:
               - *host
@@ -134,19 +134,19 @@ spec:
       tmp:
         type: emptyDir
 
-    # serviceMonitor:
-    #   secondary:
-    #     enabled: true
-    #     labels:
-    #       app.kubernetes.io/name: prowlarr
-    #       app.kubernetes.io/instance: prowlarr-metrics
-    #     selector:
-    #       matchLabels:
-    #         app.kubernetes.io/instance: prowlarr
-    #         app.kubernetes.io/name: prowlarr
-    #         app.kubernetes.io/service: prowlarr-metrics
-    #     endpoints:
-    #       - port: metrics
-    #         interval: 4m
-    #         scrapeTimeout: 90s
-    #         path: /metrics
+    serviceMonitor:
+      secondary:
+        enabled: true
+        labels:
+          app.kubernetes.io/name: prowlarr
+          app.kubernetes.io/instance: prowlarr-metrics
+        selector:
+          matchLabels:
+            app.kubernetes.io/instance: prowlarr
+            app.kubernetes.io/name: prowlarr
+            app.kubernetes.io/service: prowlarr-metrics
+        endpoints:
+          - port: metrics
+            interval: 4m
+            scrapeTimeout: 90s
+            path: /metrics
