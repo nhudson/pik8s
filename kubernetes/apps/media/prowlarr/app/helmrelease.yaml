@@ -94,7 +94,7 @@ spec:
         controller: main
         ports:
           http:
-            port: 8080
+            port: 9696
       secondary:
         nameOverride: metrics
         controller: main
@@ -117,7 +117,7 @@ spec:
               - path: /
                 service:
                   name: prowlarr-main
-                  port: 8080
+                  port: 9696
               - path: /metrics
                 pathType: Prefix
                 service:
