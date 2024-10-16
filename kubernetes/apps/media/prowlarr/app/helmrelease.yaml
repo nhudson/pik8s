@@ -38,11 +38,15 @@ spec:
               tag: 1.25.3.4800
             env:
               TZ: "${TIMEZONE}"
-              PROWLARR__INSTANCE_NAME: Prowlarr
-              PROWLARR__PORT: &port 9707
-              PROWLARR__LOG_LEVEL: info
-              PROWLARR__THEME: dark
-              PROWLARR__POSTGRES_HOST: cnpg-postgres-rw.postgres.svc.cluster.local
+              PROWLARR__APP__INSTANCENAME: Prowlarr
+              PROWLARR__APP__THEME: dark
+              PROWLARR__AUTH__METHOD: External
+              PROWLARR__AUTH__REQUIRED: DisabledForLocalAddresses
+              PROWLARR__LOG__DBENABLED: "False"
+              PROWLARR__LOG__LEVEL: info
+              PROWLARR__SERVER__PORT: &port 9707
+              PROWLARR__UPDATE__BRANCH: develop
+              PROWLARR__POSTGRES_HOST: &dbHost cnpg-postgres-rw.postgres.svc.cluster.local
               PROWLARR__POSTGRES_MAIN_DB: prowlarr-main
               PROWLARR__POSTGRES_LOG_DB: prowlarr-log
               PROWLARR__POSTGRES_PORT: 5432
