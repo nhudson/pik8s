@@ -51,7 +51,7 @@ spec:
               PROWLARR__POSTGRES__LOG__DB: prowlarr-log
               PROWLARR__POSTGRES__PORT: 5432
             envFrom:
-              - secret: prowlarr-env
+              - secret: prowlarr-env-new
             resources:
               requests:
                 cpu: 100m
