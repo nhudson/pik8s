@@ -46,10 +46,10 @@ spec:
               PROWLARR__LOG__LEVEL: info
               PROWLARR__SERVER__PORT: &port 80
               PROWLARR__UPDATE__BRANCH: develop
-              PROWLARR__POSTGRES_HOST: &dbHost cnpg-postgres-rw.postgres.svc.cluster.local
-              PROWLARR__POSTGRES_MAIN_DB: prowlarr-main
-              PROWLARR__POSTGRES_LOG_DB: prowlarr-log
-              PROWLARR__POSTGRES_PORT: 5432
+              PROWLARR__POSTGRES__HOST: &dbHost cnpg-postgres-rw.postgres.svc.cluster.local
+              PROWLARR__POSTGRES__MAIN_DB: prowlarr-main
+              PROWLARR__POSTGRES__LOG__DB: prowlarr-log
+              PROWLARR__POSTGRES__PORT: 5432
             envFrom:
               - secret: prowlarr-env
             resources:
