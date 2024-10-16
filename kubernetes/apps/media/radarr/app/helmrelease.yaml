@@ -37,18 +37,21 @@ spec:
               tag: 5.13.0.9347
             env:
               COMPlus_EnableDiagnostics: 0
-              RADARR__AUTHENTICATION_REQUIRED: DisabledForLocalAddresses
-              RADARR__INSTANCE_NAME: radarr
-              RADARR__LOG_LEVEL: info
-              RADARR__PORT: &port 7878
-              RADARR__POSTGRES_HOST: cnpg-postgres-rw.postgres.svc.cluster.local
-              RADARR__POSTGRES_MAIN_DB: radarr-main
-              RADARR__POSTGRES_LOG_DB: radarr-log
-              RADARR__POSTGRES_PORT: 5432
+              RADARR__SERVER_PORT: &port 7878
+              RADARR__APP__INSTANCENAME: Sonarr
+              RADARR__APP__THEME: dark
+              RADARR__AUTH__METHOD: External
+              RADARR__AUTH__REQUIRED: DisabledForLocalAddresses
+              RADARR__LOG__LEVEL: info
+              RADARR__UPDATE__BRANCH: develop
+              RADARR__POSTGRES__HOST: cnpg-postgres-rw.postgres.svc.cluster.local
+              RADARR__POSTGRES__MAINDB: radarr-main
+              RADARR__POSTGRES__LOGDB: radarr-log
+              RADARR__POSTGRES__PORT: 5432
               TP_ADDON: radarr-darker
               TZ: ${TIMEZONE}
             envFrom:
-              - secret: radarr-env
+              - secret: radarr-env-new
             probes:
               liveness: &probes
                 enabled: true
