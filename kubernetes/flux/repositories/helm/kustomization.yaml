@@ -19,3 +19,4 @@ resources:
   - ./nvidia.yaml
   - ./intel.yaml
   - ./node-feature-discovery.yaml
+  - ./tailscale.yaml
