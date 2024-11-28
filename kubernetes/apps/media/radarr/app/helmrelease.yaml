@@ -34,7 +34,7 @@ spec:
           main:
             image:
               repository: ghcr.io/onedr0p/radarr-nightly
-              tag: 5.16.0.9466
+              tag: 5.16.0.9479
             env:
               COMPlus_EnableDiagnostics: 0
               RADARR__SERVER_PORT: &port 7878
