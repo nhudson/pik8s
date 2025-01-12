@@ -48,4 +48,4 @@ spec:
               - name: "Kernel version"
                 attribute: "version"
     prometheus:
-      enable: true
+      enable: false
