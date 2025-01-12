@@ -25,7 +25,6 @@ spec:
   uninstall:
     keepHistory: false
 
-
   values:
     controllers:
       main:
@@ -72,23 +71,23 @@ spec:
               limits:
                 memory: 5Gi
 
-          secondary:
-            image:
-              repository: ghcr.io/onedr0p/exportarr
-              tag: v2.0.1
-            env:
-              PORT: &metricsPort 9707
-              URL: "http://{{ .Release.Name }}.{{ .Release.Namespace }}.svc.cluster.local:80"
-            envFrom:
-              - secret: sab-env
-            args: ["sabnzbd"]
-
-            resources:
-              requests:
-                cpu: 10m
-                memory: 100Mi
-              limits:
-                memory: 125Mi
+          # secondary:
+          #   image:
+          #     repository: ghcr.io/onedr0p/exportarr
+          #     tag: v2.0.1
+          #   env:
+          #     PORT: &metricsPort 9707
+          #     URL: "http://{{ .Release.Name }}.{{ .Release.Namespace }}.svc.cluster.local:80"
+          #   envFrom:
+          #     - secret: sab-env
+          #   args: ["sabnzbd"]
+          #
+          #   resources:
+          #     requests:
+          #       cpu: 10m
+          #       memory: 100Mi
+          #     limits:
+          #       memory: 125Mi
         pod:
           securityContext:
             runAsUser: 0
@@ -103,12 +102,12 @@ spec:
         ports:
           http:
             port: *port
-      secondary:
-        nameOverride: metrics
-        controller: main
-        ports:
-          metrics:
-            port: *metricsPort
+      # secondary:
+      #   nameOverride: metrics
+      #   controller: main
+      #   ports:
+      #     metrics:
+      #       port: *metricsPort
 
     ingress:
       main:
@@ -169,19 +168,19 @@ spec:
         type: hostPath
         hostPath: /mnt/transcode
 
-    serviceMonitor:
-      secondary:
-        enabled: true
-        labels:
-          app.kubernetes.io/name: sabnzbd
-          app.kubernetes.io/instance: sabnzbd-metrics
-        selector:
-          matchLabels:
-            app.kubernetes.io/instance: sabnzbd
-            app.kubernetes.io/name: sabnzbd
-            app.kubernetes.io/service: sabnzbd-metrics
-        endpoints:
-          - port: metrics
-            interval: 4m
-            scrapeTimeout: 90s
-            path: /metrics
+    # serviceMonitor:
+    #   secondary:
+    #     enabled: false
+    #     labels:
+    #       app.kubernetes.io/name: sabnzbd
+    #       app.kubernetes.io/instance: sabnzbd-metrics
+    #     selector:
+    #       matchLabels:
+    #         app.kubernetes.io/instance: sabnzbd
+    #         app.kubernetes.io/name: sabnzbd
+    #         app.kubernetes.io/service: sabnzbd-metrics
+    #     endpoints:
+    #       - port: metrics
+    #         interval: 4m
+    #         scrapeTimeout: 90s
+    #         path: /metrics

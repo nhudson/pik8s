@@ -55,7 +55,7 @@ spec:
           - icmp
           - http
         serviceMonitor:
-          enabled: true
+          enabled: false
         dashboards:
           enabled: true
           annotations:
@@ -65,7 +65,7 @@ spec:
         rollOutPods: true
         prometheus:
           serviceMonitor:
-            enabled: true
+            enabled: false
       ui:
         enabled: true
         rollOutPods: true
@@ -92,7 +92,7 @@ spec:
       prometheus:
         enabled: true
         serviceMonitor:
-          enabled: true
+          enabled: false
       dashboards:
         enabled: true
         annotations:
@@ -100,7 +100,7 @@ spec:
     prometheus:
       enabled: true
       serviceMonitor:
-        enabled: true
+        enabled: false
         trustCRDsExist: true
     dashboards:
       enabled: true
