@@ -135,7 +135,8 @@ spec:
                 pathType: Prefix
                 service:
                   name: prowlarr-metrics
-                  port: *metricsPort
+                  port: 9707
+                  # port: *metricsPort
         tls:
           - hosts:
               - *host

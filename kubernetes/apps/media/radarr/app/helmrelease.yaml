@@ -138,7 +138,7 @@ spec:
                 pathType: Prefix
                 service:
                   name: radarr-metrics
-                  port: *metricsPort
+                  port: 9707
         tls:
           - hosts:
               - *host

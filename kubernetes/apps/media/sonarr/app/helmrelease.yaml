@@ -131,7 +131,7 @@ spec:
                 pathType: Prefix
                 service:
                   name: sonarr-metrics
-                  port: *metricsPort
+                  port: 9707
         tls:
           - hosts:
               - *host

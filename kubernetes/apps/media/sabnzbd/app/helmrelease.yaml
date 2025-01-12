@@ -131,7 +131,7 @@ spec:
                 pathType: Prefix
                 service:
                   name: &metricsService sabnzbd-metrics
-                  port: *metricsPort
+                  port: &metricsPort 9707
           - host: &customhost "sabnzbd.${SECRET_DOMAIN}"
             paths:
               - path: /
