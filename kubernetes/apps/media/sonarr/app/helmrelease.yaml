@@ -34,7 +34,7 @@ spec:
           main:
             image:
               repository: ghcr.io/onedr0p/sonarr-develop
-              tag: 4.0.12.2849
+              tag: 4.0.12.2866
             env:
               COMPlus_EnableDiagnostics: 0
               SONARR__APP__INSTANCENAME: Sonarr
