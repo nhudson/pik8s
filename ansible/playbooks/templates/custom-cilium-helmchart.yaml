@@ -23,7 +23,7 @@ spec:
       hostRoot: /sys/fs/cgroup
     cluster:
       id: 1
-      name: pik8s
+      name: pik8s.nhudson.dev
     cni:
       exclusive: false
       binPath: /var/lib/rancher/k3s/data/current/bin
@@ -39,7 +39,7 @@ spec:
       enabled: false
     ipam:
       mode: kubernetes
-    ipv4NativeRoutingCIDR: "10.42.0.0/16"
+    ipv4NativeRoutingCIDR: "10.69.0.0/16"
     k8sServiceHost: 127.0.0.1
     k8sServicePort: 6444
     kubeProxyReplacement: true

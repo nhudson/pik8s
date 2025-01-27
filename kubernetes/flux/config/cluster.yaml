@@ -6,7 +6,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 30m
-  url: "https://github.com/nhudson/pik8s"
+  url: "https://github.com/nhudson/pik8s.git"
   ref:
     branch: "main"
   ignore: |

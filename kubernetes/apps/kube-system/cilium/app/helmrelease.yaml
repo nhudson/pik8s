@@ -32,12 +32,13 @@ spec:
       hostRoot: /sys/fs/cgroup
     cluster:
       id: 1
-      name: pik8s
+      name: pik8s.nhudson.dev
     cni:
       exclusive: false
       binPath: /var/lib/rancher/k3s/data/current/bin
       confPath: /var/lib/rancher/k3s/agent/etc/cni/net.d
     containerRuntime:
+      integration: containerd
       socketPath: /var/run/k3s/containerd/containerd.sock
     # NOTE: devices might need to be set if you have more than one active NIC on your hosts
     # devices: eno+ eth+
@@ -55,7 +56,7 @@ spec:
           - icmp
           - http
         serviceMonitor:
-          enabled: false
+          enabled: true
         dashboards:
           enabled: true
           annotations:
@@ -64,9 +65,8 @@ spec:
         enabled: true
         rollOutPods: true
         prometheus:
-          enabled: false
           serviceMonitor:
-            enabled: false
+            enabled: true
       ui:
         enabled: true
         rollOutPods: true
@@ -91,17 +91,17 @@ spec:
       replicas: 1
       rollOutPods: true
       prometheus:
-        enabled: false
+        enabled: true
         serviceMonitor:
-          enabled: false
+          enabled: true
       dashboards:
         enabled: true
         annotations:
           grafana_folder: Cilium
     prometheus:
-      enabled: false
+      enabled: true
       serviceMonitor:
-        enabled: false
+        enabled: true
         trustCRDsExist: true
     dashboards:
       enabled: true

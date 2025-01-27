@@ -7,5 +7,3 @@ resources:
   - ./metrics-server/ks.yaml
   - ./reloader/ks.yaml
   - ./kube-vip/ks.yaml
-  - ./descheduler/ks.yaml
-  - ./node-feature-discovery/ks.yaml

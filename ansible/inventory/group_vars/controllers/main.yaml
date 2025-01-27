@@ -1,8 +1,8 @@
 ---
 k3s_control_node: true
 k3s_server:
-  cluster-cidr: "10.42.0.0/16"
-  service-cidr: "10.43.0.0/16"
+  cluster-cidr: "10.69.0.0/16"
+  service-cidr: "10.96.0.0/16"
   disable: ["flannel", "local-storage", "metrics-server", "servicelb", "traefik"]
   disable-cloud-controller: true
   disable-kube-proxy: true
@@ -21,5 +21,4 @@ k3s_server:
   secrets-encryption: true
   tls-san:
     - "192.168.6.40"
-    - "nhudson.dev"
   write-kubeconfig-mode: "644"
