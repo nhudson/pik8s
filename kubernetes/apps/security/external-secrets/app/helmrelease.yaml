@@ -27,8 +27,23 @@ spec:
     mode: warn
   values:
     installCRDs: true
-    replicaCount: 2
+    replicaCount: 1
+    leaderElect: true
     deploymentAnnotations:
       configmap.reloader.stakater.com/reload: 1password
     serviceMonitor:
       enabled: true
+    resources:
+      requests:
+        cpu: 10m
+        memory: 125Mi
+      limits:
+        memory: 200Mi
+    webhook:
+      serviceMonitor:
+        enabled: true
+    certController:
+      serviceMonitor:
+        enabled: true
+    # grafanaDashboard:
+    #   enabled: true
