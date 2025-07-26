@@ -23,7 +23,7 @@ spec:
       hostRoot: /sys/fs/cgroup
     cluster:
       id: 1
-      name: pik8s.nhudson.dev
+      name: pik8s
     cni:
       exclusive: false
       binPath: /var/lib/rancher/k3s/data/current/bin

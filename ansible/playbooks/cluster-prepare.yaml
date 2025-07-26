@@ -63,7 +63,7 @@
             content: |
               search .
               nameserver 1.1.1.1
-              nameserver 1.0.0.1
+              nameserver 9.9.9.9
 
     - name: System Configuration
       notify: Reboot

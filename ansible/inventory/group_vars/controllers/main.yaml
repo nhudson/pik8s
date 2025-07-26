@@ -21,4 +21,5 @@ k3s_server:
   secrets-encryption: true
   tls-san:
     - "192.168.6.40"
+    - "nhudson.dev"
   write-kubeconfig-mode: "644"
