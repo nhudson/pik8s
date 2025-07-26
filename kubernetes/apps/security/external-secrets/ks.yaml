@@ -27,7 +27,7 @@ metadata:
 spec:
   commonMetadata:
     labels:
-      app.kubernetes.io/name: *app
+      app.kubernetes.io/name: *cluster-secret-store
   interval: 30m
   timeout: 5m
   path: ./kubernetes/apps/security/external-secrets/clustersecretstore
