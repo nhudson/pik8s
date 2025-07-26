@@ -358,6 +358,12 @@
         'renovate/github-action',
       ],
     },
+    {
+      "matchPackageNames": [
+        "ghcr.io/kube-vip/kube-vip"
+      ],
+      "allowedVersions": "!/^v0\\.9\\.2$/"
+    },
   ],
   customManagers: [
     {
