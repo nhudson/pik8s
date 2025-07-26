@@ -6,7 +6,6 @@ metadata:
   name: &app external-secrets
   namespace: flux-system
 spec:
-  targetNamespace: security
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
@@ -17,5 +16,4 @@ spec:
   sourceRef:
     kind: GitRepository
     name: home-kubernetes
-    namespace: flux-system
   wait: true
