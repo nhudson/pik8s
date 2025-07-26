@@ -32,9 +32,3 @@ spec:
       configmap.reloader.stakater.com/reload: 1password
     serviceMonitor:
       enabled: true
-    resources:
-      requests:
-        cpu: 10m
-        memory: 80Mi
-      limits:
-        memory: 125Mi
