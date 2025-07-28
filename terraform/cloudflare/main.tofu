@@ -3,6 +3,14 @@ locals {
   r2_location = var.cloudflare_r2_location
 }
 
+# Tofu Backend bucket needs to be created manually first
+# by running `tofu apply` locally.
+resource "cloudflare_r2_bucket" "tofu_backend" {
+  account_id = local.account_id
+  name       = "tofu-backend"
+  location   = local.r2_location
+}
+
 resource "cloudflare_r2_bucket" "thanos" {
   account_id = local.account_id
   name       = "thanos"
@@ -18,11 +26,5 @@ resource "cloudflare_r2_bucket" "loki" {
 resource "cloudflare_r2_bucket" "psqlbackups" {
   account_id = local.account_id
   name       = "postgres-backups"
-  location   = local.r2_location
-}
-
-resource "cloudflare_r2_bucket" "tofu_backend" {
-  account_id = local.account_id
-  name       = "tofu-backend"
   location   = local.r2_location
 }
