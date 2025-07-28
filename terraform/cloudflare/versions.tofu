@@ -5,7 +5,9 @@ terraform {
       version = "~> 5.7.0"
     }
     random = {
+      source  = "hashicorp/random"
       version = "~> 3.7.0"
     }
   }
+  required_version = ">= 1.8.0"
 }

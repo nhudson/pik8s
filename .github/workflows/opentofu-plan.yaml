@@ -1,0 +1,74 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+name: "OpenTofu Plan"
+
+on:
+  pull_request:
+    branches: ["main"]
+    paths: ["terraform/**"]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: OpenTofu Lint
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    strategy:
+      matrix:
+        directory: 
+          - terraform/cloudflare
+    env:
+      # Cloudflare R2 backend configuration
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_ENDPOINT_URL_S3: ${{ secrets.AWS_ENDPOINT_URL_S3 }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      # Cloudflare provider variables
+      TF_VAR_cloudflare_r2_api_token: ${{ secrets.CLOUDFLARE_R2_API_TOKEN }}
+      TF_VAR_cloudflare_r2_account_id: ${{ secrets.CLOUDFLARE_R2_ACCOUNT_ID }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: OpenTofu Format Check
+        uses: dflook/tofu-fmt-check@v2
+        with:
+          path: ${{ matrix.directory }}
+
+      - name: OpenTofu Validate
+        uses: dflook/tofu-validate@v2
+        with:
+          path: ${{ matrix.directory }}
+
+  plan:
+    name: OpenTofu Plan
+    runs-on: ubuntu-latest
+    needs: lint
+    permissions:
+      contents: read
+      pull-requests: write
+    strategy:
+      matrix:
+        directory: 
+          - terraform/cloudflare
+    env:
+      # Cloudflare R2 backend configuration
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_ENDPOINT_URL_S3: ${{ secrets.AWS_ENDPOINT_URL_S3 }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      # Cloudflare provider variables
+      TF_VAR_cloudflare_r2_api_token: ${{ secrets.CLOUDFLARE_R2_API_TOKEN }}
+      TF_VAR_cloudflare_r2_account_id: ${{ secrets.CLOUDFLARE_R2_ACCOUNT_ID }}
+      GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: OpenTofu Plan
+        uses: dflook/tofu-plan@v2
+        with:
+          path: ${{ matrix.directory }} 

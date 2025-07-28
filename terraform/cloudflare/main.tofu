@@ -20,3 +20,9 @@ resource "cloudflare_r2_bucket" "psqlbackups" {
   name       = "postgres-backups"
   location   = local.r2_location
 }
+
+resource "cloudflare_r2_bucket" "tofu_backend" {
+  account_id = local.account_id
+  name       = "tofu-backend"
+  location   = local.r2_location
+}
