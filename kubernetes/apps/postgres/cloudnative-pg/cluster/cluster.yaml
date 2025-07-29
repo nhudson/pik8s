@@ -3,14 +3,14 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: &name pik8s-postgres
+  name: &name cnpg-postgres
 spec:
   instances: 3
   imageCatalogRef:
     apiGroup: postgresql.cnpg.io
     kind: ImageCatalog
     name: postgresql
-    major: 17
+    major: 16
   primaryUpdateStrategy: unsupervised
   primaryUpdateMethod: switchover
   storage:
@@ -18,9 +18,15 @@ spec:
     storageClass: nfs
   enableSuperuserAccess: true
   bootstrap:
-    initdb:
-      database: app
-      owner: app
+    recovery:
+      source: origin
+  externalClusters:
+    - name: origin
+      plugin:
+        name: barman-cloud.cloudnative-pg.io
+        parameters:
+          barmanObjectName: cnpg-postgres-r2
+          serverName: *name
   resources:
     requests:
       cpu: 200m
@@ -31,7 +37,8 @@ spec:
   monitoring:
     enablePodMonitor: false
   plugins:
-    name: barman-cloud.cloudnative-pg.io
-    parameters:
-      barmanObjectName: cnpg-postgres-r2
-      serverName: *name
+    - name: barman-cloud.cloudnative-pg.io
+      isWALArchiver: true
+      parameters:
+        barmanObjectName: cnpg-postgres-r2
+        serverName: *name

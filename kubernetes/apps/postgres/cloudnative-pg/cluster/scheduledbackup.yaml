@@ -3,7 +3,7 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: ScheduledBackup
 metadata:
-  name: &clusterName pik8s-postgres
+  name: &clusterName cnpg-postgres
 spec:
   cluster:
     name: *clusterName

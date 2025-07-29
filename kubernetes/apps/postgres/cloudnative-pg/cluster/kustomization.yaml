@@ -7,6 +7,6 @@ resources:
   - ./externalsecrets.yaml
   - ./objectstore.yaml
   - ./clusterimagecatalog.yaml
-  # - ./cluster.yaml
-  # - ./scheduledbackup.yaml
+  - ./cluster.yaml
+  - ./scheduledbackup.yaml
   # - ./prometheusrule.yaml
