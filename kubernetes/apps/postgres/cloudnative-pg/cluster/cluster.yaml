@@ -10,7 +10,7 @@ spec:
     apiGroup: postgresql.cnpg.io
     kind: ClusterImageCatalog
     name: cnpg-postgresql
-    major: 16
+    major: 17
   primaryUpdateStrategy: unsupervised
   primaryUpdateMethod: switchover
   storage:
@@ -18,15 +18,16 @@ spec:
     storageClass: nfs
   enableSuperuserAccess: true
   bootstrap:
-    recovery:
-      source: origin
-  externalClusters:
-    - name: origin
-      plugin:
-        name: barman-cloud.cloudnative-pg.io
-        parameters:
-          barmanObjectName: cnpg-postgres-r2
-          serverName: *name
+    initdb:
+      database: app
+      owner: app
+  # externalClusters:
+  #   - name: origin
+  #     plugin:
+  #       name: barman-cloud.cloudnative-pg.io
+  #       parameters:
+  #         barmanObjectName: cnpg-postgres-r2
+  #         serverName: *name
   resources:
     requests:
       cpu: 200m
