@@ -8,5 +8,6 @@ resources:
   - ./objectstore.yaml
   - ./clusterimagecatalog.yaml
   - ./cluster.yaml
+  - ./pooler.yaml
   - ./scheduledbackup.yaml
   # - ./prometheusrule.yaml
