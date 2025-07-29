@@ -9,7 +9,7 @@ spec:
   imageCatalogRef:
     apiGroup: postgresql.cnpg.io
     kind: ImageCatalog
-    name: postgresql
+    name: cnpg-postgresql
     major: 16
   primaryUpdateStrategy: unsupervised
   primaryUpdateMethod: switchover
