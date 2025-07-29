@@ -36,5 +36,5 @@ spec:
                   - key: app
                     operator: In
                     values:
-                      - pooler
+                      - *name
               topologyKey: "kubernetes.io/hostname"
