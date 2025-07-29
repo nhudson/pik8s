@@ -8,7 +8,7 @@ spec:
   instances: 3
   imageCatalogRef:
     apiGroup: postgresql.cnpg.io
-    kind: ImageCatalog
+    kind: ClusterImageCatalog
     name: cnpg-postgresql
     major: 16
   primaryUpdateStrategy: unsupervised
