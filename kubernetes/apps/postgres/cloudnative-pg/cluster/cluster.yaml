@@ -3,17 +3,19 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: &name cnpg-postgres
+  name: &name pik8s-postgres
 spec:
   instances: 3
-  imageName: ghcr.io/cloudnative-pg/postgresql:16.3-1
+  imageCatalogRef:
+    apiGroup: postgresql.cnpg.io
+    kind: ImageCatalog
+    name: postgresql
+    major: 17
   primaryUpdateStrategy: unsupervised
   primaryUpdateMethod: switchover
   storage:
     size: 10Gi
     storageClass: nfs
-  superuserSecret:
-    name: &secret cloudnative-pg-secret
   enableSuperuserAccess: true
   bootstrap:
     initdb:
@@ -28,21 +30,8 @@ spec:
       memory: 1024Mi
   monitoring:
     enablePodMonitor: false
-  backup:
-    retentionPolicy: 5d
-    barmanObjectStore:
-      data:
-        compression: snappy
-      wal:
-        compression: snappy
-        maxParallel: 8
-      destinationPath: s3://postgres-backups/
-      endpointURL: https://${SECRET_CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com
+  plugins:
+    name: barman-cloud.cloudnative-pg.io
+    parameters:
+      barmanObjectName: cnpg-postgres-r2
       serverName: *name
-      s3Credentials:
-        accessKeyId:
-          name: *secret
-          key: aws-access-key-id
-        secretAccessKey:
-          name: *secret
-          key: aws-secret-access-key
