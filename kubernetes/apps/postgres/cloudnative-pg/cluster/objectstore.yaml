@@ -1,0 +1,18 @@
+apiVersion: barmancloud.cnpg.io/v1
+kind: ObjectStore
+metadata:
+  name: cnpg-postgres-r2
+  namespace: postgres
+spec:
+  configuration:
+    destinationPath: s3://postgres-backups/
+    endpointURL: https://${SECRET_CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com
+    s3Credentials:
+      accessKeyId:
+        name: &secret cloudflare-r2-token
+        key: access-key-id
+      secretAccessKey:
+        name: *secret
+        key: secret-access-key
+    wal:
+      maxParallel: 8
