@@ -6,7 +6,7 @@ metadata:
   namespace: postgres
 spec:
   cluster:
-    name: pik8s-postgres
+    name: &name pik8s-postgres
   instances: 1
   type: rw
   pgbouncer:
@@ -17,7 +17,7 @@ spec:
   template:
     metadata:
       labels:
-        app:
+        app: *name
   #   spec:
   #     containers:
   #       - name: pgbouncer
