@@ -21,13 +21,6 @@ spec:
     initdb:
       database: app
       owner: app
-  # externalClusters:
-  #   - name: origin
-  #     plugin:
-  #       name: barman-cloud.cloudnative-pg.io
-  #       parameters:
-  #         barmanObjectName: cnpg-postgres-r2
-  #         serverName: *name
   resources:
     requests:
       cpu: 200m

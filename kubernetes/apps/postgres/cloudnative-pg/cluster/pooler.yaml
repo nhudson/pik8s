@@ -1,0 +1,40 @@
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Pooler
+metadata:
+  name: pik8s-postgres-rw
+  namespace: postgres
+spec:
+  cluster:
+    name: pik8s-postgres
+  instances: 1
+  type: rw
+  pgbouncer:
+    poolMode: session
+    parameters:
+      max_client_conn: "1000"
+      default_pool_size: "10"
+  template:
+    metadata:
+      labels:
+        app:
+  #   spec:
+  #     containers:
+  #       - name: pgbouncer
+  #         resources:
+  #           requests:
+  #             cpu: "0.1"
+  #             memory: 100Mi
+  #           limits:
+  #             cpu: "0.5"
+  #             memory: 500Mi
+  #     affinity:
+  #       podAntiAffinity:
+  #         requiredDuringSchedulingIgnoredDuringExecution:
+  #           - labelSelector:
+  #               matchExpressions:
+  #                 - key: app
+  #                   operator: In
+  #                   values:
+  #                     - pooler
+  #             topologyKey: "kubernetes.io/hostname"
