@@ -6,14 +6,20 @@ metadata:
 spec:
   images:
     - major: 13
+      # renovate: datasource=docker depName=ghcr.io/cloudnative-pg/postgresql versioning=regex:^(?<major>13)\.(?<minor>\d+)-(?<patch>\d+)-bookworm$
       image: ghcr.io/cloudnative-pg/postgresql:13.21-20-bookworm@sha256:60b4d9af72a92b9203129aef0f53e3f1d095ad754c9ba2d90ff0964c7822f79a
     - major: 14
+      # renovate: datasource=docker depName=ghcr.io/cloudnative-pg/postgresql versioning=regex:^(?<major>14)\.(?<minor>\d+)-(?<patch>\d+)-bookworm$
       image: ghcr.io/cloudnative-pg/postgresql:14.18-20-bookworm@sha256:7bbd6747cba2329688a60ed4b365a6532aeb648aca36e4bbb7a9152a5975b4c2
     - major: 15
+      # renovate: datasource=docker depName=ghcr.io/cloudnative-pg/postgresql versioning=regex:^(?<major>15)\.(?<minor>\d+)-(?<patch>\d+)-bookworm$
       image: ghcr.io/cloudnative-pg/postgresql:15.13-20-bookworm@sha256:23abdcc0bf0578c6bc559c9d69f295756fff84cf580f78d39ec0f555434c7128
     - major: 16
+      # renovate: datasource=docker depName=ghcr.io/cloudnative-pg/postgresql versioning=regex:^(?<major>16)\.(?<minor>\d+)-(?<patch>\d+)-bookworm$
       image: ghcr.io/cloudnative-pg/postgresql:16.9-20-bookworm@sha256:7f05aa5bca3b7c2fe93fc30406813c5584ca52bbeef81a8fe10bdf1ddb216478
     - major: 17
+      # renovate: datasource=docker depName=ghcr.io/cloudnative-pg/postgresql versioning=regex:^(?<major>17)\.(?<minor>\d+)-(?<patch>\d+)-bookworm$
       image: ghcr.io/cloudnative-pg/postgresql:17.5-20-bookworm@sha256:5f4d5057c1e7e4af27472972ce26d7b8ae10ab838ca2a5baefbfebfd85a50792
     - major: 18
+      # renovate: datasource=docker depName=ghcr.io/cloudnative-pg/postgresql versioning=regex:^(?<major>18).*-bookworm$
       image: ghcr.io/cloudnative-pg/postgresql:18beta2-2-bookworm@sha256:7a49cb505a521605f12eda60dc4c4f806e4afed4b2e3cb7a2ffff2927bfcbaaf
