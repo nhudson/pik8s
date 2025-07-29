@@ -3,7 +3,7 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: &name cnpg-postgres
+  name: &name pik8s-postgres
 spec:
   instances: 3
   imageCatalogRef:
