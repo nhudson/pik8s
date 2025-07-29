@@ -6,7 +6,7 @@ metadata:
   name: &app cloudnative-pg
   namespace: flux-system
 spec:
-  targetNamespace: postgres
+  targetNamespace: cnpg-system
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
