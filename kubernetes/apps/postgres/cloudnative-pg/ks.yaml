@@ -24,19 +24,45 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app cloudnative-pg-cluster
+  name: &app cloudnative-pg-barman-plugin
   namespace: flux-system
 spec:
-  targetNamespace: postgres
+  targetNamespace: cnpg-system
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  path: ./kubernetes/apps/postgres/cloudnative-pg/cluster
+  dependsOn:
+    - name: cloudnative-pg
+  path: ./kubernetes/apps/postgres/cloudnative-pg/barman-cloud-plugin
   prune: true
   sourceRef:
     kind: GitRepository
     name: home-kubernetes
-  wait: true
+  wait: false
   interval: 30m
   retryInterval: 1m
   timeout: 5m
+---
+# # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
+# apiVersion: kustomize.toolkit.fluxcd.io/v1
+# kind: Kustomization
+# metadata:
+#   name: &app cloudnative-pg-cluster
+#   namespace: flux-system
+# spec:
+#   targetNamespace: postgres
+#   commonMetadata:
+#     labels:
+#       app.kubernetes.io/name: *app
+#   dependsOn:
+#     - name: cloudnative-pg
+#     - name: cloudnative-pg-barman-plugin
+#   path: ./kubernetes/apps/postgres/cloudnative-pg/cluster
+#   prune: true
+#   sourceRef:
+#     kind: GitRepository
+#     name: home-kubernetes
+#   wait: true
+#   interval: 30m
+#   retryInterval: 1m
+#   timeout: 5m
