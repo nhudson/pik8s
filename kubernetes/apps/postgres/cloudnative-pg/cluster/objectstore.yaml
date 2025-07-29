@@ -10,9 +10,9 @@ spec:
     s3Credentials:
       accessKeyId:
         name: &secret cloudflare-r2-token
-        key: access-key-id
+        key: access_key_id
       secretAccessKey:
         name: *secret
-        key: secret-access-key
+        key: secret_access_key
     wal:
       maxParallel: 8
