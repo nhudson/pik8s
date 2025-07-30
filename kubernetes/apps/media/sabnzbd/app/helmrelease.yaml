@@ -125,7 +125,7 @@ spec:
             paths:
               - path: /
                 service:
-                  name: &service sabnzbd-main
+                  name: &service sabnzbd
                   port: *port
               - path: /metrics
                 pathType: Prefix
