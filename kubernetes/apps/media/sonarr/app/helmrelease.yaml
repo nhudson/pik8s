@@ -3,7 +3,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: sonarr
+  name: &name sonarr
   namespace: media
 spec:
   interval: 30m
@@ -27,14 +27,14 @@ spec:
 
   values:
     controllers:
-      main:
+      sonarr:
         annotations:
           reloader.stakater.com/auto: "true"
         containers:
-          main:
+          app:
             image:
-              repository: ghcr.io/onedr0p/sonarr-develop
-              tag: 4.0.14.2938
+              repository: ghcr.io/home-operations/sonarr
+              tag: 4.0.15.2940@sha256:ca6c735014bdfb04ce043bf1323a068ab1d1228eea5bab8305ca0722df7baf78
             env:
               COMPlus_EnableDiagnostics: 0
               SONARR__APP__INSTANCENAME: Sonarr
@@ -44,13 +44,13 @@ spec:
               SONARR__LOG__LEVEL: info
               SONARR__SERVER__PORT: &port 8989
               SONARR__UPDATE__BRANCH: develop
-              SONARR__POSTGRES__HOST: cnpg-postgres-rw.postgres.svc.cluster.local
+              SONARR__POSTGRES__HOST: pik8s-postgres-pooler.postgres.svc.cluster.local
               SONARR__POSTGRES__MAINDB: sonarr-main
               SONARR__POSTGRES__LOGDB: sonarr-log
               SONARR__POSTGRES__PORT: 5432
               TZ: ${TIMEZONE}
             envFrom:
-              - secret: sonarr-env-new
+              - secret: sonarr-secret
             probes:
               liveness: &probes
                 enabled: true
@@ -73,23 +73,6 @@ spec:
                 cpu: 10m
                 memory: 400M
 
-          # secondary:
-          #   image:
-          #     repository: ghcr.io/onedr0p/exportarr
-          #     tag: v2.0.1
-          #   env:
-          #     PORT: &metricsPort 9707
-          #     URL: "http://{{ .Release.Name }}-main.{{ .Release.Namespace }}.svc.cluster.local:8989"
-          #   envFrom:
-          #     - secret: sonarr-env
-          #   args: ["sonarr"]
-          #   resources:
-          #     requests:
-          #       cpu: 10m
-          #       memory: 100Mi
-          #     limits:
-          #       memory: 125Mi
-
         pod:
           securityContext:
             runAsUser: 0
@@ -99,39 +82,23 @@ spec:
         runAsUser: 0
 
     service:
-      main:
-        controller: main
+      app:
+        controller: *name
         ports:
           http:
             port: *port
-      # secondary:
-      #   nameOverride: metrics
-      #   controller: main
-      #   ports:
-      #     metrics:
-      #       port: *metricsPort
 
     ingress:
       main:
         enabled: true
         className: internal
-        annotations:
-          nginx.ingress.kubernetes.io/configuration-snippet: |
-            proxy_set_header Accept-Encoding "";
-            sub_filter '</head>' '<link rel="stylesheet" type="text/css" href="https://theme-park.dev/css/base/sonarr/dark.css"></head>';
-            sub_filter_once on;
         hosts:
           - host: &host "sonarr.${SECRET_DOMAIN}"
             paths:
               - path: /
                 service:
-                  name: sonarr-main
+                  name: *name
                   port: *port
-              - path: /metrics
-                pathType: Prefix
-                service:
-                  name: sonarr-metrics
-                  port: 9707
         tls:
           - hosts:
               - *host
@@ -150,20 +117,3 @@ spec:
         accessMode: ReadWriteOnce
         storageClass: nfs
         size: 1Gi
-
-    # serviceMonitor:
-    #   secondary:
-    #     enabled: true
-    #     labels:
-    #       app.kubernetes.io/name: sonarr
-    #       app.kubernetes.io/instance: sonarr-metrics
-    #     selector:
-    #       matchLabels:
-    #         app.kubernetes.io/instance: sonarr
-    #         app.kubernetes.io/name: sonarr
-    #         app.kubernetes.io/service: sonarr-metrics
-    #     endpoints:
-    #       - port: metrics
-    #         interval: 4m
-    #         scrapeTimeout: 90s
-    #         path: /metrics
