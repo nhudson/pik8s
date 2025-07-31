@@ -4,7 +4,7 @@ kind: Kustomization
 resources:
   - ./namespace.yaml
   - ./sabnzbd/ks.yaml
-  # - ./prowlarr/ks.yaml
+  - ./prowlarr/ks.yaml
   # - ./sonarr/ks.yaml
   # - ./radarr/ks.yaml
   # - ./jellyfin/ks.yaml
