@@ -7,7 +7,7 @@ spec:
   version: "${KUBE_VERSION}"
   upgrade:
     image: rancher/k3s-upgrade
-  serviceAccountName: system-upgrade
+  serviceAccountName: system-upgrade-controller
   concurrency: 1
   cordon: true
   nodeSelector:
@@ -37,7 +37,7 @@ metadata:
   name: workers
 spec:
   version: "${KUBE_VERSION}"
-  serviceAccountName: system-upgrade
+  serviceAccountName: system-upgrade-controller
   concurrency: 1
   nodeSelector:
     matchExpressions:
