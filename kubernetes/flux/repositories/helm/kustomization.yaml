@@ -8,8 +8,10 @@ resources:
   - ./csi-driver-nfs.yaml
   - ./external-dns.yaml
   - ./ingress-nginx.yaml
+  - ./intel.yaml
   - ./k8s-gateway.yaml
   - ./jetstack.yaml
   - ./metrics-server.yaml
+  - ./nvidia.yaml
   - ./openebs.yaml
   - ./stakater.yaml
