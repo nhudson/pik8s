@@ -1,0 +1,106 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2beta2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &name jellyseerr
+  namespace: media
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 4.2.0
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    controllers:
+      jellyseerr:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/fallenbagel/jellyseerr
+              tag: 2.7.2@sha256:d83fcc8478f53073008b0c452c87d94ff5182fce73c426c813301c402b6612de
+            env:
+              TZ: ${TIMEZONE}
+              DB_TYPE: "postgres"
+              DB_HOST: "pik8s-postgres-pooler.postgres.svc.cluster.local"
+              DB_PORT: "5432"
+              DB_NAME: *name
+              DB_LOG_QUERIES: false
+              LOG_LEVEL: "info"
+              PORT: &port 80
+            envFrom:
+              - secret: jellyseerr-secret
+            probes:
+              liveness:
+                enabled: false
+              readiness:
+                enabled: false
+              startup:
+                enabled: false
+            securityContext:
+              runAsUser: 0
+            resources:
+              requests:
+                cpu: 10m
+                memory: 350M
+              limits:
+                memory: 600M
+        pod:
+          securityContext:
+            runAsUser: 0
+    defaultPodOptions:
+      securityContext:
+        runAsUser: 0
+
+    service:
+      app:
+        controller: *name
+        ports:
+          http:
+            port: *port
+
+    ingress:
+      main:
+        enabled: true
+        className: internal
+        hosts:
+          - host: &host "jelly.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                service:
+                  name: *name
+                  port: *port
+        tls:
+          - hosts:
+              - *host
+
+    persistence:
+      config:
+        enabled: true
+        globalMounts:
+          - path: /app/config
+        accessMode: ReadWriteOnce
+        storageClass: nfs
+        size: 1Gi
+      cache:
+        enabled: true
+        globalMounts:
+          - path: /app/config/cache
+        accessMode: ReadWriteOnce
+        storageClass: nfs
+        size: 1Gi
