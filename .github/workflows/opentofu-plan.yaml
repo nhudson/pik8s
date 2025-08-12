@@ -32,7 +32,7 @@ jobs:
       TF_VAR_cloudflare_r2_account_id: ${{ secrets.CLOUDFLARE_R2_ACCOUNT_ID }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: OpenTofu Format Check
         uses: dflook/tofu-fmt-check@v2
@@ -66,7 +66,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: OpenTofu Plan
         uses: dflook/tofu-plan@v2
