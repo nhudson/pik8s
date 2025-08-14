@@ -26,6 +26,7 @@ spec:
     remediation:
       retries: 3
   values:
+    # Will need to wait till https://github.com/open-telemetry/opentelemetry-helm-charts/pull/1803 is merged to fix schema issue
     crds:
       installOtel: true
       installPrometheus: true
