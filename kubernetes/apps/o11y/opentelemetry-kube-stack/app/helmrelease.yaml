@@ -43,7 +43,7 @@ spec:
         # Configure the operator manager
         collectorImage:
           repository: otel/opentelemetry-collector-contrib
-          tag: 0.132.0
+          tag: 0.132.2
 
         # Enable features
         featureGates: ""
