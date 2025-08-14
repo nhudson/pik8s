@@ -15,4 +15,5 @@ resources:
   - ./node-feature-discovery.yaml
   - ./nvidia.yaml
   - ./openebs.yaml
+  - ./open-telemetry.yaml
   - ./stakater.yaml
