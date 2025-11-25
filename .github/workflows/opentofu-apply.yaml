@@ -33,7 +33,7 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: OpenTofu Apply
         uses: dflook/tofu-apply@v2
