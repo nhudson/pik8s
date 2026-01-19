@@ -1,4 +1,3 @@
----
 apiVersion: postgresql.cnpg.io/v1
 kind: ClusterImageCatalog
 metadata:
@@ -6,6 +5,6 @@ metadata:
 spec:
   images:
     - major: 17
-      image: ghcr.io/cloudnative-pg/postgresql:17.5-202508110807-standard-bookworm@sha256:b14301dd53d8b26ff8843bf406c69334bf97bcf11406da35cc598a40b1a20db5
+      image: ghcr.io/cloudnative-pg/postgresql:17.6-system-trixie
     - major: 18
-      image: ghcr.io/cloudnative-pg/postgresql:18beta2-202508110807-standard-bookworm@sha256:6cb2f061021da6a39eedd7e859946dc933432a70816ac7e3baa9335c0c7277c3
+      image: ghcr.io/cloudnative-pg/postgresql:18.1-system-trixie
