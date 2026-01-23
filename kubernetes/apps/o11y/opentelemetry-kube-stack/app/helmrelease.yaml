@@ -10,7 +10,7 @@ spec:
     spec:
       # renovate: registryUrl=https://open-telemetry.github.io/opentelemetry-helm-charts
       chart: opentelemetry-kube-stack
-      version: 0.12.7
+      version: 0.13.1
       sourceRef:
         kind: HelmRepository
         name: open-telemetry
