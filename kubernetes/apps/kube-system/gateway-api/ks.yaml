@@ -9,7 +9,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  path: ./config/crd/standard
+  path: ./config/crd/experimental
   prune: false # CRDs should never be auto-pruned
   sourceRef:
     kind: GitRepository
