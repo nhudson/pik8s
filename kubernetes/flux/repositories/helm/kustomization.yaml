@@ -14,6 +14,5 @@ resources:
   - ./metrics-server.yaml
   - ./node-feature-discovery.yaml
   - ./nvidia.yaml
-  - ./openebs.yaml
   - ./open-telemetry.yaml
   - ./stakater.yaml
