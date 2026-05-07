@@ -43,6 +43,10 @@ spec:
     # devices: eno+ eth+
     endpointRoutes:
       enabled: true
+    gatewayAPI:
+      enabled: true
+      enableAlpn: true
+      enableAppProtocol: true
     hubble:
       enabled: true
       metrics:

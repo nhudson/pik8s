@@ -1,0 +1,22 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: gateway-api
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: gateway-api
+    namespace: flux-system
+  install:
+    crds: CreateReplace
+    remediation:
+      retries: 3
+  upgrade:
+    crds: CreateReplace
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    # Cilium 1.19.x supports Gateway API v1.4.x (standard channel)
+    channel: standard
