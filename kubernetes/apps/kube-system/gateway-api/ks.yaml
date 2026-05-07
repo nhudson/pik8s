@@ -9,11 +9,11 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  path: ./kubernetes/apps/kube-system/gateway-api/app
+  path: ./config/crd/standard
   prune: false # CRDs should never be auto-pruned
   sourceRef:
     kind: GitRepository
-    name: home-kubernetes
+    name: gateway-api
   wait: true
   interval: 30m
   retryInterval: 1m
