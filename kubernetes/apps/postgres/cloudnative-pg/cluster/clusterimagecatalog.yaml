@@ -2,9 +2,15 @@ apiVersion: postgresql.cnpg.io/v1
 kind: ClusterImageCatalog
 metadata:
   name: cnpg-postgresql
+  labels:
+    images.cnpg.io/family: postgresql
+    images.cnpg.io/type: minimal
+    images.cnpg.io/os: trixie
+    images.cnpg.io/date: "20260427"
+    images.cnpg.io/publisher: cnpg.io
 spec:
   images:
     - major: 17
-      image: ghcr.io/cloudnative-pg/postgresql:17.8-202602230816-system-trixie@sha256:85d6be52aea23b74299a32563ac053a1b088f4580e8589d3bb5618a950769137
+      image: ghcr.io/cloudnative-pg/postgresql:17.9-minimal-trixie
     - major: 18
-      image: ghcr.io/cloudnative-pg/postgresql:18.2-202602230816-system-trixie@sha256:1e6e9290208dd04ab2fd8cf3f31d6927f147c19329de886b085e0bb07fab81c0
+      image: ghcr.io/cloudnative-pg/postgresql:18.3-minimal-trixie
