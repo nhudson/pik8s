@@ -364,6 +364,32 @@
       ],
       "allowedVersions": "!/^v0\\.9\\.2$/"
     },
+    {
+      description: [
+        'Pin CloudNativePG image catalog entries to their major version',
+      ],
+      matchDatasources: [
+        'docker',
+      ],
+      matchPackageNames: [
+        'ghcr.io/cloudnative-pg/postgresql',
+      ],
+      matchCurrentValue: '/^17\\./',
+      allowedVersions: '/^17\\./',
+    },
+    {
+      description: [
+        'Pin CloudNativePG image catalog entries to their major version',
+      ],
+      matchDatasources: [
+        'docker',
+      ],
+      matchPackageNames: [
+        'ghcr.io/cloudnative-pg/postgresql',
+      ],
+      matchCurrentValue: '/^18\\./',
+      allowedVersions: '/^18\\./',
+    },
   ],
   customManagers: [
     {
