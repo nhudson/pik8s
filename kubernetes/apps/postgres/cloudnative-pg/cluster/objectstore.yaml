@@ -1,4 +1,3 @@
----
 apiVersion: barmancloud.cnpg.io/v1
 kind: ObjectStore
 metadata:
@@ -17,7 +16,6 @@ spec:
         name: *secret
         key: secret_access_key
     data:
-      compression: snappy
       jobs: 2
     wal:
       compression: snappy
