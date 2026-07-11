@@ -1,0 +1,23 @@
+#% if bootstrap_cloudflare.enabled %#
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: flux-webhook
+  annotations:
+    external-dns.alpha.kubernetes.io/controller: ignore
+spec:
+  hostnames:
+    - "flux-webhook.${SECRET_DOMAIN}"
+  parentRefs:
+    - name: external
+      namespace: network
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /hook/
+      backendRefs:
+        - name: webhook-receiver
+          port: 80
+#% endif %#

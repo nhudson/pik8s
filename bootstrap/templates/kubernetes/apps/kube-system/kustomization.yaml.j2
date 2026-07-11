@@ -6,6 +6,9 @@ resources:
   - ./cilium/ks.yaml
   - ./metrics-server/ks.yaml
   - ./reloader/ks.yaml
+  #% if bootstrap_cloudflare.enabled %#
+  - ./gateway-api/ks.yaml
+  #% endif %#
   #% if bootstrap_distribution in ["talos"] %#
   - ./kubelet-csr-approver/ks.yaml
   - ./spegel/ks.yaml

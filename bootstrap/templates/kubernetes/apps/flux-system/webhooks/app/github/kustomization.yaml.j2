@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - ./secret.sops.yaml
   #% if bootstrap_cloudflare.enabled %#
-  - ./ingress.yaml
+  - ./httproute.yaml
+  - ./dnsendpoint.yaml
   #% endif %#
   - ./receiver.yaml

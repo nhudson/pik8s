@@ -1,0 +1,28 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: external
+spec:
+  gatewayClassName: cilium
+  infrastructure:
+    annotations:
+      external-dns.alpha.kubernetes.io/hostname: "external.${SECRET_DOMAIN}"
+      io.cilium/lb-ipam-ips: "#{ bootstrap_cloudflare.tunnel.ingress_vip }#"
+  listeners:
+    - name: https
+      protocol: HTTPS
+      port: 443
+      hostname: "*.${SECRET_DOMAIN}"
+      tls:
+        certificateRefs:
+          #% if bootstrap_cloudflare.acme.production %#
+          - kind: Secret
+            name: "${SECRET_DOMAIN/./-}-production-tls"
+          #% else %#
+          - kind: Secret
+            name: "${SECRET_DOMAIN/./-}-staging-tls"
+          #% endif %#
+      allowedRoutes:
+        namespaces:
+          from: All

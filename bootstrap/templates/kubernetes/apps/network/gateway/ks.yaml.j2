@@ -2,7 +2,7 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app ingress-nginx-certificates
+  name: &app gateway-certificates
   namespace: flux-system
 spec:
   targetNamespace: network
@@ -11,7 +11,7 @@ spec:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: cert-manager-issuers
-  path: ./kubernetes/apps/network/ingress-nginx/certificates
+  path: ./kubernetes/apps/network/gateway/certificates
   prune: true
   sourceRef:
     kind: GitRepository
@@ -24,7 +24,7 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app ingress-nginx-internal
+  name: &app gateway-internal
   namespace: flux-system
 spec:
   targetNamespace: network
@@ -32,8 +32,9 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
-    - name: ingress-nginx-certificates
-  path: ./kubernetes/apps/network/ingress-nginx/internal
+    - name: gateway-certificates
+    - name: cilium-config
+  path: ./kubernetes/apps/network/gateway/internal
   prune: true
   sourceRef:
     kind: GitRepository
@@ -46,7 +47,7 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app ingress-nginx-external
+  name: &app gateway-external
   namespace: flux-system
 spec:
   targetNamespace: network
@@ -54,8 +55,10 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
-    - name: ingress-nginx-certificates
-  path: ./kubernetes/apps/network/ingress-nginx/external
+    - name: gateway-certificates
+    - name: cilium-config
+    - name: cloudflared
+  path: ./kubernetes/apps/network/gateway/external
   prune: true
   sourceRef:
     kind: GitRepository

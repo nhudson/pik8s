@@ -1,0 +1,17 @@
+#% if bootstrap_cloudflare.enabled %#
+# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/gitrepository-source-v1.json
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: gateway-api
+  namespace: flux-system
+spec:
+  interval: 1h
+  url: https://github.com/kubernetes-sigs/gateway-api
+  ref:
+    tag: v1.4.1
+  ignore: |
+    /*
+    !/config/crd/experimental
+#% endif %#
