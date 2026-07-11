@@ -88,20 +88,13 @@ spec:
           http:
             port: *port
 
-    ingress:
+    route:
       main:
-        enabled: true
-        className: internal
-        hosts:
-          - host: &host "sonarr.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                service:
-                  name: *name
-                  port: *port
-        tls:
-          - hosts:
-              - *host
+        hostnames:
+          - "sonarr.${SECRET_DOMAIN}"
+        parentRefs:
+          - name: internal
+            namespace: network
 
     persistence:
       media:

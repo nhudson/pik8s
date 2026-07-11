@@ -86,22 +86,13 @@ spec:
         ports:
           http:
             port: *port
-    ingress:
+    route:
       main:
-        enabled: true
-        className: internal
-        annotations:
-          cert-manager.io/cluster-issuer: letsencrypt-production
-        hosts:
-          - host: &host "{{ .Release.Name }}.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                service:
-                  identifier: app
-                  port: http
-        tls:
-          - hosts: [*host]
-            secretName: "{{ .Release.Name }}-tls"
+        hostnames:
+          - "{{ .Release.Name }}.${SECRET_DOMAIN}"
+        parentRefs:
+          - name: internal
+            namespace: network
     persistence:
       tmp:
         type: emptyDir

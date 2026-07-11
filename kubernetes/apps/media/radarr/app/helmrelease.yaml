@@ -91,20 +91,13 @@ spec:
           http:
             port: *port
 
-    ingress:
+    route:
       main:
-        enabled: true
-        className: internal
-        hosts:
-          - host: &host "radarr.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                service:
-                  name: *name
-                  port: *port
-        tls:
-          - hosts:
-              - *host
+        hostnames:
+          - "radarr.${SECRET_DOMAIN}"
+        parentRefs:
+          - name: internal
+            namespace: network
 
     persistence:
       media:
