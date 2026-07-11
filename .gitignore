@@ -38,3 +38,6 @@ wiki
 **/*_override.tf.json
 **/.terraformrc
 **/terraform.rc
+# AI Stuff
+.omc
+.serena
