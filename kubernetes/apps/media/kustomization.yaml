@@ -8,4 +8,5 @@ resources:
   - ./radarr/ks.yaml
   - ./sonarr/ks.yaml
   - ./jellyseerr/ks.yaml
+  - ./threadfin/ks.yaml
   # - ./jellyfin/ks.yaml
