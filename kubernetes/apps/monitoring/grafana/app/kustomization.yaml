@@ -5,3 +5,4 @@ resources:
   - ./grafana-env.sops.yaml
   - ./grafana-secret.sops.yaml
   - ./helmrelease.yaml
+  - ./httproute.yaml

@@ -238,14 +238,6 @@ spec:
       - vonage-status-panel
     serviceMonitor:
       enabled: true
-    ingress:
-      enabled: true
-      ingressClassName: internal
-      hosts:
-        - &host "grafana.${SECRET_DOMAIN}"
-      tls:
-        - hosts:
-            - *host
     persistence:
       enabled: false
     testFramework:

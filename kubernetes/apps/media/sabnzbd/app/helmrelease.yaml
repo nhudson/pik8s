@@ -85,27 +85,14 @@ spec:
           http:
             port: *port
 
-    ingress:
+    route:
       main:
-        enabled: true
-        className: internal
-        hosts:
-          - host: &host "sab.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                service:
-                  name: *name
-                  port: *port
-          - host: &customhost "sabnzbd.${SECRET_DOMAIN}"
-            paths:
-              - path: /
-                service:
-                  name: *name
-                  port: *port
-        tls:
-          - hosts:
-              - *host
-              - *customhost
+        hostnames:
+          - "sab.${SECRET_DOMAIN}"
+          - "sabnzbd.${SECRET_DOMAIN}"
+        parentRefs:
+          - name: internal
+            namespace: network
 
     persistence:
       config:
