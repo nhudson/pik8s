@@ -69,6 +69,6 @@ jobs:
         uses: actions/checkout@v7
 
       - name: OpenTofu Plan
-        uses: dflook/tofu-plan@v2
+        uses: dflook/tofu-plan@v3
         with:
           path: ${{ matrix.directory }} 
