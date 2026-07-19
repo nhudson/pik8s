@@ -40,7 +40,7 @@ jobs:
           path: ${{ matrix.directory }}
 
       - name: OpenTofu Validate
-        uses: dflook/tofu-validate@v2
+        uses: dflook/tofu-validate@v3
         with:
           path: ${{ matrix.directory }}
 
