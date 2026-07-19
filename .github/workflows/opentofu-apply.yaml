@@ -36,6 +36,6 @@ jobs:
         uses: actions/checkout@v7
 
       - name: OpenTofu Apply
-        uses: dflook/tofu-apply@v2
+        uses: dflook/tofu-apply@v3
         with:
           path: ${{ matrix.directory }} 
