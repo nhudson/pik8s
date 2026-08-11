@@ -70,6 +70,12 @@ spec:
         prometheus:
           serviceMonitor:
             enabled: true
+      # NOTE: the "helm" method reuses existing cert secrets verbatim, so it never
+      # renews them and Hubble breaks a year after install. The cronJob method
+      # regenerates them every 4 months via cilium-certgen.
+      tls:
+        auto:
+          method: cronJob
       ui:
         enabled: true
         rollOutPods: true
