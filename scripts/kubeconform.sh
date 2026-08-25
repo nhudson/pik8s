@@ -53,3 +53,6 @@ done
 
 echo "=== Testing Hermes reader RBAC ==="
 python3 ./scripts/test-hermes-reader-rbac.py
+
+echo "=== Testing Tailscale access contracts ==="
+python3 ./scripts/test-tailscale-access.py

@@ -23,5 +23,7 @@ spec:
     proxyConfig:
       defaultTags: "tag:k8s"
     apiServerProxyConfig:
-      allowImpersonation: "false"
+      # Required by the dedicated auth-mode ProxyGroup. The in-process proxy
+      # remains disabled so the operator device is not also an API endpoint.
+      allowImpersonation: "true"
       mode: "false"
