@@ -50,3 +50,6 @@ find "${KUBERNETES_DIR}/apps" -type f -name $kustomize_config -print0 | while IF
       exit 1
     fi
 done
+
+echo "=== Testing Hermes reader RBAC ==="
+python3 ./scripts/test-hermes-reader-rbac.py
