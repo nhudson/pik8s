@@ -15,3 +15,4 @@ resources:
   - ./nvidia.yaml
   - ./open-telemetry.yaml
   - ./stakater.yaml
+  - ./tailscale.yaml
