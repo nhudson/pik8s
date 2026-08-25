@@ -1,0 +1,17 @@
+---
+apiVersion: tailscale.com/v1alpha1
+kind: ProxyClass
+metadata:
+  name: tailscale-connector-ha
+spec:
+  statefulSet:
+    pod:
+      labels:
+        app.kubernetes.io/part-of: tailscale-infrastructure-connector
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app.kubernetes.io/part-of: tailscale-infrastructure-connector
+              topologyKey: kubernetes.io/hostname

@@ -21,6 +21,8 @@ spec:
         name: cluster-settings
       - kind: Secret
         name: cluster-secrets
+      - kind: Secret
+        name: tailscale-settings
       - kind: ConfigMap
         name: cluster-settings-user
         optional: true
@@ -44,6 +46,8 @@ spec:
                 name: cluster-settings
               - kind: Secret
                 name: cluster-secrets
+              - kind: Secret
+                name: tailscale-settings
               - kind: ConfigMap
                 name: cluster-settings-user
                 optional: true

@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: tailscale-settings
+    namespace: flux-system
+stringData:
+    SECRET_INFRASTRUCTURE_CIDR: ENC[AES256_GCM,data:wFwEMx6div1mi3bvt4Q=,iv:sPqQAiC6qr4HdBN0bfdR/xDTGn0JAHAOwrNdIPZoZnU=,tag:59k/MtYbGoIHuA+REwpwnw==,type:str]
+sops:
+    age:
+        - recipient: age13tgynpy3lm785sydz78hxx5dlqp85g25an4tmekx5l99fdzzns0qd89t25
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBzaEZaTllzZ2YwWlUzWnRH
+            b0JDcUFPQ2pGV25NVnZNUENDd2JiQk1oaFRNCjN1ck02UkRtSXprdGJHTGZLUHo4
+            bjNSc294U2UyMlVyVVlOYkdNRHZ4MXMKLS0tIGViV2lCZXFlQ1BqUlJxRmRNMGIv
+            M25UekJNVHJpMk03MWdjQzQrTzJLUGMK2ZCK41RAW8+R3mkCt0u0++Vdd6z2sAqi
+            c4ZJqxlZCC9W2JciAA4WcfKcyH6VUUswM79jkr4PDhgZzywDxIjm2w==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-08-25T20:20:57Z"
+    mac: ENC[AES256_GCM,data:+mG6FMugF8Jb30mPgI2x7K7YdTOdmGAb4YyyYvQ13wT4EtShmwgwz4hp62cwNtslSryMpdaoPvGdXYM3hW4NAhsVXhM6Pz4q52+DpRxdqQd6VTddxnwM007Lail75LjybHNVNNFUFZqE5c4cC44rr/anB2/RyHkQlkQfHMUECB4=,iv:mW94mjYLMTzfQVDplp8LLm9xH8FnKcjZP6gPIdXT77A=,tag:iIzBjEECcTimRHVKUqYhHg==,type:str]
+    encrypted_regex: ^(data|stringData)$
+    version: 3.10.2

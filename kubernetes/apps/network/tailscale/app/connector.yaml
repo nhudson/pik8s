@@ -1,0 +1,14 @@
+---
+apiVersion: tailscale.com/v1alpha1
+kind: Connector
+metadata:
+  name: infrastructure-subnet
+spec:
+  replicas: 2
+  hostnamePrefix: infrastructure-subnet-
+  proxyClass: tailscale-connector-ha
+  tags:
+    - tag:k8s-subnet
+  subnetRouter:
+    advertiseRoutes:
+      - "${SECRET_INFRASTRUCTURE_CIDR}"
