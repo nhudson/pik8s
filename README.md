@@ -22,6 +22,7 @@ The features included will depend on the type of configuration you want to use. 
 
 - A [Renovate](https://www.mend.io/renovate)-ready repository with pull request diffs provided by [flux-local](https://github.com/allenporter/flux-local)
 - Integrated [GitHub Actions](https://github.com/features/actions) with helpful workflows.
+- A safe, repeatable [agent-authored GitOps contribution workflow](./.github/AGENT_GITOPS_CONTRIBUTIONS.md).
 
 ## 💻 Machine Preparation
 
