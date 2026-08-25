@@ -1,0 +1,84 @@
+{
+  "apiVersion": "rbac.authorization.k8s.io/v1",
+  "kind": "ClusterRole",
+  "metadata": {
+    "name": "hermes-reader"
+  },
+  "rules": [
+    {
+      "apiGroups": [""],
+      "resources": ["events", "namespaces", "nodes", "persistentvolumeclaims", "persistentvolumes", "pods", "services"],
+      "verbs": ["get", "list", "watch"]
+    },
+    {
+      "apiGroups": ["apps"],
+      "resources": ["daemonsets", "deployments", "replicasets", "statefulsets"],
+      "verbs": ["get", "list", "watch"]
+    },
+    {
+      "apiGroups": ["batch"],
+      "resources": ["cronjobs", "jobs"],
+      "verbs": ["get", "list", "watch"]
+    },
+    {
+      "apiGroups": ["metrics.k8s.io"],
+      "resources": ["nodes", "pods"],
+      "verbs": ["get", "list", "watch"]
+    },
+    {
+      "apiGroups": ["source.toolkit.fluxcd.io"],
+      "resources": ["buckets", "gitrepositories", "helmcharts", "helmrepositories", "ocirepositories"],
+      "verbs": ["get", "list", "watch"]
+    },
+    {
+      "apiGroups": ["kustomize.toolkit.fluxcd.io"],
+      "resources": ["kustomizations"],
+      "verbs": ["get", "list", "watch"]
+    },
+    {
+      "apiGroups": ["helm.toolkit.fluxcd.io"],
+      "resources": ["helmreleases"],
+      "verbs": ["get", "list", "watch"]
+    },
+    {
+      "apiGroups": ["notification.toolkit.fluxcd.io"],
+      "resources": ["alerts", "providers", "receivers"],
+      "verbs": ["get", "list", "watch"]
+    },
+    {
+      "apiGroups": ["image.toolkit.fluxcd.io"],
+      "resources": ["imagepolicies", "imagerepositories", "imageupdateautomations"],
+      "verbs": ["get", "list", "watch"]
+    },
+    {
+      "apiGroups": ["gateway.networking.k8s.io"],
+      "resources": ["backendtlspolicies", "gatewayclasses", "gateways", "grpcroutes", "httproutes", "referencegrants", "tcproutes", "tlsroutes", "udproutes"],
+      "verbs": ["get", "list", "watch"]
+    },
+    {
+      "apiGroups": ["cert-manager.io"],
+      "resources": ["certificates", "certificaterequests", "clusterissuers", "issuers"],
+      "verbs": ["get", "list", "watch"]
+    },
+    {
+      "apiGroups": ["acme.cert-manager.io"],
+      "resources": ["challenges", "orders"],
+      "verbs": ["get", "list", "watch"]
+    },
+    {
+      "apiGroups": ["postgresql.cnpg.io"],
+      "resources": ["backups", "clusters", "scheduledbackups"],
+      "verbs": ["get", "list", "watch"]
+    },
+    {
+      "apiGroups": ["upgrade.cattle.io"],
+      "resources": ["plans"],
+      "verbs": ["get", "list", "watch"]
+    },
+    {
+      "apiGroups": ["monitoring.coreos.com"],
+      "resources": ["prometheusrules", "servicemonitors"],
+      "verbs": ["get", "list", "watch"]
+    }
+  ]
+}
