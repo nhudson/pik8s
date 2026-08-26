@@ -139,3 +139,38 @@ Report the exact current check state. Do not call a PR green while checks are
 pending, skipped checks are being misrepresented as passed, or required controls
 are absent. Any proposed ruleset change must be documented for owner approval,
 not applied by the agent.
+
+## 6. Default-branch protection contract
+
+The reviewed ruleset payload lives at `.github/rulesets/main-gitops.json`. The
+live ruleset remains a GitHub control-plane object, so verify it through the API
+before every protected merge rather than assuming the tracked proposal is live.
+
+The protection contract is intentionally small:
+
+- the `GitOps Validation` job runs on every pull request without path filters;
+- updates to the default branch require a pull request and the GitHub
+  Actions-owned `GitOps Validation` result;
+- strict status checks require validation against the current default branch;
+- deletion and non-fast-forward updates are prohibited;
+- there are no bypass actors;
+- `required_approving_review_count: 0` allows the dedicated automation App and
+  Renovate to merge green, issue-scoped pull requests without bypassing checks;
+- review threads must still be resolved before merge.
+
+Renovate minor and patch updates for GitHub Actions use pull-request automerge,
+not direct branch automerge. High-risk dependency classes remain subject to the
+separate Renovate policy and normal review workflow.
+
+### Owner approval and recovery
+
+Ruleset creation, modification, disabling, and deletion require explicit owner
+approval. Before applying a change, save the current live API response and
+compare it with the tracked proposal. Apply only after `GitOps Validation` has
+completed successfully on the proposal pull request.
+
+If the ruleset accidentally blocks all legitimate pull requests, the repository
+owner can temporarily disable the ruleset in **Settings → Rules → Rulesets**.
+Fix and validate the tracked proposal through a non-default branch, then restore
+active enforcement. Do not work around a broken ruleset with a direct push,
+force push, hidden bypass actor, or alternate credential.

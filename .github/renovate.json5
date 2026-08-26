@@ -65,8 +65,7 @@
         'github-actions',
       ],
       automerge: true,
-      automergeType: 'branch',
-      ignoreTests: true,
+      automergeType: 'pr',
       matchUpdateTypes: [
         'minor',
         'patch',
