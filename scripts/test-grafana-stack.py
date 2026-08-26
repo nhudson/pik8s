@@ -53,6 +53,7 @@ class GrafanaStackTests(unittest.TestCase):
         self.assertTrue(ini["security"]["cookie_secure"])
         self.assertTrue(ini["security"]["strict_transport_security"])
         self.assertEqual("31536000", ini["security"]["strict_transport_security_max_age_seconds"])
+        self.assertFalse(ini["server"]["enforce_domain"])
         self.assertEqual("https://grafana.${SECRET_DOMAIN}", ini["server"]["root_url"])
 
     def test_dashboards_and_prometheus_datasource_are_chart_owned(self):

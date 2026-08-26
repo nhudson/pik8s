@@ -25,6 +25,8 @@ The admin credential, data source, chart dashboards, and Git-owned dashboards ar
 
 Grafana attaches only to the internal Gateway API listener. Anonymous access, signup, organization creation, analytics reporting, update checks, and the news feed are disabled. The admin credential is delivered from 1Password by External Secrets and is never stored in Git. Reloader replaces the pod when that credential changes.
 
+Domain enforcement remains disabled because the dashboard and data-source sidecars reload provisioning through Grafana's localhost admin endpoint. The internal HTTPRoute still provides the only network exposure, and `root_url` remains fixed to the HTTPS hostname.
+
 The dashboard and data-source sidecars use a namespace-scoped service account that can only read ConfigMaps in the monitoring namespace. They cannot read Secrets or cluster-wide resources.
 
 ## Upgrade verification
