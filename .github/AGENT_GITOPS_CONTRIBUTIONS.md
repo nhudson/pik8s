@@ -145,6 +145,8 @@ not applied by the agent.
 The reviewed ruleset payload lives at `.github/rulesets/main-gitops.json`. The
 live ruleset remains a GitHub control-plane object, so verify it through the API
 before every protected merge rather than assuming the tracked proposal is live.
+For a docs-only pull request, path-scoped jobs may be absent or skipped, but the
+required `GitOps Validation` check must still appear and pass.
 
 The protection contract is intentionally small:
 
