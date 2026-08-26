@@ -2,6 +2,8 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
+  - ./flux-podmonitor.yaml
+  - ./grafana-dashboard-flux-control-plane.yaml
   - ./grafana-dashboard-control-plane.yaml
   - ./grafana-dashboard-database.yaml
   - ./grafana-dashboard-delivery.yaml

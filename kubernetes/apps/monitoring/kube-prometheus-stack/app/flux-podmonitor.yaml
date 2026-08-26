@@ -1,0 +1,24 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: flux-controllers
+spec:
+  namespaceSelector:
+    matchNames: [flux-system]
+  selector:
+    matchExpressions:
+      - key: app
+        operator: In
+        values:
+          - helm-controller
+          - image-automation-controller
+          - image-reflector-controller
+          - kustomize-controller
+          - notification-controller
+          - source-controller
+          - source-watcher
+  podMetricsEndpoints:
+    - port: http-prom
+      interval: 60s
+      scrapeTimeout: 10s
