@@ -9,6 +9,7 @@ KUBERNETES_DIR=$1
 ruby ./scripts/test-external-secret-finalized.rb "${KUBERNETES_DIR}"
 python3 ./scripts/test-bootstrap-secrets.py
 python3 ./scripts/test-sops-retirement.py
+python3 ./scripts/test-github-protection.py
 
 kustomize_args=("--load-restrictor=LoadRestrictionsNone")
 kustomize_config="kustomization.yaml"
