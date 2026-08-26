@@ -9,6 +9,7 @@ resources:
   - ./grafana-dashboard-delivery.yaml
   - ./grafana-dashboard-network.yaml
   - ./grafana-dashboard-platform.yaml
+  - ./grafana-dashboard-storage.yaml
   - ./grafana-httproute.yaml
   - ./grafana-rbac.yaml
   - ./helmrelease.yaml

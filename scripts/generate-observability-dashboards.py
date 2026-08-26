@@ -61,6 +61,21 @@ DASHBOARDS = {
             ("Configuration reload healthy", "min(alertmanager_config_last_reload_successful) or vector(0)", "stat", "short"),
         ],
     },
+    "storage": {
+        "uid": "platform-storage",
+        "title": "Platform / Storage and NFS",
+        "panels": [
+            ("NFS mounts reporting", "count(node_mountstats_nfs_age_seconds_total) or vector(0)", "stat", "short"),
+            ("NFS requests by operation", "sum by (operation) (rate(node_mountstats_nfs_operations_requests_total[5m]))", "timeseries", "reqps"),
+            ("NFS average request time", "sum by (operation) (rate(node_mountstats_nfs_operations_request_time_seconds_total[5m])) / clamp_min(sum by (operation) (rate(node_mountstats_nfs_operations_requests_total[5m])), 1e-9)", "timeseries", "s"),
+            ("NFS retransmission ratio", "clamp_min(sum by (operation) (rate(node_mountstats_nfs_operations_transmissions_total[5m])) - sum by (operation) (rate(node_mountstats_nfs_operations_requests_total[5m])), 0) / clamp_min(sum by (operation) (rate(node_mountstats_nfs_operations_requests_total[5m])), 1e-9)", "timeseries", "percentunit"),
+            ("NFS major timeouts", "sum by (operation) (rate(node_mountstats_nfs_operations_major_timeouts_total[5m]))", "timeseries", "ops"),
+            ("PVC capacity", "max by (namespace, persistentvolumeclaim) (kubelet_volume_stats_capacity_bytes)", "timeseries", "bytes"),
+            ("PVC utilization", "1 - max by (namespace, persistentvolumeclaim) (kubelet_volume_stats_available_bytes) / clamp_min(max by (namespace, persistentvolumeclaim) (kubelet_volume_stats_capacity_bytes), 1)", "timeseries", "percentunit"),
+            ("PVC requested storage", "max by (namespace, persistentvolumeclaim) (kube_persistentvolumeclaim_resource_requests_storage_bytes)", "timeseries", "bytes"),
+            ("PVCs Pending or Lost", "max by (namespace, persistentvolumeclaim) (kube_persistentvolumeclaim_status_phase{phase=~\"Pending|Lost\"}) == 1", "timeseries", "short"),
+        ],
+    },
 }
 
 
