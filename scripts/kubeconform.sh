@@ -6,6 +6,8 @@ KUBERNETES_DIR=$1
 
 [[ -z "${KUBERNETES_DIR}" ]] && echo "Kubernetes location not specified" && exit 1
 
+ruby ./scripts/test-external-secret-dual-write.rb "${KUBERNETES_DIR}"
+
 kustomize_args=("--load-restrictor=LoadRestrictionsNone")
 kustomize_config="kustomization.yaml"
 kubeconform_args=(
