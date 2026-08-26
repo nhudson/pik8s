@@ -14,5 +14,6 @@ resources:
   - ./node-feature-discovery.yaml
   - ./nvidia.yaml
   - ./open-telemetry.yaml
+  - ./prometheus-community-charts.yaml
   - ./stakater.yaml
   - ./tailscale.yaml

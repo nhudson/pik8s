@@ -76,8 +76,18 @@
       "verbs": ["get", "list", "watch"]
     },
     {
+      "apiGroups": ["external-secrets.io"],
+      "resources": ["clustersecretstores", "externalsecrets"],
+      "verbs": ["get", "list", "watch"]
+    },
+    {
+      "apiGroups": ["tailscale.com"],
+      "resources": ["connectors", "proxyclasses", "proxygroups"],
+      "verbs": ["get", "list", "watch"]
+    },
+    {
       "apiGroups": ["monitoring.coreos.com"],
-      "resources": ["prometheusrules", "servicemonitors"],
+      "resources": ["alertmanagers", "podmonitors", "prometheuses", "prometheusrules", "servicemonitors"],
       "verbs": ["get", "list", "watch"]
     }
   ]

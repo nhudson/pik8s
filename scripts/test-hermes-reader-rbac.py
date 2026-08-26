@@ -54,7 +54,9 @@ EXPECTED_RESOURCES = {
     "acme.cert-manager.io": {"challenges", "orders"},
     "postgresql.cnpg.io": {"backups", "clusters", "scheduledbackups"},
     "upgrade.cattle.io": {"plans"},
-    "monitoring.coreos.com": {"prometheusrules", "servicemonitors"},
+    "external-secrets.io": {"clustersecretstores", "externalsecrets"},
+    "tailscale.com": {"connectors", "proxyclasses", "proxygroups"},
+    "monitoring.coreos.com": {"alertmanagers", "podmonitors", "prometheuses", "prometheusrules", "servicemonitors"},
 }
 
 DENIED = [

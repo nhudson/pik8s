@@ -56,6 +56,16 @@ jobs:
       - name: Generate Diff
         id: diff
         run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("diff.patch")
+          limit = 40_000
+          data = path.read_bytes()
+          if len(data) > limit:
+              marker = b"\n... diff truncated; run flux-local locally for the complete render ...\n"
+              path.write_bytes(data[: limit - len(marker)] + marker)
+          PY
           cat diff.patch
           echo "diff<<EOF" >> $GITHUB_OUTPUT
           cat diff.patch >> $GITHUB_OUTPUT
