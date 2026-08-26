@@ -8,7 +8,7 @@ At a high level this project makes use of [makejinja](https://github.com/mirkole
 
 The features included will depend on the type of configuration you want to use. There are currently **2 different types** of **configurations** available with this template.
 
-1. **"Flux cluster"** - a Kubernetes distribution of your choosing: [k3s](https://github.com/k3s-io/k3s) or [Talos](https://github.com/siderolabs/talos). Deploys an opinionated implementation of [Flux](https://github.com/fluxcd/flux2) using [GitHub](https://github.com/) as the Git provider and [sops](https://github.com/getsops/sops) to manage secrets.
+1. **"Flux cluster"** - a Kubernetes distribution of your choosing: [k3s](https://github.com/k3s-io/k3s) or [Talos](https://github.com/siderolabs/talos). Deploys an opinionated implementation of [Flux](https://github.com/fluxcd/flux2) with 1Password-backed External Secrets and a value-safe bootstrap recovery path.
 
     - **Required:** Debian 12 or Talos Linux installed on bare metal (or VMs) and some knowledge of [Containers](https://opencontainers.org/) and [YAML](https://yaml.org/). Some knowledge of [Git](https://git-scm.com/) practices & terminology is also required.
     - **Components:** [Cilium](https://github.com/cilium/cilium) and [kube-vip](https://github.com/kube-vip/kube-vip) _(k3s)_. [flux](https://github.com/fluxcd/flux2), [cert-manager](https://github.com/cert-manager/cert-manager), [spegel](https://github.com/spegel-org/spegel), [reloader](https://github.com/stakater/Reloader), [system-upgrade-controller](https://github.com/rancher/system-upgrade-controller) _(k3s)_, and [openebs](https://github.com/openebs/openebs).
@@ -237,9 +237,9 @@ You have two different options for setting up your local workstation.
     task configure
     ```
 
-4. Push you changes to git
+4. Configure the bootstrap-only 1Password item contracts from [the recovery runbook](./docs/bootstrap-secrets.md), and verify no credential value is present in the Git diff.
 
-   📍 _**Verify** all the `./kubernetes/**/*.sops.*` files are **encrypted** with SOPS_
+5. Push your changes to Git
 
     ```sh
     git add -A
@@ -247,7 +247,7 @@ You have two different options for setting up your local workstation.
     git push
     ```
 
-5.  Continue on to ⚡ [**Stage 4**](#-stage-4-prepare-your-nodes-for-kubernetes)
+6. Continue on to ⚡ [**Stage 4**](#-stage-4-prepare-your-nodes-for-kubernetes)
 
 ### ⚡ Stage 4: Prepare your nodes for Kubernetes
 
@@ -335,6 +335,7 @@ You have two different options for setting up your local workstation.
     📍 _Run `task flux:github-deploy-key` first if using a private repository._
 
     ```sh
+    export OP_VAULT='<recovery-vault>'
     task flux:bootstrap
     # namespace/flux-system configured
     # customresourcedefinition.apiextensions.k8s.io/alerts.notification.toolkit.fluxcd.io created
@@ -378,17 +379,17 @@ The `external-dns` application created in the `networking` namespace will handle
 
 #### 🏠 Home DNS
 
-`k8s_gateway` will provide DNS resolution to external Kubernetes resources (i.e. points of entry to the cluster) from any device that uses your home DNS server. For this to work, your home DNS server must be configured to forward DNS queries for `${bootstrap_cloudflare.domain}` to `${bootstrap_cloudflare.gateway_vip}` instead of the upstream DNS server(s) it normally uses. This is a form of **split DNS** (aka split-horizon DNS / conditional forwarding).
+`k8s_gateway` will provide DNS resolution to external Kubernetes resources (i.e. points of entry to the cluster) from any device that uses your home DNS server. Configure the home DNS server to forward queries for `<CLUSTER_DOMAIN>` to `<GATEWAY_VIP>` instead of its normal upstream servers. This is a form of **split DNS** (aka split-horizon DNS / conditional forwarding). Obtain the resolved values from the operator's private bootstrap configuration; do not publish them.
 
 > [!TIP]
 > Below is how to configure a Pi-hole for split DNS. Other platforms should be similar.
 > 1. Apply this file on the Pihole server while substituting the variables
 > ```sh
 > # /etc/dnsmasq.d/99-k8s-gateway-forward.conf
-> server=/${bootstrap_cloudflare.domain}/${bootstrap_cloudflare.gateway_vip}
+> server=/<CLUSTER_DOMAIN>/<GATEWAY_VIP>
 > ```
 > 2. Restart dnsmasq on the server.
-> 3. Query an internal-only subdomain from your workstation (any `internal` class ingresses): `dig @${home-dns-server-ip} echo-server-internal.${bootstrap_cloudflare.domain}`. It should resolve to `${bootstrap_cloudflare.ingress_vip}`.
+> 3. Query an internal-only subdomain from your workstation: `dig @<HOME_DNS_SERVER> echo-server-internal.<CLUSTER_DOMAIN>`. It should resolve to `<INGRESS_VIP>`.
 
 If you're having trouble with DNS be sure to check out these two GitHub discussions: [Internal DNS](https://github.com/onedr0p/cluster-template/discussions/719) and [Pod DNS resolution broken](https://github.com/onedr0p/cluster-template/discussions/635).
 
@@ -418,10 +419,10 @@ By default Flux will periodically check your git repository for changes. In orde
 2. Piece together the full URL with the webhook path appended
 
     ```text
-    https://flux-webhook.${bootstrap_cloudflare.domain}/hook/12ebd1e363c641dc3c2e430ecf3cee2b3c7a5ac9e1234506f6f5f3ce1230e123
+    https://flux-webhook.<CLUSTER_DOMAIN>/hook/<RECEIVER_PATH>
     ```
 
-3. Navigate to the settings of your repository on Github, under "Settings/Webhooks" press the "Add webhook" button. Fill in the webhook url and your `bootstrap_github_webhook_token` secret and save.
+3. Navigate to the repository's **Settings → Webhooks**, add the URL, and use the concealed `token` field from the `github-webhook-token-secret` 1Password item. Never put the token in Git, shell history, documentation, or issue text.
 
 ## 💥 Nuke
 
@@ -513,7 +514,7 @@ and [synology-csi](https://github.com/SynologyOpenSource/synology-csi).
 If this repo is too hot to handle or too cold to hold check out these following projects.
 
 - [khuedoan/homelab](https://github.com/khuedoan/homelab) - _Modern self-hosting framework, fully automated from empty disk to operating services with a single command._
-- [danmanners/aws-argo-cluster-template](https://github.com/danmanners/aws-argo-cluster-template) - _A community opinionated template for deploying Kubernetes clusters on-prem and in AWS using Pulumi, SOPS, Sealed Secrets, GitHub Actions, Renovate, Cilium and more!_
+- [danmanners/aws-argo-cluster-template](https://github.com/danmanners/aws-argo-cluster-template) - _A community opinionated template for deploying Kubernetes clusters on-prem and in AWS using Pulumi, GitOps, GitHub Actions, Renovate, Cilium and more!_
 - [ricsanfre/pi-cluster](https://github.com/ricsanfre/pi-cluster) - _Pi Kubernetes Cluster. Homelab kubernetes cluster automated with Ansible and ArgoCD_
 - [techno-tim/k3s-ansible](https://github.com/techno-tim/k3s-ansible) - _The easiest way to bootstrap a self-hosted High Availability Kubernetes cluster. A fully automated HA k3s etcd install with kube-vip, MetalLB, and more_
 

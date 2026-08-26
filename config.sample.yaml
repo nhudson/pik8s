@@ -96,12 +96,6 @@ bootstrap_controllers_vip: ""
 #   if you want to call the Kube API by hostname rather than IP
 bootstrap_tls_sans: []
 
-# (Required) Age Public Key (e.g. age1...)
-# 1. Generate a new key with the following command:
-#    > task sops:age-keygen
-# 2. Copy the PUBLIC key and paste it below
-bootstrap_sops_age_pubkey: ""
-
 # (Optional) Use cilium BGP control plane when L2 announcements won't traverse VLAN network segments.
 #   Needs a BGP capable router setup with the node IPs as peers.
 #   See: https://docs.cilium.io/en/latest/network/bgp-control-plane/
@@ -126,29 +120,20 @@ bootstrap_bgp:
 # (Required) GitHub repository URL
 #   For a public repo use the 'https://' URL (e.g. "https://github.com/onedr0p/cluster-template.git")
 #   For a private repo use the 'ssh://' URL (e.g. "ssh://git@github.com/onedr0p/cluster-template.git")
-#     If using a private repo make sure to following the instructions with the 'bootstrap_github_private_key' option below.
+#     Generate ignored local github-deploy.key and github-deploy.key.pub files and
+#     run `task flux:github-deploy-key` before bootstrap.
 bootstrap_github_address: ""
+bootstrap_repository_private: false
 
 # (Required) GitHub repository branch
 bootstrap_github_branch: "main"
-
-# (Required) Token for GitHub push-based sync
-# 1. Generate a new token with the following command:
-#    > openssl rand -hex 16
-# 2. Copy the token and paste it below
-bootstrap_github_webhook_token: ""
 
 # (Optional) Private key for Flux to access the GitHub repository
 #   1. Generate a new key with the following command:
 #      > ssh-keygen -t ecdsa -b 521 -C "github-deploy-key" -f github-deploy.key -q -P ""
 #   2. Make sure to paste public key from "github-deploy.key.pub" into
 #      the deploy keys section of your GitHub repository settings.
-#   3. Uncomment and paste the private key below
-#   4. Optionally set your repository on GitHub to private
-# bootstrap_github_private_key: |
-#   -----BEGIN OPENSSH PRIVATE KEY-----
-#   ...
-#   -----END OPENSSH PRIVATE KEY-----
+#   3. Keep both local files out of Git and run `task flux:github-deploy-key`.
 
 #
 # 3. (Optional) Cloudflare details - Cloudflare is used for DNS, TLS certificates and tunneling.
@@ -158,25 +143,10 @@ bootstrap_cloudflare:
   # (Required) Disable to manually setup and use a different DNS provider - setting this
   #   to false will not deploy a network namespace or the workloads contained within.
   enabled: true
-  # (Required) Cloudflare Domain
-  domain: ""
-  # (Required) Cloudflare API Token (NOT API Key)
-  #   1. Head over to Cloudflare and create a API Token by going to
-  #      https://dash.cloudflare.com/profile/api-tokens
-  #   2. Under the `API Tokens` section click the blue `Create Token` button.
-  #   3. Click the blue `Use template` button for the `Edit zone DNS` template.
-  #   4. Name your token something like `home-kubernetes`
-  #   5. Under `Permissions`, click `+ Add More` and add each permission below:
-  #      `Zone - DNS - Edit`
-  #      `Account - Cloudflare Tunnel - Read`
-  #   6. Limit the permissions to a specific account and zone resources.
-  #   7. Click the blue `Continue to Summary` button and then the blue `Create Token` button.
-  #   8. Copy the token and paste it below.
-  token: ""
-  # (Required) Optionals for Cloudflare Acme
+  # Secret/domain values are supplied through the 1Password bootstrap items
+  # documented in docs/bootstrap-secrets.md, never through this file.
+  # (Required) Options for Cloudflare ACME
   acme:
-    # (Required) Any email you want to be associated with the ACME account (used for TLS certs via letsencrypt.org)
-    email: ""
     # (Required) Use the ACME production server when requesting the wildcard certificate.
     #   By default the ACME staging server is used. This is to prevent being rate-limited.
     #   Update this option to `true` when you have verified the staging certificate
@@ -190,22 +160,7 @@ bootstrap_cloudflare:
   # The Load balancer IP for k8s_gateway, choose an available IP
   #   in your nodes host network that is NOT being used. This is announced over L2.
   gateway_vip: ""
-  # (Required) Options for Cloudflare Tunnel
-  # There's two methods to create a tunnel, via the CLI or the Cloudflare dashboard.
-  #   1. Authenticate cloudflared to your domain with the following command:
-  #     > cloudflared tunnel login
-  #   2. Create the tunnel with the following command:
-  #     > cloudflared tunnel create k8s
   tunnel:
-    # (Required) Get the Cloudflared Tunnel ID with the following command:
-    #   > jq -r .TunnelID ~/.cloudflared/*.json
-    id: ""
-    # (Required) Get the Cloudflare Account ID with the following command:
-    #   > jq -r .AccountTag ~/.cloudflared/*.json
-    account_id: ""
-    # (Required) Get the Cloudflared Tunnel Secret with the following command:
-    #   > jq -r .TunnelSecret ~/.cloudflared/*.json
-    secret: ""
     # (Required) Provide WAN access to the cluster ingresses for external ingress classes
     # The Load balancer IP for external ingress, choose an available IP
     #   in your nodes host network that is NOT being used. This is announced over L2.

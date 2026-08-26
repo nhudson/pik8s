@@ -11,16 +11,14 @@ spec:
   sourceRef:
     kind: GitRepository
     name: home-kubernetes
-  decryption:
-    provider: sops
-    secretRef:
-      name: sops-age
   postBuild:
     substituteFrom:
       - kind: ConfigMap
         name: cluster-settings
       - kind: Secret
         name: cluster-secrets
+      - kind: Secret
+        name: tailscale-settings
       - kind: ConfigMap
         name: cluster-settings-user
         optional: true
@@ -34,16 +32,14 @@ spec:
         metadata:
           name: not-used
         spec:
-          decryption:
-            provider: sops
-            secretRef:
-              name: sops-age
           postBuild:
             substituteFrom:
               - kind: ConfigMap
                 name: cluster-settings
               - kind: Secret
                 name: cluster-secrets
+              - kind: Secret
+                name: tailscale-settings
               - kind: ConfigMap
                 name: cluster-settings-user
                 optional: true

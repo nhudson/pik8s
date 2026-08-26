@@ -119,6 +119,12 @@ class BootstrapSecretTests(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             bootstrap.execute("check", runner)
 
+    def test_provider_contract_rejects_empty_field(self):
+        runner = FakeRunner(live=True)
+        runner.items["tailscale-settings"]["SECRET_INFRASTRUCTURE_CIDR"] = b""
+        with self.assertRaises(RuntimeError):
+            bootstrap.execute("check", runner)
+
     def test_repository_bootstrap_wiring_uses_recovery_helper(self):
         taskfile = (ROOT / ".taskfiles/Flux/Taskfile.yaml").read_text()
         self.assertIn("bootstrap-secrets.py apply", taskfile)

@@ -12,6 +12,8 @@ They are bootstrap-only exceptions. External Secrets cannot retrieve its own pro
 
 Keep the values outside Git and outside Kubernetes in an operator-accessible 1Password vault. The recovery identity must be independent from the token being restored.
 
+Install the 1Password CLI (`op`) using the platform-specific instructions from 1Password before running `task flux:bootstrap`. The Flux task fails closed when `op` or `OP_VAULT` is unavailable.
+
 Required item contracts:
 
 | Item | Fields |
@@ -57,6 +59,6 @@ The helper creates the required namespaces, applies all Secret manifests through
 
 ## Rotation and rollback
 
-After changing any recovery item, run `check`, then `apply`, then verify the root Flux Kustomizations, provider store, ExternalSecrets, and consumers. Rerunning `apply` is the preferred rollback/recovery mechanism and requires no age key. Restoring the temporarily retained SOPS manifests instead still requires the corresponding in-cluster age key and is available only until final SOPS retirement.
+After changing any recovery item, run `check`, then `apply`, then verify the root Flux Kustomizations, provider store, ExternalSecrets, and consumers. Rerunning `apply` is the rollback and recovery mechanism; no repository decryption key or historical encrypted manifest is required.
 
 If recovery authentication and all authorized 1Password access are lost simultaneously, automated recovery is intentionally blocked. Maintain an independently controlled recovery identity according to the operator's credential-backup policy.

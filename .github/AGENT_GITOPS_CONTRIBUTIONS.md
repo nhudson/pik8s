@@ -9,8 +9,8 @@ remote revision, and routes every change through a pull request.
 - Never commit or push directly from `main`.
 - Never merge a pull request or change/bypass a repository ruleset without
   explicit owner approval.
-- Never print, copy, or commit private key material, kubeconfigs, decrypted SOPS
-  files, or provider credentials.
+- Never print, copy, or commit private key material, kubeconfigs, Secret values,
+  or provider credentials.
 - Do not clean, reset, rebase, or otherwise alter an existing checkout that may
   contain someone else's work. Use a separate worktree instead.
 - Treat GitHub's live ruleset and check configuration as authoritative; it can
@@ -91,8 +91,8 @@ bash ./scripts/kubeconform.sh kubernetes
 task kubernetes:kubeconform
 ```
 
-Also verify every changed `*.sops.*` file remains encrypted. Do not decrypt
-secrets merely for contribution validation.
+Verify that Secret values remain outside Git and that recovery contracts use
+only public key names and value-free equality checks.
 
 For changes under `opentofu/`, run formatting and validation locally when the
 required OpenTofu tooling is available. The pull request is additionally

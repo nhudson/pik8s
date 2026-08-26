@@ -8,7 +8,7 @@ import socket
 import sys
 
 DISTRIBUTIONS = ["k3s", "talos"]
-GLOBAL_CLI_TOOLS = ["age", "flux", "helmfile", "sops", "jq", "kubeconform", "kustomize"]
+GLOBAL_CLI_TOOLS = ["flux", "helmfile", "jq", "kubeconform", "kustomize"]
 TALOS_CLI_TOOLS = ["talosctl", "talhelper"]
 CLOUDFLARE_TOOLS = ["cloudflared"]
 
@@ -104,11 +104,6 @@ def validate_timezone(timezone: str, **_) -> None:
         raise ValueError(f"Invalid timezone {timezone}")
 
 
-@required("bootstrap_sops_age_pubkey")
-def validate_age(key: str, **_) -> None:
-    if not re.match(r"^age1[a-z0-9]{0,58}$", key):
-        raise ValueError(f"Invalid Age public key {key}")
-
 
 @required("bootstrap_node_network", "bootstrap_node_inventory", "bootstrap_distribution")
 def validate_nodes(node_cidr: str, nodes: dict[list], distribution: str, **_) -> None:
@@ -132,7 +127,5 @@ def validate(data: dict) -> None:
     validate_cli_tools(data)
     validate_distribution(data)
     validate_timezone(data)
-    validate_age(data)
-
     if not data.get("skip_tests", False):
         validate_nodes(data)
