@@ -212,7 +212,8 @@ spec:
         server:
           domain: grafana.${SECRET_DOMAIN}
           root_url: https://grafana.${SECRET_DOMAIN}
-          enforce_domain: true
+          # Keep localhost provisioning reloads from being redirected to the public root URL.
+          enforce_domain: false
         users:
           allow_sign_up: false
           allow_org_create: false
