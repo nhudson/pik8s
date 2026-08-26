@@ -7,6 +7,7 @@ require "yaml"
 
 root = File.expand_path(ARGV.fetch(0, "kubernetes"))
 phase_annotation = "secrets-migration.pik8s.dev/phase"
+migration_phases = %w[dual-write ownership-handoff].freeze
 external_secrets = []
 
 Find.find(root) do |path|
@@ -15,9 +16,11 @@ Find.find(root) do |path|
   YAML.load_stream(File.read(path)).compact.each do |document|
     next unless document.is_a?(Hash)
     next unless document["kind"] == "ExternalSecret"
-    next unless document.dig("metadata", "annotations", phase_annotation) == "dual-write"
 
-    external_secrets << [path, document]
+    phase = document.dig("metadata", "annotations", phase_annotation)
+    next unless migration_phases.include?(phase)
+
+    external_secrets << [path, document, phase]
   end
 end
 
@@ -26,13 +29,14 @@ approved_paths = [
   "apps/network/cloudflared/app/externalsecret.yaml",
   "apps/network/external-dns/app/externalsecret.yaml",
 ].sort
-actual_paths = external_secrets.map { |path, _| path.delete_prefix("#{root}/") }.sort
-abort "expected three app-level dual-write contracts" unless external_secrets.length == 3
-abort "dual-write scope differs from the approved app-level set" unless actual_paths == approved_paths
+actual_paths = external_secrets.map { |path, _, _| path.delete_prefix("#{root}/") }.sort
+abort "expected three app-level ownership-handoff contracts" unless external_secrets.length == 3
+abort "ownership-handoff scope differs from the approved app-level set" unless actual_paths == approved_paths
+abort "all approved resources must be in ownership-handoff" unless external_secrets.all? { |_, _, phase| phase == "ownership-handoff" }
 
-external_secrets.each do |path, external_secret|
+external_secrets.each do |path, external_secret, _|
   apps_root = File.join(root, "apps") + File::SEPARATOR
-  abort "only app-level resources are in dual-write scope" unless path.start_with?(apps_root)
+  abort "only app-level resources are in ownership-handoff scope" unless path.start_with?(apps_root)
 
   metadata = external_secret.fetch("metadata")
   spec = external_secret.fetch("spec")
@@ -43,11 +47,11 @@ external_secrets.each do |path, external_secret|
   directory = File.dirname(path)
 
   abort "target must preserve the existing Secret name" unless target["name"] == secret_name
-  abort "dual-write must use the approved ClusterSecretStore" unless secret_store_ref == { "kind" => "ClusterSecretStore", "name" => "1password" }
-  abort "dual-write must use Merge" unless target["creationPolicy"] == "Merge"
-  abort "dual-write must retain data on deletion" unless target["deletionPolicy"] == "Retain"
+  abort "handoff must use the approved ClusterSecretStore" unless secret_store_ref == { "kind" => "ClusterSecretStore", "name" => "1password" }
+  abort "handoff must use Orphan" unless target["creationPolicy"] == "Orphan"
+  abort "handoff must retain data on provider deletion" unless target["deletionPolicy"] == "Retain"
   abort "template engine must be v2" unless template["engineVersion"] == "v2"
-  abort "prune handoff is not part of dual-write" if template.dig("metadata", "annotations", "kustomize.toolkit.fluxcd.io/prune")
+  abort "handoff target must carry the Flux prune guard" unless template.dig("metadata", "annotations", "kustomize.toolkit.fluxcd.io/prune") == "disabled"
   abort "per-field data mappings are not allowed" if spec.key?("data")
 
   extracts = spec.fetch("dataFrom")
@@ -80,8 +84,8 @@ external_secrets.each do |path, external_secret|
   resources = kustomization.fetch("resources")
   public_resource = "./#{File.basename(path)}"
   rollback_resource = "./#{File.basename(rollback_path)}"
-  abort "dual-write resource is not active" unless resources.include?(public_resource)
-  abort "encrypted rollback resource must remain active" unless resources.include?(rollback_resource)
+  abort "ownership-handoff resource is not active" unless resources.include?(public_resource)
+  abort "encrypted rollback file must be inactive during ownership handoff" if resources.include?(rollback_resource)
 end
 
-puts "validated #{external_secrets.length} rollback-safe dual-write contracts"
+puts "validated #{external_secrets.length} prune-safe ownership-handoff contracts"
