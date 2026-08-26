@@ -1,0 +1,34 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/servicemonitor_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: exportarr
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: exportarr
+spec:
+  jobLabel: app.kubernetes.io/name
+  namespaceSelector:
+    matchNames:
+      - media
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: exportarr
+  endpoints:
+    - port: sonarr
+      path: /metrics
+      interval: 60s
+      scrapeTimeout: 30s
+    - port: radarr
+      path: /metrics
+      interval: 60s
+      scrapeTimeout: 30s
+    - port: prowlarr
+      path: /metrics
+      interval: 60s
+      scrapeTimeout: 30s
+    - port: sabnzbd
+      path: /metrics
+      interval: 60s
+      scrapeTimeout: 30s

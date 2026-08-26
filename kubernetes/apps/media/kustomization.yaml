@@ -9,4 +9,5 @@ resources:
   - ./sonarr/ks.yaml
   - ./jellyseerr/ks.yaml
   - ./threadfin/ks.yaml
+  - ./exportarr/ks.yaml
   # - ./jellyfin/ks.yaml

@@ -76,6 +76,21 @@ DASHBOARDS = {
             ("PVCs Pending or Lost", "max by (namespace, persistentvolumeclaim) (kube_persistentvolumeclaim_status_phase{phase=~\"Pending|Lost\"}) == 1", "timeseries", "short"),
         ],
     },
+    "media": {
+        "uid": "platform-media",
+        "title": "Platform / Media",
+        "panels": [
+            ("Exporter targets up", "sum by (endpoint) (up{job=\"exportarr\"})", "timeseries", "short"),
+            ("Sonarr healthy", "max(sonarr_system_status{job=\"exportarr\"}) or vector(0)", "stat", "short"),
+            ("Radarr healthy", "max(radarr_system_status{job=\"exportarr\"}) or vector(0)", "stat", "short"),
+            ("Prowlarr healthy", "max(prowlarr_system_status{job=\"exportarr\"}) or vector(0)", "stat", "short"),
+            ("SABnzbd healthy", "max(sabnzbd_status{job=\"exportarr\"}) or vector(0)", "stat", "short"),
+            ("Sonarr queue", "sum(sonarr_queue_total{job=\"exportarr\"}) or vector(0)", "timeseries", "short"),
+            ("Radarr queue", "sum(radarr_queue_total{job=\"exportarr\"}) or vector(0)", "timeseries", "short"),
+            ("SABnzbd queue", "sum(sabnzbd_queue_length{job=\"exportarr\"}) or vector(0)", "timeseries", "short"),
+            ("SABnzbd download speed", "sum(sabnzbd_speed_bps{job=\"exportarr\"}) or vector(0)", "timeseries", "Bps"),
+        ],
+    },
 }
 
 

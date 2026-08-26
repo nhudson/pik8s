@@ -1,0 +1,29 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: exportarr
+  namespace: media
+  labels:
+    app.kubernetes.io/name: exportarr
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: exportarr
+  ports:
+    - name: sonarr
+      port: 9707
+      targetPort: sonarr
+      protocol: TCP
+    - name: radarr
+      port: 9708
+      targetPort: radarr
+      protocol: TCP
+    - name: prowlarr
+      port: 9709
+      targetPort: prowlarr
+      protocol: TCP
+    - name: sabnzbd
+      port: 9710
+      targetPort: sabnzbd
+      protocol: TCP

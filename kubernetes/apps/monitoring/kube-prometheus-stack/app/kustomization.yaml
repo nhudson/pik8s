@@ -8,6 +8,7 @@ resources:
   - ./grafana-dashboard-database.yaml
   - ./grafana-dashboard-delivery.yaml
   - ./grafana-dashboard-network.yaml
+  - ./grafana-dashboard-media.yaml
   - ./grafana-dashboard-platform.yaml
   - ./grafana-dashboard-storage.yaml
   - ./grafana-httproute.yaml
