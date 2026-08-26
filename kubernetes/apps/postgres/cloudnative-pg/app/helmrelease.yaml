@@ -31,3 +31,9 @@ spec:
       podMonitorEnabled: true
       grafanaDashboard:
         create: true
+        namespace: monitoring
+        configMapName: cnpg-grafana-dashboard
+        labels:
+          grafana_dashboard: "1"
+        sidecarLabel: ""
+        sidecarLabelValue: ""
