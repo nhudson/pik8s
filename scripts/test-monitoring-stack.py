@@ -54,7 +54,7 @@ class MonitoringStackTests(unittest.TestCase):
         self.assertIn("requests", prometheus["resources"])
         self.assertIn("limits", prometheus["resources"])
         self.assertEqual([], prometheus.get("remoteWrite", []))
-        self.assertFalse(values["grafana"]["enabled"])
+        self.assertTrue(values["grafana"]["enabled"])
         alertmanager = values["alertmanager"]["alertmanagerSpec"]
         self.assertEqual(2, alertmanager["replicas"])
         self.assertTrue(alertmanager["useExistingSecret"])
@@ -65,8 +65,9 @@ class MonitoringStackTests(unittest.TestCase):
 
     def test_external_secrets_emit_only_required_keys(self):
         contracts = {
-            "alertmanager-config": {"alertmanager.yaml", "bot_token"},
-            "hermes-alert-relay": {"webhook_url", "webhook_secret", "bearer_token"},
+            "alertmanager-config": ({"alertmanager.yaml", "bot_token"}, "monitoring-alerts"),
+            "grafana-admin": ({"admin-user", "admin-password"}, "grafana-admin"),
+            "hermes-alert-relay": ({"webhook_url", "webhook_secret", "bearer_token"}, "monitoring-alerts"),
         }
         for path in sorted(CREDENTIALS.glob("externalsecret-*.yaml")):
             resource = load(path)
@@ -76,9 +77,10 @@ class MonitoringStackTests(unittest.TestCase):
             self.assertEqual("1password", resource["spec"]["secretStoreRef"]["name"])
             self.assertEqual("ClusterSecretStore", resource["spec"]["secretStoreRef"]["kind"])
             self.assertEqual("Owner", target["creationPolicy"])
-            self.assertEqual({"monitoring-alerts"}, {item["extract"]["key"] for item in resource["spec"]["dataFrom"]})
-            self.assertEqual(contracts[name], set(target["template"]["data"]))
-        self.assertEqual(2, len(list(CREDENTIALS.glob("externalsecret-*.yaml"))))
+            expected_keys, expected_item = contracts[name]
+            self.assertEqual({expected_item}, {item["extract"]["key"] for item in resource["spec"]["dataFrom"]})
+            self.assertEqual(expected_keys, set(target["template"]["data"]))
+        self.assertEqual(3, len(list(CREDENTIALS.glob("externalsecret-*.yaml"))))
 
     def test_alertmanager_routes_to_telegram_and_authenticated_relay(self):
         resource = load(CREDENTIALS / "externalsecret-alertmanager.yaml")

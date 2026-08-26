@@ -11,6 +11,7 @@ python3 ./scripts/test-bootstrap-secrets.py
 python3 ./scripts/test-sops-retirement.py
 python3 ./scripts/test-github-protection.py
 python3 ./scripts/test-monitoring-stack.py
+python3 ./scripts/test-grafana-stack.py
 python3 ./scripts/validate-prometheus-rules.py
 
 kustomize_args=("--load-restrictor=LoadRestrictionsNone")

@@ -135,8 +135,106 @@ spec:
         monitor:
           enabled: true
     grafana:
-      enabled: false
+      enabled: true
+      replicas: 1
+      annotations:
+        secret.reloader.stakater.com/reload: grafana-admin
+      forceDeployDatasources: false
       forceDeployDashboards: false
+      defaultDashboardsEnabled: true
+      defaultDashboardsEditable: false
+      defaultDashboardsTimezone: browser
+      defaultDashboardsInterval: 1m
+      admin:
+        existingSecret: grafana-admin
+        userKey: admin-user
+        passwordKey: admin-password
+      assertNoLeakedSecrets: true
+      ingress:
+        enabled: false
+      persistence:
+        enabled: false
+        inMemory:
+          enabled: true
+          sizeLimit: 256Mi
+      initChownData:
+        enabled: false
+      plugins: []
+      enableServiceLinks: false
+      automountServiceAccountToken: true
+      serviceAccount:
+        create: true
+        automountServiceAccountToken: true
+      rbac:
+        create: false
+        namespaced: true
+        namespaces: [monitoring]
+      resources:
+        requests:
+          cpu: 100m
+          ephemeral-storage: 128Mi
+          memory: 256Mi
+        limits:
+          cpu: "1"
+          ephemeral-storage: 512Mi
+          memory: 1Gi
+      sidecar:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
+        dashboards:
+          enabled: true
+          label: grafana_dashboard
+          labelValue: "1"
+          searchNamespace: monitoring
+          resource: configmap
+          sizeLimit: 64Mi
+          provider:
+            allowUiUpdates: false
+        datasources:
+          enabled: true
+          defaultDatasourceEnabled: true
+          isDefaultDatasource: true
+          name: Prometheus
+          uid: prometheus
+          httpMethod: POST
+          defaultDatasourceScrapeInterval: 60s
+          searchNamespace: monitoring
+          resource: configmap
+          sizeLimit: 16Mi
+      serviceMonitor:
+        enabled: true
+      grafana.ini:
+        server:
+          domain: grafana.${SECRET_DOMAIN}
+          root_url: https://grafana.${SECRET_DOMAIN}
+          enforce_domain: true
+        users:
+          allow_sign_up: false
+          allow_org_create: false
+        auth.anonymous:
+          enabled: false
+        analytics:
+          reporting_enabled: false
+          check_for_updates: false
+          check_for_plugin_updates: false
+        news:
+          news_feed_enabled: false
+        security:
+          cookie_secure: true
+          cookie_samesite: strict
+          strict_transport_security: true
+          strict_transport_security_max_age_seconds: "31536000"
+          content_security_policy: true
+        dashboards:
+          versions_to_keep: 1
+        log:
+          mode: console
+          level: warn
     kube-state-metrics:
       fullnameOverride: kube-state-metrics
       prometheus:
