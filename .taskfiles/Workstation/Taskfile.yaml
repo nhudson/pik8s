@@ -53,9 +53,7 @@ tasks:
       - for:
           - budimanjojo/talhelper?as=talhelper&type=script
           - cloudflare/cloudflared?as=cloudflared&type=script
-          - FiloSottile/age?as=age&type=script
           - fluxcd/flux2?as=flux&type=script
-          - getsops/sops?as=sops&type=script
           - helmfile/helmfile?as=helmfile&type=script
           - jqlang/jq?as=jq&type=script
           - kubernetes-sigs/kustomize?as=kustomize&type=script

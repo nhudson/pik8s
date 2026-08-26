@@ -78,6 +78,8 @@ def execute(mode: str, runner: Any) -> dict[str, Any]:
         values = runner.item_values(contract["item"], contract["keys"])
         if set(values) != set(contract["keys"]):
             raise RuntimeError("provider item key set differs from bootstrap contract")
+        if any(not values[key] for key in contract["keys"]):
+            raise RuntimeError("provider item contains an empty bootstrap field")
         plans.append((contract, values))
 
     if mode == "apply":

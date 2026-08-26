@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import ipaddress
+import runpy
 from pathlib import Path
 
 import yaml
@@ -85,16 +86,12 @@ def main() -> None:
         "./helmrelease.yaml",
     }
 
-    encrypted_settings = yaml.safe_load(
-        (ROOT / "kubernetes/flux/vars/tailscale-settings.sops.yaml").read_text(encoding="utf-8")
-    )
-    encrypted_route = encrypted_settings["stringData"]["SECRET_INFRASTRUCTURE_CIDR"]
-    assert encrypted_settings["metadata"] == {
-        "name": "tailscale-settings",
-        "namespace": "flux-system",
-    }
-    assert encrypted_route.startswith("ENC[AES256_GCM,")
-    assert encrypted_settings["sops"]["encrypted_regex"] == "^(data|stringData)$"
+    assert not (ROOT / "kubernetes/flux/vars/tailscale-settings.sops.yaml").exists()
+    contracts = runpy.run_path(str(ROOT / "scripts/bootstrap-secrets.py"))["CONTRACTS"]
+    route_contract = next(contract for contract in contracts if contract["secret"] == "tailscale-settings")
+    assert route_contract["namespace"] == "flux-system"
+    assert route_contract["item"] == "tailscale-settings"
+    assert route_contract["keys"] == ("SECRET_INFRASTRUCTURE_CIDR",)
 
     flux_apps = yaml.safe_load((ROOT / "kubernetes/flux/apps.yaml").read_text(encoding="utf-8"))
     top_level_sources = flux_apps["spec"]["postBuild"]["substituteFrom"]

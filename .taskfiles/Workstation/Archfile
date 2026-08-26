@@ -1,4 +1,3 @@
-age
 cloudflared-bin
 direnv
 flux-bin
@@ -11,7 +10,6 @@ kubeconform
 kubectl-bin
 kustomize
 moreutils
-sops
 stern-bin
 talhelper-bin
 talosctl

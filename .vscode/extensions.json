@@ -6,7 +6,6 @@
         "mikestead.dotenv",
         "mitchdenny.ecdc",
         "redhat.ansible",
-        "signageos.signageos-vscode-sops",
         "will-stone.in-any-case",
         "EditorConfig.editorconfig",
         "PKief.material-icon-theme",

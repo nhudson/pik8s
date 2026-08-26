@@ -29,7 +29,6 @@ tasks:
     cmds:
       - task: :ansible:.reset
       - task: :kubernetes:.reset
-      - task: :sops:.reset
       - task: :talos:.reset
 
   force-reset:

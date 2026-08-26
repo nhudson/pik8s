@@ -70,16 +70,11 @@ jobs:
         shell: bash
         run: task workstation:direnv
 
-      - name: Run Sops Age key task
-        shell: bash
-        run: task sops:age-keygen
-
       - name: Run init tasks
         shell: bash
         run: |
           task init
           cp ./.github/tests/config-${{ matrix.config-files }}.yaml ./config.yaml
-          export BOOTSTRAP_AGE_PUBLIC_KEY=$(sed -n 's/# public key: //gp' age.key)
           envsubst < ./config.yaml | sponge ./config.yaml
 
       - name: Run configure task

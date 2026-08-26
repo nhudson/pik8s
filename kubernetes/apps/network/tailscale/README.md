@@ -98,10 +98,11 @@ after reviewing them. Never approve any additional advertised route. The
 existing OAuth client scopes remain unchanged; `tag:k8s-operator` ownership of
 the two workload tags lets the operator create only those tagged devices.
 
-The route is SOPS-encrypted in `tailscale-settings.sops.yaml` and becomes a Flux
-post-build substitution only in-cluster. To change it, use SOPS with the
-repository age recipient; never put the decrypted value in a command argument,
-Git diff, issue, or pull request.
+The route is a bootstrap-only 1Password item field restored into the
+`tailscale-settings` Flux substitution by `scripts/bootstrap-secrets.py`. To
+change it, update the concealed recovery field, run the helper's value-safe
+`check` and `apply` modes, and never put the value in a command argument, Git
+diff, issue, or pull request.
 
 Restricted DNS is also an owner action. If internal names are required, add a
 split-DNS nameserver for `<INTERNAL_DOMAIN>` pointing to

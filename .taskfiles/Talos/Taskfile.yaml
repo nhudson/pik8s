@@ -4,7 +4,7 @@ version: "3"
 
 vars:
   TALOS_DIR: "{{.KUBERNETES_DIR}}/bootstrap/talos"
-  TALHELPER_SECRET_FILE: "{{.TALOS_DIR}}/talsecret.sops.yaml"
+  TALHELPER_SECRET_FILE: "{{.PRIVATE_DIR}}/talsecret.yaml"
   TALHELPER_CONFIG_FILE: "{{.TALOS_DIR}}/talconfig.yaml"
 
 env:
@@ -27,11 +27,7 @@ tasks:
   bootstrap-gensecret:
     desc: Generate the Talos secrets
     dir: "{{.TALOS_DIR}}"
-    cmds:
-      - talhelper gensecret > {{.TALHELPER_SECRET_FILE}}
-      - task: :sops:.encrypt-file
-        vars:
-          file: "{{.TALHELPER_SECRET_FILE}}"
+    cmd: mkdir -p {{.PRIVATE_DIR}} && umask 077 && talhelper gensecret > {{.TALHELPER_SECRET_FILE}}
     preconditions:
       - { msg: "Missing talhelper config file", sh: "test -f {{.TALHELPER_CONFIG_FILE}}" }
     status:
