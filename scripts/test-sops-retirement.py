@@ -4,6 +4,9 @@ from __future__ import annotations
 
 import pathlib
 import re
+import shutil
+import subprocess
+import tempfile
 import unittest
 import yaml
 
@@ -82,6 +85,32 @@ class SopsRetirementTests(unittest.TestCase):
         provider_resources = yaml.safe_load((ROOT / "kubernetes/apps/security/external-secrets/app/kustomization.yaml").read_text())["resources"]
         self.assertEqual(["./cluster-settings.yaml"], root_resources)
         self.assertEqual(["./helmrelease.yaml"], provider_resources)
+
+    def test_flux_diff_generates_value_free_bootstrap_substitution_stubs(self):
+        script = ROOT / "scripts/prepare-flux-diff-bootstrap.py"
+        workflow = (ROOT / ".github/workflows/flux-diff.yaml").read_text()
+        self.assertTrue(script.exists())
+        self.assertIn("prepare-flux-diff-bootstrap.py pull", workflow)
+        self.assertIn("prepare-flux-diff-bootstrap.py default", workflow)
+        with tempfile.TemporaryDirectory() as directory:
+            checkout = pathlib.Path(directory)
+            target = checkout / "kubernetes/flux/vars"
+            target.mkdir(parents=True)
+            shutil.copy(ROOT / "kubernetes/flux/vars/kustomization.yaml", target)
+            with (target / "kustomization.yaml").open("a") as stream:
+                stream.write("  - ./cluster-secrets.sops.yaml\n  - ./tailscale-settings.sops.yaml\n")
+            subprocess.run(["python3", str(script), str(checkout)], check=True)
+            subprocess.run(["python3", str(script), str(checkout)], check=True)
+            resources = yaml.safe_load((target / "kustomization.yaml").read_text())["resources"]
+            self.assertEqual(["./cluster-settings.yaml", "./ci-bootstrap-substitutions.yaml"], resources)
+            documents = list(yaml.safe_load_all((target / "ci-bootstrap-substitutions.yaml").read_text()))
+            self.assertEqual(["cluster-secrets", "tailscale-settings"], [doc["metadata"]["name"] for doc in documents])
+            self.assertEqual(
+                {"SECRET_ACME_EMAIL", "SECRET_CLOUDFLARE_ACCOUNT_ID", "SECRET_CLOUDFLARE_TUNNEL_ID", "SECRET_DOMAIN"},
+                set(documents[0]["stringData"]),
+            )
+            self.assertEqual({"SECRET_INFRASTRUCTURE_CIDR"}, set(documents[1]["stringData"]))
+            self.assertTrue(all(value.startswith(".PLACEHOLDER_") and value.endswith(".") for doc in documents for value in doc["stringData"].values()))
 
 
 if __name__ == "__main__":
