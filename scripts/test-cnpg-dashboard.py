@@ -15,7 +15,7 @@ import yaml
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 RELEASE = ROOT / "kubernetes/apps/postgres/cloudnative-pg/app/helmrelease.yaml"
-CHART_URL = "https://cloudnative-pg.github.io/charts/cloudnative-pg-0.29.0.tgz"
+CHART_URL = "https://github.com/cloudnative-pg/charts/releases/download/cloudnative-pg-v0.29.0/cloudnative-pg-0.29.0.tgz"
 CHART_SHA256 = "668e065ff53508d58238788fd35b355a925060843629a951df0e6a9362e6d32f"
 
 
@@ -51,7 +51,8 @@ class CloudNativePGDashboardTests(unittest.TestCase):
     def test_exact_pinned_chart_renders_one_discoverable_official_dashboard(self):
         archive = pathlib.Path(tempfile.gettempdir()) / "cloudnative-pg-0.29.0.tgz"
         if not archive.exists() or hashlib.sha256(archive.read_bytes()).hexdigest() != CHART_SHA256:
-            archive.write_bytes(urllib.request.urlopen(CHART_URL, timeout=30).read())
+            with urllib.request.urlopen(CHART_URL, timeout=30) as response:
+                archive.write_bytes(response.read())
         self.assertEqual(CHART_SHA256, hashlib.sha256(archive.read_bytes()).hexdigest())
         release = yaml.safe_load(RELEASE.read_text())
         with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml") as values:
