@@ -107,6 +107,8 @@ class MediaExportarrTests(unittest.TestCase):
         self.assertEqual("platform-media", payload["uid"])
         self.assertFalse(payload["editable"])
         expressions = "\n".join(target["expr"] for panel in payload["panels"] for target in panel.get("targets", []))
+        self.assertIn('max by (endpoint) (up{job="exportarr"})', expressions)
+        self.assertNotIn('sum by (endpoint) (up{job="exportarr"})', expressions)
         for metric in ("sonarr_system_status", "radarr_system_status", "prowlarr_system_status", "sabnzbd_status", "sabnzbd_queue_length"):
             self.assertIn(metric, expressions)
         for expression in expressions.splitlines():

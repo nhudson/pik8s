@@ -80,7 +80,7 @@ DASHBOARDS = {
         "uid": "platform-media",
         "title": "Platform / Media",
         "panels": [
-            ("Exporter targets up", "sum by (endpoint) (up{job=\"exportarr\"})", "timeseries", "short"),
+            ("Exporter targets up", "max by (endpoint) (up{job=\"exportarr\"})", "timeseries", "short"),
             ("Sonarr healthy", "max(sonarr_system_status{job=\"exportarr\"}) or vector(0)", "stat", "short"),
             ("Radarr healthy", "max(radarr_system_status{job=\"exportarr\"}) or vector(0)", "stat", "short"),
             ("Prowlarr healthy", "max(prowlarr_system_status{job=\"exportarr\"}) or vector(0)", "stat", "short"),
