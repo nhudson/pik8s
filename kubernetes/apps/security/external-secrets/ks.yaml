@@ -25,6 +25,8 @@ metadata:
   name: &cluster-secret-store external-secrets-cluster-secret-store
   namespace: flux-system
 spec:
+  dependsOn:
+    - name: external-secrets
   commonMetadata:
     labels:
       app.kubernetes.io/name: *cluster-secret-store
