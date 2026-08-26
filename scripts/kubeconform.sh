@@ -6,7 +6,7 @@ KUBERNETES_DIR=$1
 
 [[ -z "${KUBERNETES_DIR}" ]] && echo "Kubernetes location not specified" && exit 1
 
-ruby ./scripts/test-external-secret-ownership-handoff.rb "${KUBERNETES_DIR}"
+ruby ./scripts/test-external-secret-finalized.rb "${KUBERNETES_DIR}"
 
 kustomize_args=("--load-restrictor=LoadRestrictionsNone")
 kustomize_config="kustomization.yaml"
