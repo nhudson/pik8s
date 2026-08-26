@@ -14,6 +14,7 @@ python3 ./scripts/test-monitoring-stack.py
 python3 ./scripts/test-grafana-stack.py
 python3 ./scripts/test-flux-monitoring.py
 python3 ./scripts/test-observability-dashboards.py
+python3 ./scripts/test-storage-observability.py
 python3 ./scripts/validate-prometheus-rules.py
 
 kustomize_args=("--load-restrictor=LoadRestrictionsNone")

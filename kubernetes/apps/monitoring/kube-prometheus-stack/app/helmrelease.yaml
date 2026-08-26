@@ -131,6 +131,11 @@ spec:
           memory: 512Mi
     prometheus-node-exporter:
       fullnameOverride: node-exporter
+      extraArgs:
+        - --collector.mountstats
+      hostRootFsMount:
+        enabled: true
+        mountPropagation: HostToContainer
       prometheus:
         monitor:
           enabled: true
