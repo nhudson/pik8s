@@ -28,7 +28,7 @@ spec:
       cpu: 500m
       memory: 1024Mi
   monitoring:
-    enablePodMonitor: false
+    enablePodMonitor: true
   plugins:
     - name: barman-cloud.cloudnative-pg.io
       isWALArchiver: true

@@ -1,0 +1,110 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: platform-alerts
+  labels:
+    app.kubernetes.io/part-of: monitoring
+spec:
+  groups:
+    - name: gitops-and-secrets
+      rules:
+        - alert: FluxReconciliationFailure
+          expr: gotk_resource_info{ready!="True"} == 1
+          for: 10m
+          labels:
+            severity: critical
+          annotations:
+            summary: A Flux resource is not Ready.
+            description: A GitOps resource has remained non-Ready for more than ten minutes.
+            runbook_url: https://github.com/nhudson/pik8s/blob/main/docs/runbooks/monitoring/README.md#flux-reconciliation-failure
+        - alert: ExternalSecretNotReady
+          expr: external_secret_info{ready!="True"} == 1
+          for: 10m
+          labels:
+            severity: critical
+          annotations:
+            summary: An ExternalSecret is not Ready.
+            description: A secret synchronization resource has remained non-Ready for more than ten minutes.
+            runbook_url: https://github.com/nhudson/pik8s/blob/main/docs/runbooks/monitoring/README.md#external-secret-not-ready
+        - alert: TailscaleResourceNotReady
+          expr: tailscale_resource_info{ready!="True"} == 1
+          for: 10m
+          labels:
+            severity: critical
+          annotations:
+            summary: A Tailscale access resource is not Ready.
+            description: A Connector or API proxy group has remained non-Ready for more than ten minutes.
+            runbook_url: https://github.com/nhudson/pik8s/blob/main/docs/runbooks/monitoring/README.md#tailscale-resource-not-ready
+    - name: storage-and-backups
+      rules:
+        - alert: CloudNativePGBackupStale
+          expr: |-
+            (time() - cnpg_collector_last_available_backup_timestamp) > 90000
+            or absent(cnpg_collector_last_available_backup_timestamp)
+          for: 15m
+          labels:
+            severity: critical
+          annotations:
+            summary: The latest database backup is stale.
+            description: CloudNativePG has not reported an available backup within the expected recovery window.
+            runbook_url: https://github.com/nhudson/pik8s/blob/main/docs/runbooks/monitoring/README.md#cloudnativepg-backup-stale
+        - alert: NFSVolumeUnavailable
+          expr: kube_persistentvolumeclaim_status_phase{storageclass="nfs",phase=~"Lost|Pending"} > 0
+          for: 10m
+          labels:
+            severity: critical
+          annotations:
+            summary: An NFS-backed claim is not Bound.
+            description: A persistent volume claim using shared storage is Lost or Pending.
+            runbook_url: https://github.com/nhudson/pik8s/blob/main/docs/runbooks/monitoring/README.md#nfs-volume-unavailable
+    - name: workloads
+      rules:
+        - alert: DNSResolverUnavailable
+          expr: |-
+            kube_deployment_status_replicas_available{namespace="network",deployment="k8s-gateway"} < 1
+            or absent(kube_deployment_status_replicas_available{namespace="network",deployment="k8s-gateway"})
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: The internal DNS resolver is unavailable.
+            description: The internal DNS deployment has no available replica.
+            runbook_url: https://github.com/nhudson/pik8s/blob/main/docs/runbooks/monitoring/README.md#dns-resolver-unavailable
+        - alert: CertificateExpiringSoon
+          expr: min by (name, namespace) (certmanager_certificate_expiration_timestamp_seconds - time()) < 604800
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: A managed certificate expires within seven days.
+            description: A certificate managed by cert-manager is inside the warning window.
+            runbook_url: https://github.com/nhudson/pik8s/blob/main/docs/runbooks/monitoring/README.md#certificate-expiring-soon
+        - alert: CloudflareTunnelUnavailable
+          expr: |-
+            kube_deployment_status_replicas_available{namespace="network",deployment="cloudflared"} < 1
+            or absent(kube_deployment_status_replicas_available{namespace="network",deployment="cloudflared"})
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: All tunnel replicas are unavailable.
+            description: The external tunnel deployment has no available replica.
+            runbook_url: https://github.com/nhudson/pik8s/blob/main/docs/runbooks/monitoring/README.md#cloudflare-tunnel-unavailable
+        - alert: CriticalWorkloadUnavailable
+          expr: |-
+            kube_deployment_status_replicas_available{deployment!~"k8s-gateway|cloudflared"}
+              < kube_deployment_spec_replicas{deployment!~"k8s-gateway|cloudflared"}
+            or (
+              kube_deployment_spec_replicas{deployment!~"k8s-gateway|cloudflared"}
+              unless on (namespace, deployment)
+              kube_deployment_status_replicas_available{deployment!~"k8s-gateway|cloudflared"}
+            )
+            or absent(kube_deployment_spec_replicas)
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: A deployment has unavailable replicas.
+            description: A deployment has not met its desired available replica count for fifteen minutes.
+            runbook_url: https://github.com/nhudson/pik8s/blob/main/docs/runbooks/monitoring/README.md#critical-workload-unavailable

@@ -1,0 +1,90 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hermes-alert-relay
+  annotations:
+    secret.reloader.stakater.com/reload: hermes-alert-relay
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: hermes-alert-relay
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: hermes-alert-relay
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: hermes-alert-relay
+              topologyKey: kubernetes.io/hostname
+      containers:
+        - name: relay
+          # renovate: datasource=docker depName=python
+          image: docker.io/library/python:3.13-alpine@sha256:540c7d91f98ff6880174c40e99067bf5941eb54d818a7a5e094d188b196a934d
+          command: [python3, /app/relay.py]
+          env:
+            - name: HERMES_WEBHOOK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: hermes-alert-relay
+                  key: webhook_url
+            - name: HERMES_WEBHOOK_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: hermes-alert-relay
+                  key: webhook_secret
+            - name: RELAY_BEARER_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hermes-alert-relay
+                  key: bearer_token
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - name: script
+              mountPath: /app
+              readOnly: true
+      volumes:
+        - name: script
+          configMap:
+            name: hermes-alert-relay
+            defaultMode: 0555

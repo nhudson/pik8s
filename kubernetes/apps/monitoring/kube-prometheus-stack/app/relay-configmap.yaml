@@ -1,0 +1,89 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hermes-alert-relay
+data:
+  relay.py: |-
+    #!/usr/bin/env python3
+    import hashlib
+    import hmac
+    import json
+    import os
+    import time
+    import urllib.error
+    import urllib.request
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
+    MAX_BODY = 1_048_576
+
+    class Handler(BaseHTTPRequestHandler):
+        def log_message(self, _format, *_args):
+            return
+
+        def reply(self, status, payload):
+            body = json.dumps(payload, separators=(",", ":")).encode()
+            self.send_response(status)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+        def do_GET(self):
+            if self.path != "/health":
+                self.reply(404, {"status": "not-found"})
+                return
+            self.reply(200, {"status": "ok"})
+
+        def do_POST(self):
+            if self.path != "/alerts":
+                self.reply(404, {"status": "not-found"})
+                return
+            try:
+                size = int(self.headers.get("Content-Length", "0"))
+            except ValueError:
+                self.reply(400, {"status": "invalid-length"})
+                return
+            if size <= 0 or size > MAX_BODY:
+                self.reply(413, {"status": "invalid-size"})
+                return
+            expected = "Bearer " + os.environ["RELAY_BEARER_TOKEN"]
+            if not hmac.compare_digest(self.headers.get("Authorization", ""), expected):
+                self.reply(401, {"status": "unauthorized"})
+                return
+            body = self.rfile.read(size)
+            try:
+                parsed = json.loads(body)
+            except json.JSONDecodeError:
+                self.reply(400, {"status": "invalid-json"})
+                return
+            if not isinstance(parsed, dict) or not isinstance(parsed.get("alerts"), list):
+                self.reply(400, {"status": "invalid-payload"})
+                return
+            timestamp = str(int(time.time()))
+            signed = timestamp.encode() + b"." + body
+            signature = hmac.new(
+                os.environ["HERMES_WEBHOOK_SECRET"].encode(), signed, hashlib.sha256
+            ).hexdigest()
+            delivery = hashlib.sha256(body).hexdigest()
+            request = urllib.request.Request(
+                os.environ["HERMES_WEBHOOK_URL"],
+                data=body,
+                method="POST",
+                headers={
+                    "Content-Type": "application/json",
+                    "X-Webhook-Timestamp": timestamp,
+                    "X-Webhook-Signature-V2": signature,
+                    "X-Request-ID": delivery,
+                },
+            )
+            try:
+                with urllib.request.urlopen(request, timeout=15) as response:
+                    if response.status < 200 or response.status >= 300:
+                        raise RuntimeError("unexpected webhook response")
+            except (OSError, urllib.error.HTTPError, RuntimeError):
+                self.reply(502, {"status": "upstream-failed"})
+                return
+            self.reply(202, {"status": "accepted"})
+
+    ThreadingHTTPServer(("0.0.0.0", 8080), Handler).serve_forever()
