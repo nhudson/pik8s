@@ -100,6 +100,22 @@ def main() -> None:
     nested_sources = nested_patch["spec"]["postBuild"]["substituteFrom"]
     assert {source["name"] for source in nested_sources} >= {"tailscale-settings"}
 
+    runbook = (ROOT / "kubernetes/apps/network/tailscale/README.md").read_text(encoding="utf-8").lower()
+    failure_tests = runbook.split("### failure tests", 1)[1].split("## rollback", 1)[0]
+    for required in (
+        "forced through tailscale",
+        "--accept-routes=true",
+        "primary router remains unavailable",
+        "client route to move",
+        "tailscale ping --tsmp",
+        "regular lan probe is invalid",
+        "record every node",
+        "restore node schedulability",
+        "even if the probe fails",
+        "--accept-routes=false",
+    ):
+        assert required in failure_tests, f"HA failure runbook is missing: {required}"
+
     print("PASS: Tailscale API proxy, impersonation, route indirection, and HA contracts")
 
 

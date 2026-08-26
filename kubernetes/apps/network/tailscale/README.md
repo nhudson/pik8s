@@ -143,7 +143,8 @@ approved. No tailnet policy, route, or DNS change is applied by Flux.
 
 ### Off-site authorization test
 
-From an approved identity on a genuinely off-site connection:
+From an approved identity on a genuinely off-site connection, or from a test
+client explicitly forced through Tailscale rather than its local LAN route:
 
 ```sh
 tailscale configure kubeconfig <API_PROXY_URL>
@@ -161,12 +162,32 @@ addresses, kubeconfig content, or identity names into public artifacts.
 
 ### Failure tests
 
-1. Record the two Connector pod names and nodes from the label query above.
-2. Delete one Connector pod. While it is unavailable, repeat the off-site
-   infrastructure probe and confirm it succeeds through the remaining replica.
-3. Wait for the replacement to become Ready and confirm required anti-affinity
-   places it on a different eligible node from its peer.
-4. Scale the `operator` Deployment in `network` to zero. Confirm existing API
+All path probes in this section must be forced through Tailscale. A local-LAN
+success is not evidence of tailnet availability.
+
+1. Create a temporary API-proxy kubeconfig outside the repository. Confirm pod
+   reads succeed while Secret reads and pod creation are denied.
+2. Delete one API ProxyGroup pod. Repeat an API read before the replacement is
+   Ready, then verify both replicas recover on distinct nodes.
+3. On a Linux test client that normally ignores subnet routes, record the
+   current preference and temporarily run `tailscale set --accept-routes=true`.
+   Always restore it with `tailscale set --accept-routes=false` afterward.
+4. Record the two Connector pods, nodes, and which tailnet device currently
+   carries the overlapping route. A pod that immediately reconnects the same
+   device does not prove failover.
+5. Ensure the primary router remains unavailable long enough for the coordination
+   plane to select the second router. For a controlled cluster test, temporarily
+   prevent the failed ordinal from scheduling while leaving the surviving
+   Connector replica running. Record every node whose scheduling state changes,
+   and use a cleanup trap to restore those nodes and the client's original route
+   preference even if the probe fails. Do not evict unrelated workloads.
+6. Wait for the client route to move to the surviving router, then run a
+   Tailscale-layer probe such as `tailscale ping --tsmp <SUBNET_TARGET>`. A
+   regular LAN probe is invalid because it can bypass Tailscale.
+7. Restore node schedulability and the client's original route preference.
+   Wait for both Connector replicas to become Ready on distinct nodes and
+   verify that no temporary kubeconfig or test resource remains.
+8. Scale the `operator` Deployment in `network` to zero. Confirm existing API
    and Connector proxies continue serving traffic while CR status stops
    reconciling. Scale it back to one, wait for availability, and confirm all
    three custom resources return to Ready. Do not leave the Deployment scaled.
@@ -175,7 +196,8 @@ addresses, kubeconfig content, or identity names into public artifacts.
 
 Revert the access-enabling commit and merge the revert. Flux will prune the
 `Connector`, `ProxyGroup`, and `ProxyClass`, disable impersonation RBAC in the
-chart, and remove the encrypted route Secret. Confirm the workload devices and
+chart, while the bootstrap-only route substitution remains available for
+recovery or a later approved Connector. Confirm workload devices and the
 advertised route disappear before removing the approved `grants`,
 `autoApprovers`, and workload `tagOwners` entries in the Tailscale policy. Remove
 split DNS only if it was introduced solely for this access path. Do not revoke
