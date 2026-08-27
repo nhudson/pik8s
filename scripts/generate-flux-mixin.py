@@ -35,6 +35,7 @@ def dashboard_resource() -> dict:
     dashboard = json.loads(fetch(DASHBOARD_URL, DASHBOARD_SOURCE_SHA256))
     if dashboard.get("uid") != "flux-cluster" or dashboard.get("title") != "Flux Cluster Stats":
         raise SystemExit("unexpected Flux cluster dashboard identity")
+    dashboard = json.loads(json.dumps(dashboard).replace("${DS_PROMETHEUS}", "$${DS_PROMETHEUS}"))
     dashboard["editable"] = False
     dashboard["tags"] = sorted(set(dashboard.get("tags", [])) | {"flux", "mixin"})
     rendered = json.dumps(dashboard, sort_keys=True, separators=(",", ":")).encode()
