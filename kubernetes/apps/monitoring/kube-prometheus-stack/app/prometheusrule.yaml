@@ -40,8 +40,13 @@ spec:
       rules:
         - alert: CloudNativePGBackupStale
           expr: |-
-            (time() - cnpg_collector_last_available_backup_timestamp) > 90000
-            or absent(cnpg_collector_last_available_backup_timestamp)
+            (time() - max by (namespace, job) (barman_cloud_cloudnative_pg_io_last_available_backup_timestamp)) > 90000
+            or (
+              max by (namespace, job) (cnpg_collector_up)
+              unless on (namespace, job)
+              max by (namespace, job) (barman_cloud_cloudnative_pg_io_last_available_backup_timestamp)
+            )
+            or absent(cnpg_collector_up)
           for: 15m
           labels:
             severity: critical

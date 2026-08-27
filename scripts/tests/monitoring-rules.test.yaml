@@ -80,3 +80,59 @@ tests:
       - eval_time: 20m
         alertname: CriticalWorkloadUnavailable
         exp_alerts: []
+  - interval: 1m
+    input_series:
+      - series: 'cnpg_collector_up{namespace="postgres",job="postgres/database",pod="database-1"}'
+        values: '1x30'
+      - series: 'cnpg_collector_up{namespace="postgres",job="postgres/database",pod="database-2"}'
+        values: '1x30'
+      - series: 'barman_cloud_cloudnative_pg_io_last_available_backup_timestamp{namespace="postgres",job="postgres/database",pod="database-1"}'
+        values: '0+60x30'
+      - series: 'barman_cloud_cloudnative_pg_io_last_available_backup_timestamp{namespace="postgres",job="postgres/database",pod="database-2"}'
+        values: '0+60x30'
+    alert_rule_test:
+      - eval_time: 30m
+        alertname: CloudNativePGBackupStale
+        exp_alerts: []
+  - interval: 1m
+    input_series:
+      - series: 'cnpg_collector_up{namespace="postgres",job="postgres/database",pod="database-1"}'
+        values: '1x1800'
+      - series: 'cnpg_collector_up{namespace="postgres",job="postgres/database",pod="database-2"}'
+        values: '1x1800'
+      - series: 'barman_cloud_cloudnative_pg_io_last_available_backup_timestamp{namespace="postgres",job="postgres/database",pod="database-1"}'
+        values: '1x1800'
+      - series: 'barman_cloud_cloudnative_pg_io_last_available_backup_timestamp{namespace="postgres",job="postgres/database",pod="database-2"}'
+        values: '1x1800'
+    alert_rule_test:
+      - eval_time: 30h
+        alertname: CloudNativePGBackupStale
+        exp_alerts:
+          - exp_labels:
+              job: postgres/database
+              namespace: postgres
+              severity: critical
+            exp_annotations:
+              summary: The latest database backup is stale.
+              description: CloudNativePG has not reported an available backup within the expected recovery window.
+              runbook_url: https://github.com/nhudson/pik8s/blob/main/docs/runbooks/monitoring/README.md#cloudnativepg-backup-stale
+  - interval: 1m
+    input_series:
+      - series: 'cnpg_collector_up{namespace="postgres",job="postgres/first",pod="first-1"}'
+        values: '1x30'
+      - series: 'cnpg_collector_up{namespace="postgres",job="postgres/second",pod="second-1"}'
+        values: '1x30'
+      - series: 'barman_cloud_cloudnative_pg_io_last_available_backup_timestamp{namespace="postgres",job="postgres/first",pod="first-1"}'
+        values: '0+60x30'
+    alert_rule_test:
+      - eval_time: 30m
+        alertname: CloudNativePGBackupStale
+        exp_alerts:
+          - exp_labels:
+              job: postgres/second
+              namespace: postgres
+              severity: critical
+            exp_annotations:
+              summary: The latest database backup is stale.
+              description: CloudNativePG has not reported an available backup within the expected recovery window.
+              runbook_url: https://github.com/nhudson/pik8s/blob/main/docs/runbooks/monitoring/README.md#cloudnativepg-backup-stale
