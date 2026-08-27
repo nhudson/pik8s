@@ -93,6 +93,19 @@ class MonitoringStackTests(unittest.TestCase):
         self.assertIn("credentials:", config)
         self.assertIn("hermes-alert-relay.monitoring.svc.cluster.local", config)
         self.assertNotRegex(config, r"\b\d{8,}\b")
+        rendered = re.sub(r"\{\{[^}]+\}\}", "1", config)
+        routes = yaml.safe_load(rendered)["route"]["routes"]
+        noisy_matchers = {
+            'alertname="CPUThrottlingHigh"',
+            'namespace="monitoring"',
+            'container="grafana-sc-dashboard"',
+        }
+        matches = [route for route in routes if set(route.get("matchers", [])) == noisy_matchers]
+        self.assertEqual(1, len(matches))
+        self.assertEqual(3, len(matches[0]["matchers"]))
+        self.assertEqual(matches[0], routes[0])
+        self.assertEqual("discard", matches[0]["receiver"])
+        self.assertFalse(matches[0].get("continue", False))
 
     def test_relay_is_replicated_hardened_and_network_restricted(self):
         deployment = load(APP / "relay-deployment.yaml")
