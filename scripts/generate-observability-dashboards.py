@@ -21,7 +21,7 @@ DASHBOARDS = {
             ("Database size by database", "max by (datname) (cnpg_pg_database_size_bytes{datname!~\"template0|template1\"})", "timeseries", "bytes"),
             ("Active backends", "sum(cnpg_backends_total)", "timeseries", "short"),
             ("WAL generation", "sum(rate(cnpg_collector_wal_bytes[5m]))", "timeseries", "Bps"),
-            ("Latest backup age", "time() - max(cnpg_collector_last_available_backup_timestamp)", "timeseries", "s"),
+            ("Latest backup age", "time() - max by (namespace, job) (barman_cloud_cloudnative_pg_io_last_available_backup_timestamp)", "timeseries", "s"),
             ("Archive failures", "sum(increase(cnpg_pg_stat_archiver_failed_count[1h]))", "timeseries", "short"),
         ],
     },

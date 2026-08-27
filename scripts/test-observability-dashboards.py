@@ -12,7 +12,7 @@ import yaml
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 APP = ROOT / "kubernetes/apps/monitoring/kube-prometheus-stack/app"
 EXPECTED = {
-    "grafana-dashboard-database.yaml": ("platform-database", {"cnpg_collector_up", "cnpg_pg_replication_lag", "cnpg_pg_database_size_bytes", "cnpg_collector_last_available_backup_timestamp"}),
+    "grafana-dashboard-database.yaml": ("platform-database", {"cnpg_collector_up", "cnpg_pg_replication_lag", "cnpg_pg_database_size_bytes", "barman_cloud_cloudnative_pg_io_last_available_backup_timestamp"}),
     "grafana-dashboard-network.yaml": ("platform-network", {"cilium_drop_count_total", "cilium_endpoint_state", "hubble_flows_processed_total", "hubble_lost_events_total"}),
     "grafana-dashboard-control-plane.yaml": ("platform-control-plane", {"certmanager_certificate_expiration_timestamp_seconds", "externalsecret_sync_calls_error", "external_dns_source_errors_total", "cloudflared_tunnel_ha_connections", "reloader_reload_executed_total"}),
     "grafana-dashboard-delivery.yaml": ("platform-alert-delivery", {"ALERTS", "alertmanager_notifications_total", "alertmanager_notifications_failed_total"}),
@@ -33,6 +33,8 @@ class ObservabilityDashboardTests(unittest.TestCase):
             expressions = "\n".join(target["expr"] for panel in payload["panels"] for target in panel.get("targets", []))
             for metric in metrics:
                 self.assertIn(metric, expressions)
+            if uid == "platform-database":
+                self.assertIn("max by (namespace, job) (barman_cloud_cloudnative_pg_io_last_available_backup_timestamp)", expressions)
             for panel in payload["panels"]:
                 self.assertEqual("prometheus", panel["datasource"]["uid"])
 
