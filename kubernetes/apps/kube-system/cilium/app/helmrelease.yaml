@@ -110,6 +110,9 @@ spec:
         trustCRDsExist: true
     dashboards:
       enabled: true
+      namespace: monitoring
+      label: grafana_dashboard
+      labelValue: "1"
       annotations:
         grafana_folder: Cilium
     rollOutCiliumPods: true
