@@ -136,3 +136,29 @@ tests:
               summary: The latest database backup is stale.
               description: CloudNativePG has not reported an available backup within the expected recovery window.
               runbook_url: https://github.com/nhudson/pik8s/blob/main/docs/runbooks/monitoring/README.md#cloudnativepg-backup-stale
+  - interval: 1m
+    input_series:
+      - series: 'gotk_resource_info{exported_namespace="flux-system",customresource_kind="Kustomization",name="broken",ready="False"}'
+        values: '1x20'
+    alert_rule_test:
+      - eval_time: 20m
+        alertname: FluxReconciliationFailure
+        exp_alerts:
+          - exp_labels:
+              customresource_kind: Kustomization
+              exported_namespace: flux-system
+              name: broken
+              ready: "False"
+              severity: critical
+            exp_annotations:
+              summary: A Flux resource is not Ready.
+              description: A GitOps resource has remained non-Ready for more than ten minutes.
+              runbook_url: https://github.com/nhudson/pik8s/blob/main/docs/runbooks/monitoring/README.md#flux-reconciliation-failure
+  - interval: 1m
+    input_series:
+      - series: 'gotk_resource_info{exported_namespace="flux-system",customresource_kind="Kustomization",name="healthy",ready="True"}'
+        values: '1x20'
+    alert_rule_test:
+      - eval_time: 20m
+        alertname: FluxReconciliationFailure
+        exp_alerts: []

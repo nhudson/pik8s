@@ -306,6 +306,57 @@ spec:
                       suspended: [spec, suspend]
                       revision: [status, artifact, revision]
               - groupVersionKind:
+                  group: source.toolkit.fluxcd.io
+                  version: v1
+                  kind: HelmRepository
+                metricNamePrefix: gotk
+                metrics:
+                  - name: resource_info
+                    help: Flux HelmRepository readiness information.
+                    each:
+                      type: Info
+                      info:
+                        labelsFromPath:
+                          name: [metadata, name]
+                    labelsFromPath:
+                      exported_namespace: [metadata, namespace]
+                      ready: [status, conditions, "[type=Ready]", status]
+                      suspended: [spec, suspend]
+              - groupVersionKind:
+                  group: source.toolkit.fluxcd.io
+                  version: v1
+                  kind: OCIRepository
+                metricNamePrefix: gotk
+                metrics:
+                  - name: resource_info
+                    help: Flux OCIRepository readiness information.
+                    each:
+                      type: Info
+                      info:
+                        labelsFromPath:
+                          name: [metadata, name]
+                    labelsFromPath:
+                      exported_namespace: [metadata, namespace]
+                      ready: [status, conditions, "[type=Ready]", status]
+                      suspended: [spec, suspend]
+              - groupVersionKind:
+                  group: source.toolkit.fluxcd.io
+                  version: v1
+                  kind: Bucket
+                metricNamePrefix: gotk
+                metrics:
+                  - name: resource_info
+                    help: Flux Bucket readiness information.
+                    each:
+                      type: Info
+                      info:
+                        labelsFromPath:
+                          name: [metadata, name]
+                    labelsFromPath:
+                      exported_namespace: [metadata, namespace]
+                      ready: [status, conditions, "[type=Ready]", status]
+                      suspended: [spec, suspend]
+              - groupVersionKind:
                   group: external-secrets.io
                   version: v1
                   kind: ExternalSecret
@@ -353,17 +404,18 @@ spec:
                       ready: [status, conditions, "[type=ProxyGroupReady]", status]
       rbac:
         extraRules:
-          - apiGroups:
-              - source.toolkit.fluxcd.io
-              - kustomize.toolkit.fluxcd.io
-              - helm.toolkit.fluxcd.io
-              - external-secrets.io
-              - tailscale.com
-            resources:
-              - gitrepositories
-              - kustomizations
-              - helmreleases
-              - externalsecrets
-              - connectors
-              - proxygroups
+          - apiGroups: [source.toolkit.fluxcd.io]
+            resources: [buckets, gitrepositories, helmrepositories, ocirepositories]
+            verbs: [list, watch]
+          - apiGroups: [kustomize.toolkit.fluxcd.io]
+            resources: [kustomizations]
+            verbs: [list, watch]
+          - apiGroups: [helm.toolkit.fluxcd.io]
+            resources: [helmreleases]
+            verbs: [list, watch]
+          - apiGroups: [external-secrets.io]
+            resources: [externalsecrets]
+            verbs: [list, watch]
+          - apiGroups: [tailscale.com]
+            resources: [connectors, proxygroups]
             verbs: [list, watch]

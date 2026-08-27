@@ -140,8 +140,10 @@ class MonitoringStackTests(unittest.TestCase):
         self.assertNotIn("X-Webhook-Delivery", source)
 
     def test_alert_rules_have_runbooks_and_recovery_signals(self):
-        rules = load(APP / "prometheusrule.yaml")
-        alerts = [rule for group in rules["spec"]["groups"] for rule in group["rules"] if "alert" in rule]
+        alerts = []
+        for path in APP.glob("prometheusrule*.yaml"):
+            rules = load(path)
+            alerts.extend(rule for group in rules["spec"]["groups"] for rule in group["rules"] if "alert" in rule)
         expected = {
             "FluxReconciliationFailure",
             "ExternalSecretNotReady",

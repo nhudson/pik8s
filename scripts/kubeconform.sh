@@ -14,6 +14,7 @@ python3 ./scripts/test-monitoring-stack.py
 python3 ./scripts/test-grafana-stack.py
 python3 ./scripts/test-cnpg-dashboard.py
 python3 ./scripts/test-cilium-dashboard.py
+python3 ./scripts/generate-flux-mixin.py --check
 python3 ./scripts/test-flux-monitoring.py
 python3 ./scripts/test-observability-dashboards.py
 python3 ./scripts/test-storage-observability.py
