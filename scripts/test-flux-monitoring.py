@@ -54,6 +54,8 @@ class FluxMonitoringTests(unittest.TestCase):
         self.assertFalse(dashboard["editable"])
         self.assertGreaterEqual(len(dashboard["panels"]), 13)
         rendered_dashboard = json.dumps(dashboard, sort_keys=True, separators=(",", ":"))
+        self.assertIn("$${DS_PROMETHEUS}", rendered_dashboard)
+        self.assertNotRegex(rendered_dashboard, r"(?<!\$)\$\{DS_PROMETHEUS\}")
         self.assertIn("gotk_resource_info", rendered_dashboard)
         self.assertIn("gotk_reconcile_duration_seconds", rendered_dashboard)
         self.assertNotIn("gotk_reconcile_condition", rendered_dashboard)
