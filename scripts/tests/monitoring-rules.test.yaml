@@ -162,3 +162,11 @@ tests:
       - eval_time: 20m
         alertname: FluxReconciliationFailure
         exp_alerts: []
+  - interval: 1m
+    input_series:
+      - series: 'gotk_resource_info{exported_namespace="flux-system",customresource_kind="HelmRepository",name="statusless-oci"}'
+        values: '1x20'
+    alert_rule_test:
+      - eval_time: 20m
+        alertname: FluxReconciliationFailure
+        exp_alerts: []

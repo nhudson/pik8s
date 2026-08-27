@@ -73,7 +73,7 @@ def validate_rule_contract() -> None:
         raise SystemExit("expected exactly one preserved FluxReconciliationFailure rule")
     rule = matches[0]
     expected = {
-        "expr": 'gotk_resource_info{ready!="True"} == 1',
+        "expr": 'gotk_resource_info{ready=~"False|Unknown"} == 1',
         "for": "10m",
         "severity": "critical",
         "runbook_url": RUNBOOK,

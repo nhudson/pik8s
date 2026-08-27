@@ -71,7 +71,7 @@ class FluxMonitoringTests(unittest.TestCase):
         rules = [rule for group in platform["spec"]["groups"] for rule in group["rules"] if rule.get("alert") == "FluxReconciliationFailure"]
         self.assertEqual(1, len(rules))
         rule = rules[0]
-        self.assertEqual('gotk_resource_info{ready!="True"} == 1', rule["expr"])
+        self.assertEqual('gotk_resource_info{ready=~"False|Unknown"} == 1', rule["expr"])
         self.assertEqual("10m", rule["for"])
         self.assertEqual("critical", rule["labels"]["severity"])
         self.assertTrue(rule["annotations"]["runbook_url"])
