@@ -10,7 +10,7 @@ spec:
     - name: gitops-and-secrets
       rules:
         - alert: FluxReconciliationFailure
-          expr: gotk_resource_info{ready!="True"} == 1
+          expr: gotk_resource_info{ready=~"False|Unknown"} == 1
           for: 10m
           labels:
             severity: critical
