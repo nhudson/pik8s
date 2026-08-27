@@ -10,4 +10,3 @@ resources:
   - ./jellyseerr/ks.yaml
   - ./threadfin/ks.yaml
   - ./exportarr/ks.yaml
-  # - ./jellyfin/ks.yaml
