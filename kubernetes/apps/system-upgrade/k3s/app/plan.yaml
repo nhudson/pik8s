@@ -7,6 +7,40 @@ spec:
   version: "${KUBE_VERSION}"
   upgrade:
     image: rancher/k3s-upgrade
+    command: ["/bin/sh", "-c"]
+    args:
+      - |-
+        set -eu
+        host_root=${HOST_ROOT:-/host}
+        upgrade_script=${UPGRADE_SCRIPT:-/bin/upgrade.sh}
+        max_attempts=${WAIT_ATTEMPTS:-120}
+        delay=${WAIT_SECONDS:-1}
+        source="$host_root/opt/cni/bin/cilium-cni"
+        staged=$(mktemp /tmp/cilium-cni.XXXXXX)
+        trap 'rm -f "$staged"' EXIT
+        test -x "$source"
+        cp "$source" "$staged"
+        chmod 0755 "$staged"
+        before=$(readlink -f "$host_root/var/lib/rancher/k3s/data/current")
+        "$upgrade_script" upgrade
+        attempts=0
+        while [ "$attempts" -lt "$max_attempts" ]; do
+          current=$(readlink -f "$host_root/var/lib/rancher/k3s/data/current")
+          if [ "$current" != "$before" ] && [ -x "$current/bin/loopback" ]; then
+            cp "$staged" "$current/bin/cilium-cni"
+            chmod 0755 "$current/bin/cilium-cni"
+            test -x "$current/bin/cilium-cni"
+            exit 0
+          fi
+          attempts=$((attempts + 1))
+          sleep "$delay"
+        done
+        current=$(readlink -f "$host_root/var/lib/rancher/k3s/data/current")
+        if [ "$current" = "$before" ] && [ -x "$current/bin/loopback" ] && [ -x "$current/bin/cilium-cni" ]; then
+          exit 0
+        fi
+        echo "timed out waiting for the upgraded K3s CNI directory" >&2
+        exit 1
   serviceAccountName: system-upgrade-controller
   concurrency: 1
   cordon: true
@@ -48,3 +82,37 @@ spec:
     args: ["prepare", "controllers"]
   upgrade:
     image: rancher/k3s-upgrade
+    command: ["/bin/sh", "-c"]
+    args:
+      - |-
+        set -eu
+        host_root=${HOST_ROOT:-/host}
+        upgrade_script=${UPGRADE_SCRIPT:-/bin/upgrade.sh}
+        max_attempts=${WAIT_ATTEMPTS:-120}
+        delay=${WAIT_SECONDS:-1}
+        source="$host_root/opt/cni/bin/cilium-cni"
+        staged=$(mktemp /tmp/cilium-cni.XXXXXX)
+        trap 'rm -f "$staged"' EXIT
+        test -x "$source"
+        cp "$source" "$staged"
+        chmod 0755 "$staged"
+        before=$(readlink -f "$host_root/var/lib/rancher/k3s/data/current")
+        "$upgrade_script" upgrade
+        attempts=0
+        while [ "$attempts" -lt "$max_attempts" ]; do
+          current=$(readlink -f "$host_root/var/lib/rancher/k3s/data/current")
+          if [ "$current" != "$before" ] && [ -x "$current/bin/loopback" ]; then
+            cp "$staged" "$current/bin/cilium-cni"
+            chmod 0755 "$current/bin/cilium-cni"
+            test -x "$current/bin/cilium-cni"
+            exit 0
+          fi
+          attempts=$((attempts + 1))
+          sleep "$delay"
+        done
+        current=$(readlink -f "$host_root/var/lib/rancher/k3s/data/current")
+        if [ "$current" = "$before" ] && [ -x "$current/bin/loopback" ] && [ -x "$current/bin/cilium-cni" ]; then
+          exit 0
+        fi
+        echo "timed out waiting for the upgraded K3s CNI directory" >&2
+        exit 1
