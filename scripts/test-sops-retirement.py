@@ -104,13 +104,24 @@ class SopsRetirementTests(unittest.TestCase):
             resources = yaml.safe_load((target / "kustomization.yaml").read_text())["resources"]
             self.assertEqual(["./cluster-settings.yaml", "./ci-bootstrap-substitutions.yaml"], resources)
             documents = list(yaml.safe_load_all((target / "ci-bootstrap-substitutions.yaml").read_text()))
-            self.assertEqual(["cluster-secrets", "tailscale-settings"], [doc["metadata"]["name"] for doc in documents])
+            self.assertEqual(
+                ["cluster-secrets", "tailscale-settings", "cluster-secrets-user"],
+                [doc["metadata"]["name"] for doc in documents],
+            )
             self.assertEqual(
                 {"SECRET_ACME_EMAIL", "SECRET_CLOUDFLARE_ACCOUNT_ID", "SECRET_CLOUDFLARE_TUNNEL_ID", "SECRET_DOMAIN"},
                 set(documents[0]["stringData"]),
             )
             self.assertEqual({"SECRET_INFRASTRUCTURE_CIDR"}, set(documents[1]["stringData"]))
-            self.assertTrue(all(value.startswith(".PLACEHOLDER_") and value.endswith(".") for doc in documents for value in doc["stringData"].values()))
+            self.assertEqual({"HOME_ASSISTANT_TAILNET_FQDN"}, set(documents[2]["stringData"]))
+            self.assertTrue(
+                all(
+                    value.startswith(".PLACEHOLDER_") and value.endswith(".")
+                    for doc in documents[:2]
+                    for value in doc["stringData"].values()
+                )
+            )
+            self.assertEqual("home-assistant.example.invalid", documents[2]["stringData"]["HOME_ASSISTANT_TAILNET_FQDN"])
 
 
 if __name__ == "__main__":

@@ -44,6 +44,16 @@ tests:
               summary: The latest database backup is stale.
               description: CloudNativePG has not reported an available backup within the expected recovery window.
               runbook_url: https://github.com/nhudson/pik8s/blob/main/docs/runbooks/monitoring/README.md#cloudnativepg-backup-stale
+      - eval_time: 20m
+        alertname: HomeNetworkExporterDown
+        exp_alerts:
+          - exp_labels:
+              job: home-network
+              severity: critical
+            exp_annotations:
+              summary: The private home-network observer is unreachable.
+              description: Prometheus has been unable to scrape the wireless-side observer for more than ten minutes.
+              runbook_url: https://github.com/nhudson/pik8s/blob/main/docs/runbooks/monitoring/README.md#home-network-exporter-down
   - interval: 1m
     input_series:
       - series: 'kube_deployment_spec_replicas{namespace="network",deployment="k8s-gateway"}'
@@ -169,4 +179,250 @@ tests:
     alert_rule_test:
       - eval_time: 20m
         alertname: FluxReconciliationFailure
+        exp_alerts: []
+  - interval: 1m
+    input_series:
+      - series: 'up{job="home-network",instance="private-observer"}'
+        values: '0x20'
+    alert_rule_test:
+      - eval_time: 9m
+        alertname: HomeNetworkExporterDown
+        exp_alerts: []
+      - eval_time: 15m
+        alertname: HomeNetworkExporterDown
+        exp_alerts:
+          - exp_labels:
+              instance: private-observer
+              job: home-network
+              severity: critical
+            exp_annotations:
+              summary: The private home-network observer is unreachable.
+              description: Prometheus has been unable to scrape the wireless-side observer for more than ten minutes.
+              runbook_url: https://github.com/nhudson/pik8s/blob/main/docs/runbooks/monitoring/README.md#home-network-exporter-down
+  - interval: 1m
+    input_series:
+      - series: 'up{job="home-network",instance="private-observer"}'
+        values: '1x30'
+      - series: 'lan_monitor_last_probe_timestamp_seconds{job="home-network",instance="private-observer"}'
+        values: '0x30'
+      - series: 'lan_monitor_config_valid{job="home-network",instance="private-observer"}'
+        values: '1x30'
+      - series: 'lan_monitor_target_up{job="home-network",instance="private-observer",target_id="wifi-001",network="wireless",role="wireless-gateway",alert="critical"}'
+        values: '1x30'
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: HomeNetworkProbeStale
+        exp_alerts: []
+      - eval_time: 20m
+        alertname: HomeNetworkProbeStale
+        exp_alerts:
+          - exp_labels:
+              instance: private-observer
+              job: home-network
+              severity: critical
+            exp_annotations:
+              summary: Home-network probe results are stale.
+              description: The observer remains scrapeable but has not completed a probe cycle in the expected window.
+              runbook_url: https://github.com/nhudson/pik8s/blob/main/docs/runbooks/monitoring/README.md#home-network-probe-stale
+  - interval: 1m
+    input_series:
+      - series: 'up{job="home-network",instance="private-observer"}'
+        values: '1x30'
+      - series: 'lan_monitor_config_valid{job="home-network",instance="private-observer"}'
+        values: '0x30'
+      - series: 'lan_monitor_last_probe_timestamp_seconds{job="home-network",instance="private-observer"}'
+        values: '0+60x30'
+      - series: 'lan_monitor_target_up{job="home-network",instance="private-observer",target_id="wifi-001",network="wireless",role="wireless-gateway",alert="critical"}'
+        values: '1x30'
+    alert_rule_test:
+      - eval_time: 9m
+        alertname: HomeNetworkInventoryInvalid
+        exp_alerts: []
+      - eval_time: 20m
+        alertname: HomeNetworkInventoryInvalid
+        exp_alerts:
+          - exp_labels:
+              instance: private-observer
+              job: home-network
+              severity: critical
+            exp_annotations:
+              summary: The private home-network inventory is invalid.
+              description: The observer cannot load its private target configuration and is retaining the last usable result set.
+              runbook_url: https://github.com/nhudson/pik8s/blob/main/docs/runbooks/monitoring/README.md#home-network-inventory-invalid
+  - interval: 1m
+    input_series:
+      - series: 'up{job="home-network",instance="private-observer"}'
+        values: '1x150'
+      - series: 'lan_monitor_last_probe_timestamp_seconds{job="home-network",instance="private-observer"}'
+        values: '0+60x150'
+      - series: 'lan_monitor_config_valid{job="home-network",instance="private-observer"}'
+        values: '1x150'
+      - series: 'lan_monitor_target_up{job="home-network",instance="private-observer",target_id="wifi-001",network="wireless",role="wireless-gateway",alert="critical"}'
+        values: '0x150'
+      - series: 'lan_monitor_target_up{job="home-network",instance="private-observer",target_id="wifi-002",network="wireless",role="smart-plug",alert="warning"}'
+        values: '0x150'
+    alert_rule_test:
+      - eval_time: 14m
+        alertname: HomeNetworkCriticalTargetUnavailable
+        exp_alerts: []
+      - eval_time: 20m
+        alertname: HomeNetworkCriticalTargetUnavailable
+        exp_alerts:
+          - exp_labels:
+              alert: critical
+              instance: private-observer
+              job: home-network
+              network: wireless
+              role: wireless-gateway
+              severity: critical
+              target_id: wifi-001
+            exp_annotations:
+              summary: A critical home-network target is unavailable.
+              description: A critical pseudonymous target has failed its local probe for more than fifteen minutes.
+              runbook_url: https://github.com/nhudson/pik8s/blob/main/docs/runbooks/monitoring/README.md#home-network-target-unavailable
+      - eval_time: 119m
+        alertname: HomeNetworkManagedTargetUnavailable
+        exp_alerts: []
+      - eval_time: 130m
+        alertname: HomeNetworkManagedTargetUnavailable
+        exp_alerts:
+          - exp_labels:
+              alert: warning
+              instance: private-observer
+              job: home-network
+              network: wireless
+              role: smart-plug
+              severity: warning
+              target_id: wifi-002
+            exp_annotations:
+              summary: A managed home-network target is unavailable.
+              description: A stable managed target has failed its local probe for more than two hours; transient clients are excluded.
+              runbook_url: https://github.com/nhudson/pik8s/blob/main/docs/runbooks/monitoring/README.md#home-network-target-unavailable
+  - interval: 1m
+    input_series:
+      - series: 'up{job="home-network",instance="private-observer"}'
+        values: '1x150'
+      - series: 'lan_monitor_last_probe_timestamp_seconds{job="home-network",instance="private-observer"}'
+        values: '0+60x150'
+      - series: 'lan_monitor_config_valid{job="home-network",instance="private-observer"}'
+        values: '1x150'
+      - series: 'lan_monitor_target_up{job="home-network",instance="private-observer",target_id="wifi-001",network="wireless",role="wireless-gateway",alert="critical"}'
+        values: '1x150'
+      - series: 'lan_monitor_target_up{job="home-network",instance="private-observer",target_id="wifi-002",network="wireless",role="smart-plug",alert="warning"}'
+        values: '1x150'
+    alert_rule_test:
+      - eval_time: 130m
+        alertname: HomeNetworkExporterDown
+        exp_alerts: []
+      - eval_time: 130m
+        alertname: HomeNetworkProbeStale
+        exp_alerts: []
+      - eval_time: 130m
+        alertname: HomeNetworkInventoryInvalid
+        exp_alerts: []
+      - eval_time: 130m
+        alertname: HomeNetworkTargetMetricsMissing
+        exp_alerts: []
+      - eval_time: 130m
+        alertname: HomeNetworkCriticalTargetUnavailable
+        exp_alerts: []
+      - eval_time: 130m
+        alertname: HomeNetworkManagedTargetUnavailable
+        exp_alerts: []
+  - interval: 1m
+    input_series:
+      - series: 'up{job="home-network",instance="private-observer"}'
+        values: '1x30'
+      - series: 'lan_monitor_config_valid{job="home-network",instance="private-observer"}'
+        values: '1x30'
+      - series: 'lan_monitor_target_up{job="home-network",instance="private-observer",target_id="wifi-001",network="wireless",role="wireless-gateway",alert="critical"}'
+        values: '1x30'
+    alert_rule_test:
+      - eval_time: 9m
+        alertname: HomeNetworkProbeStale
+        exp_alerts: []
+      - eval_time: 11m
+        alertname: HomeNetworkProbeStale
+        exp_alerts:
+          - exp_labels:
+              instance: private-observer
+              job: home-network
+              severity: critical
+            exp_annotations:
+              summary: Home-network probe results are stale.
+              description: The observer remains scrapeable but has not completed a probe cycle in the expected window.
+              runbook_url: https://github.com/nhudson/pik8s/blob/main/docs/runbooks/monitoring/README.md#home-network-probe-stale
+  - interval: 1m
+    input_series:
+      - series: 'up{job="home-network",instance="private-observer"}'
+        values: '1x30'
+      - series: 'lan_monitor_last_probe_timestamp_seconds{job="home-network",instance="private-observer"}'
+        values: '0+60x30'
+      - series: 'lan_monitor_target_up{job="home-network",instance="private-observer",target_id="wifi-001",network="wireless",role="wireless-gateway",alert="critical"}'
+        values: '1x30'
+    alert_rule_test:
+      - eval_time: 9m
+        alertname: HomeNetworkInventoryInvalid
+        exp_alerts: []
+      - eval_time: 11m
+        alertname: HomeNetworkInventoryInvalid
+        exp_alerts:
+          - exp_labels:
+              instance: private-observer
+              job: home-network
+              severity: critical
+            exp_annotations:
+              summary: The private home-network inventory is invalid.
+              description: The observer cannot load its private target configuration and is retaining the last usable result set.
+              runbook_url: https://github.com/nhudson/pik8s/blob/main/docs/runbooks/monitoring/README.md#home-network-inventory-invalid
+  - interval: 1m
+    input_series:
+      - series: 'up{job="home-network",instance="private-observer"}'
+        values: '1x30'
+      - series: 'lan_monitor_last_probe_timestamp_seconds{job="home-network",instance="private-observer"}'
+        values: '0+60x30'
+      - series: 'lan_monitor_config_valid{job="home-network",instance="private-observer"}'
+        values: '1x30'
+    alert_rule_test:
+      - eval_time: 9m
+        alertname: HomeNetworkTargetMetricsMissing
+        exp_alerts: []
+      - eval_time: 11m
+        alertname: HomeNetworkTargetMetricsMissing
+        exp_alerts:
+          - exp_labels:
+              instance: private-observer
+              job: home-network
+              severity: critical
+            exp_annotations:
+              summary: Home-network target metrics are missing.
+              description: The observer is scrapeable but is not exposing any target health series.
+              runbook_url: https://github.com/nhudson/pik8s/blob/main/docs/runbooks/monitoring/README.md#home-network-target-metrics-missing
+  - interval: 1m
+    input_series:
+      - series: 'up{job="home-network",instance="private-observer"}'
+        values: '0x150'
+      - series: 'lan_monitor_last_probe_timestamp_seconds{job="home-network",instance="private-observer"}'
+        values: '0x150'
+      - series: 'lan_monitor_config_valid{job="home-network",instance="private-observer"}'
+        values: '0x150'
+      - series: 'lan_monitor_target_up{job="home-network",instance="private-observer",target_id="wifi-001",network="wireless",role="wireless-gateway",alert="critical"}'
+        values: '0x150'
+      - series: 'lan_monitor_target_up{job="home-network",instance="private-observer",target_id="wifi-002",network="wireless",role="smart-plug",alert="warning"}'
+        values: '0x150'
+    alert_rule_test:
+      - eval_time: 20m
+        alertname: HomeNetworkProbeStale
+        exp_alerts: []
+      - eval_time: 20m
+        alertname: HomeNetworkInventoryInvalid
+        exp_alerts: []
+      - eval_time: 20m
+        alertname: HomeNetworkTargetMetricsMissing
+        exp_alerts: []
+      - eval_time: 20m
+        alertname: HomeNetworkCriticalTargetUnavailable
+        exp_alerts: []
+      - eval_time: 130m
+        alertname: HomeNetworkManagedTargetUnavailable
         exp_alerts: []

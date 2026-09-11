@@ -17,6 +17,7 @@ spec:
     name: home-kubernetes
   dependsOn:
     - name: monitoring-credentials
+    - name: tailscale-operator
   wait: true
   interval: 30m
   retryInterval: 1m

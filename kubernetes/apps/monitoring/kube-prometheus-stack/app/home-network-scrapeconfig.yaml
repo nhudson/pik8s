@@ -1,0 +1,29 @@
+---
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: ScrapeConfig
+metadata:
+  name: home-network
+  labels:
+    app.kubernetes.io/name: home-network-exporter
+    app.kubernetes.io/part-of: monitoring
+spec:
+  jobName: home-network
+  scheme: HTTPS
+  metricsPath: /metrics
+  scrapeInterval: 60s
+  scrapeTimeout: 20s
+  targetLimit: 1
+  sampleLimit: 2000
+  bodySizeLimit: 1MB
+  labelLimit: 20
+  labelNameLengthLimit: 128
+  labelValueLengthLimit: 256
+  tlsConfig:
+    minVersion: TLS12
+    serverName: "${HOME_ASSISTANT_TAILNET_FQDN}"
+  metricRelabelings:
+    - action: labelkeep
+      regex: ^(__name__|job|instance|target_id|network|role|alert)$
+  staticConfigs:
+    - targets:
+        - home-network-exporter.monitoring.svc.cluster.local:9116

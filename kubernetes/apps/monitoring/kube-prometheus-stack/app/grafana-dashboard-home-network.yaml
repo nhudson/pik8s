@@ -1,0 +1,94 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-home-network
+  labels:
+    grafana_dashboard: '1'
+data:
+  home-network.json: "{\n  \"annotations\": {\n    \"list\": []\n  },\n  \"editable\": false,\n  \"fiscalYearStartMonth\"\
+    : 0,\n  \"graphTooltip\": 1,\n  \"id\": null,\n  \"links\": [],\n  \"liveNow\": false,\n  \"panels\": [\n    {\n     \
+    \ \"id\": 1,\n      \"title\": \"Observer scrape\",\n      \"type\": \"stat\",\n      \"datasource\": {\n        \"type\"\
+    : \"prometheus\",\n        \"uid\": \"prometheus\"\n      },\n      \"gridPos\": {\n        \"h\": 6,\n        \"w\":\
+    \ 6,\n        \"x\": 0,\n        \"y\": 0\n      },\n      \"targets\": [\n        {\n          \"expr\": \"max(up{job=\\\
+    \"home-network\\\"})\",\n          \"refId\": \"A\"\n        }\n      ],\n      \"fieldConfig\": {\n        \"defaults\"\
+    : {\n          \"mappings\": [\n            {\n              \"options\": {\n                \"0\": {\n              \
+    \    \"color\": \"red\",\n                  \"text\": \"Down\"\n                },\n                \"1\": {\n       \
+    \           \"color\": \"green\",\n                  \"text\": \"Up\"\n                }\n              },\n         \
+    \     \"type\": \"value\"\n            }\n          ],\n          \"thresholds\": {\n            \"mode\": \"absolute\"\
+    ,\n            \"steps\": [\n              {\n                \"color\": \"red\",\n                \"value\": null\n \
+    \             },\n              {\n                \"color\": \"green\",\n                \"value\": 1\n             \
+    \ }\n            ]\n          }\n        },\n        \"overrides\": []\n      },\n      \"options\": {\n        \"colorMode\"\
+    : \"background\",\n        \"graphMode\": \"none\",\n        \"justifyMode\": \"center\",\n        \"orientation\": \"\
+    auto\",\n        \"reduceOptions\": {\n          \"calcs\": [\n            \"lastNotNull\"\n          ],\n          \"\
+    fields\": \"\",\n          \"values\": false\n        },\n        \"textMode\": \"auto\",\n        \"wideLayout\": true\n\
+    \      }\n    },\n    {\n      \"id\": 2,\n      \"title\": \"Targets available\",\n      \"type\": \"stat\",\n      \"\
+    datasource\": {\n        \"type\": \"prometheus\",\n        \"uid\": \"prometheus\"\n      },\n      \"gridPos\": {\n\
+    \        \"h\": 6,\n        \"w\": 6,\n        \"x\": 6,\n        \"y\": 0\n      },\n      \"targets\": [\n        {\n\
+    \          \"expr\": \"sum(lan_monitor_target_up{job=\\\"home-network\\\"})\",\n          \"legendFormat\": \"available\"\
+    ,\n          \"refId\": \"A\"\n        },\n        {\n          \"expr\": \"count(lan_monitor_target_up{job=\\\"home-network\\\
+    \"})\",\n          \"legendFormat\": \"monitored\",\n          \"refId\": \"B\"\n        }\n      ],\n      \"fieldConfig\"\
+    : {\n        \"defaults\": {\n          \"unit\": \"short\"\n        },\n        \"overrides\": []\n      },\n      \"\
+    options\": {\n        \"colorMode\": \"value\",\n        \"graphMode\": \"area\",\n        \"justifyMode\": \"auto\",\n\
+    \        \"orientation\": \"horizontal\",\n        \"reduceOptions\": {\n          \"calcs\": [\n            \"lastNotNull\"\
+    \n          ],\n          \"fields\": \"\",\n          \"values\": false\n        },\n        \"textMode\": \"auto\",\n\
+    \        \"wideLayout\": true\n      }\n    },\n    {\n      \"id\": 3,\n      \"title\": \"Availability by network\"\
+    ,\n      \"type\": \"gauge\",\n      \"datasource\": {\n        \"type\": \"prometheus\",\n        \"uid\": \"prometheus\"\
+    \n      },\n      \"gridPos\": {\n        \"h\": 6,\n        \"w\": 12,\n        \"x\": 12,\n        \"y\": 0\n      },\n\
+    \      \"targets\": [\n        {\n          \"expr\": \"100 * sum by (network) (lan_monitor_target_up{job=\\\"home-network\\\
+    \"}) / count by (network) (lan_monitor_target_up{job=\\\"home-network\\\"})\",\n          \"legendFormat\": \"{{network}}\"\
+    ,\n          \"refId\": \"A\"\n        }\n      ],\n      \"fieldConfig\": {\n        \"defaults\": {\n          \"min\"\
+    : 0,\n          \"max\": 100,\n          \"unit\": \"percent\",\n          \"thresholds\": {\n            \"mode\": \"\
+    absolute\",\n            \"steps\": [\n              {\n                \"color\": \"red\",\n                \"value\"\
+    : null\n              },\n              {\n                \"color\": \"yellow\",\n                \"value\": 80\n   \
+    \           },\n              {\n                \"color\": \"green\",\n                \"value\": 95\n              }\n\
+    \            ]\n          }\n        },\n        \"overrides\": []\n      },\n      \"options\": {\n        \"minVizHeight\"\
+    : 75,\n        \"minVizWidth\": 75,\n        \"orientation\": \"auto\",\n        \"reduceOptions\": {\n          \"calcs\"\
+    : [\n            \"lastNotNull\"\n          ],\n          \"fields\": \"\",\n          \"values\": false\n        },\n\
+    \        \"showThresholdLabels\": false,\n        \"showThresholdMarkers\": true,\n        \"sizing\": \"auto\"\n    \
+    \  }\n    },\n    {\n      \"id\": 4,\n      \"title\": \"Target state\",\n      \"type\": \"state-timeline\",\n     \
+    \ \"datasource\": {\n        \"type\": \"prometheus\",\n        \"uid\": \"prometheus\"\n      },\n      \"gridPos\":\
+    \ {\n        \"h\": 12,\n        \"w\": 24,\n        \"x\": 0,\n        \"y\": 6\n      },\n      \"targets\": [\n   \
+    \     {\n          \"expr\": \"lan_monitor_target_up{job=\\\"home-network\\\",network=~\\\"$network\\\"}\",\n        \
+    \  \"legendFormat\": \"{{target_id}} \\u00b7 {{role}} \\u00b7 {{alert}}\",\n          \"refId\": \"A\"\n        }\n  \
+    \    ],\n      \"fieldConfig\": {\n        \"defaults\": {\n          \"mappings\": [\n            {\n              \"\
+    options\": {\n                \"0\": {\n                  \"color\": \"red\",\n                  \"text\": \"Unavailable\"\
+    \n                },\n                \"1\": {\n                  \"color\": \"green\",\n                  \"text\": \"\
+    Available\"\n                }\n              },\n              \"type\": \"value\"\n            }\n          ],\n   \
+    \       \"thresholds\": {\n            \"mode\": \"absolute\",\n            \"steps\": [\n              {\n          \
+    \      \"color\": \"red\",\n                \"value\": null\n              },\n              {\n                \"color\"\
+    : \"green\",\n                \"value\": 1\n              }\n            ]\n          }\n        },\n        \"overrides\"\
+    : []\n      },\n      \"options\": {\n        \"alignValue\": \"left\",\n        \"legend\": {\n          \"displayMode\"\
+    : \"list\",\n          \"placement\": \"bottom\",\n          \"showLegend\": true\n        },\n        \"mergeValues\"\
+    : true,\n        \"rowHeight\": 0.8,\n        \"showValue\": \"auto\",\n        \"tooltip\": {\n          \"mode\": \"\
+    single\",\n          \"sort\": \"none\"\n        }\n      }\n    },\n    {\n      \"id\": 5,\n      \"title\": \"Probe\
+    \ duration\",\n      \"type\": \"timeseries\",\n      \"datasource\": {\n        \"type\": \"prometheus\",\n        \"\
+    uid\": \"prometheus\"\n      },\n      \"gridPos\": {\n        \"h\": 9,\n        \"w\": 16,\n        \"x\": 0,\n    \
+    \    \"y\": 18\n      },\n      \"targets\": [\n        {\n          \"expr\": \"lan_monitor_target_probe_duration_seconds{job=\\\
+    \"home-network\\\",network=~\\\"$network\\\"}\",\n          \"legendFormat\": \"{{target_id}} \\u00b7 {{role}}\",\n  \
+    \        \"refId\": \"A\"\n        }\n      ],\n      \"fieldConfig\": {\n        \"defaults\": {\n          \"unit\"\
+    : \"s\",\n          \"custom\": {\n            \"drawStyle\": \"line\",\n            \"lineInterpolation\": \"linear\"\
+    ,\n            \"lineWidth\": 1,\n            \"fillOpacity\": 5,\n            \"showPoints\": \"never\",\n          \
+    \  \"spanNulls\": false\n          }\n        },\n        \"overrides\": []\n      },\n      \"options\": {\n        \"\
+    legend\": {\n          \"displayMode\": \"table\",\n          \"placement\": \"bottom\",\n          \"showLegend\": true,\n\
+    \          \"calcs\": [\n            \"lastNotNull\",\n            \"max\"\n          ]\n        },\n        \"tooltip\"\
+    : {\n          \"mode\": \"single\",\n          \"sort\": \"none\"\n        }\n      }\n    },\n    {\n      \"id\": 6,\n\
+    \      \"title\": \"Managed targets currently unavailable\",\n      \"type\": \"table\",\n      \"datasource\": {\n  \
+    \      \"type\": \"prometheus\",\n        \"uid\": \"prometheus\"\n      },\n      \"gridPos\": {\n        \"h\": 9,\n\
+    \        \"w\": 8,\n        \"x\": 16,\n        \"y\": 18\n      },\n      \"targets\": [\n        {\n          \"expr\"\
+    : \"lan_monitor_target_up{job=\\\"home-network\\\",network=~\\\"$network\\\",alert=~\\\"critical|warning\\\"} == 0\",\n\
+    \          \"format\": \"table\",\n          \"instant\": true,\n          \"refId\": \"A\"\n        }\n      ],\n   \
+    \   \"fieldConfig\": {\n        \"defaults\": {\n          \"custom\": {\n            \"align\": \"auto\",\n         \
+    \   \"cellOptions\": {\n              \"type\": \"auto\"\n            },\n            \"inspect\": false\n          }\n\
+    \        },\n        \"overrides\": []\n      },\n      \"options\": {\n        \"cellHeight\": \"sm\",\n        \"footer\"\
+    : {\n          \"countRows\": false,\n          \"fields\": \"\",\n          \"reducer\": [\n            \"sum\"\n   \
+    \       ],\n          \"show\": false\n        }\n      }\n    }\n  ],\n  \"refresh\": \"1m\",\n  \"schemaVersion\": 42,\n\
+    \  \"tags\": [\n    \"home-network\",\n    \"monitoring\"\n  ],\n  \"templating\": {\n    \"list\": [\n      {\n     \
+    \   \"name\": \"network\",\n        \"type\": \"query\",\n        \"datasource\": {\n          \"type\": \"prometheus\"\
+    ,\n          \"uid\": \"prometheus\"\n        },\n        \"definition\": \"label_values(lan_monitor_target_up{job=\\\"\
+    home-network\\\"}, network)\",\n        \"query\": {\n          \"query\": \"label_values(lan_monitor_target_up{job=\\\
+    \"home-network\\\"}, network)\",\n          \"refId\": \"StandardVariableQuery\"\n        },\n        \"current\": {\n\
+    \          \"selected\": true,\n          \"text\": \"All\",\n          \"value\": \"$__all\"\n        },\n        \"\
+    includeAll\": true,\n        \"allValue\": \".*\",\n        \"multi\": true,\n        \"refresh\": 1,\n        \"sort\"\
+    : 1,\n        \"hide\": 0,\n        \"label\": \"Network\"\n      }\n    ]\n  },\n  \"time\": {\n    \"from\": \"now-24h\"\
+    ,\n    \"to\": \"now\"\n  },\n  \"timepicker\": {},\n  \"timezone\": \"browser\",\n  \"title\": \"Home Network Health\"\
+    ,\n  \"uid\": \"home-network-health\",\n  \"version\": 1,\n  \"weekStart\": \"\"\n}\n"
