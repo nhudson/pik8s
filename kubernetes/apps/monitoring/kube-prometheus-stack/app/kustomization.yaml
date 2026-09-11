@@ -5,6 +5,7 @@ resources:
   - ./flux-podmonitor.yaml
   - ./grafana-dashboard-flux-cluster.yaml
   - ./grafana-dashboard-flux-control-plane.yaml
+  - ./grafana-dashboard-home-network.yaml
   - ./grafana-dashboard-control-plane.yaml
   - ./grafana-dashboard-database.yaml
   - ./grafana-dashboard-delivery.yaml
@@ -15,6 +16,9 @@ resources:
   - ./grafana-httproute.yaml
   - ./grafana-rbac.yaml
   - ./helmrelease.yaml
+  - ./home-network-egress-service.yaml
+  - ./home-network-scrapeconfig.yaml
+  - ./prometheusrule-home-network.yaml
   - ./prometheusrule.yaml
   - ./relay-configmap.yaml
   - ./relay-deployment.yaml

@@ -18,6 +18,7 @@ CONTRACTS = (
         ),
     ),
     ("tailscale-settings", ("SECRET_INFRASTRUCTURE_CIDR",)),
+    ("cluster-secrets-user", ("HOME_ASSISTANT_TAILNET_FQDN",)),
 )
 
 
@@ -34,7 +35,9 @@ def render() -> str:
             "type: Opaque",
             "stringData:",
         ]
-        lines.extend(f'  {key}: ".PLACEHOLDER_{key}."' for key in keys)
+        for key in keys:
+            value = "home-assistant.example.invalid" if key == "HOME_ASSISTANT_TAILNET_FQDN" else f".PLACEHOLDER_{key}."
+            lines.append(f'  {key}: "{value}"')
         documents.append("\n".join(lines))
     return "\n".join(documents) + "\n"
 

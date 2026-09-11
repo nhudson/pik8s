@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import ipaddress
+import json
 import pathlib
 import re
 import unittest
@@ -36,7 +37,10 @@ class MonitoringStackTests(unittest.TestCase):
         self.assertEqual([{"name": "external-secrets-cluster-secret-store"}], credentials["spec"]["dependsOn"])
         self.assertTrue(credentials["spec"]["wait"])
         stack = load(STACK / "ks.yaml")
-        self.assertEqual([{"name": "monitoring-credentials"}], stack["spec"]["dependsOn"])
+        self.assertEqual(
+            [{"name": "monitoring-credentials"}, {"name": "tailscale-operator"}],
+            stack["spec"]["dependsOn"],
+        )
         self.assertTrue(stack["spec"]["wait"])
 
     def test_prometheus_is_bounded_ephemeral_and_local_alerting_is_ha(self):
@@ -62,6 +66,40 @@ class MonitoringStackTests(unittest.TestCase):
         self.assertIn("alertmanager-config", alertmanager["secrets"])
         self.assertEqual({}, alertmanager["storage"])
         self.assertEqual({"enabled": True, "minAvailable": 1}, values["alertmanager"]["podDisruptionBudget"])
+
+    def test_home_network_observer_uses_private_tailscale_egress(self):
+        service = load(APP / "home-network-egress-service.yaml")
+        self.assertEqual("ExternalName", service["spec"]["type"])
+        private_target = "${HOME_ASSISTANT_TAILNET_FQDN}"
+        self.assertEqual("placeholder", service["spec"]["externalName"])
+        self.assertEqual(private_target, service["metadata"]["annotations"]["tailscale.com/tailnet-fqdn"])
+        self.assertNotIn("tailscale.com/proxy-group", service["metadata"]["annotations"])
+        self.assertEqual([9116], [port["port"] for port in service["spec"]["ports"]])
+
+        scrape = load(APP / "home-network-scrapeconfig.yaml")
+        self.assertEqual("home-network", scrape["spec"]["jobName"])
+        self.assertEqual("HTTPS", scrape["spec"]["scheme"])
+        self.assertEqual("${HOME_ASSISTANT_TAILNET_FQDN}", scrape["spec"]["tlsConfig"]["serverName"])
+        self.assertNotIn("insecureSkipVerify", scrape["spec"]["tlsConfig"])
+        self.assertEqual(1, scrape["spec"]["targetLimit"])
+        self.assertEqual(
+            [{"action": "labelkeep", "regex": "^(__name__|job|instance|target_id|network|role|alert)$"}],
+            scrape["spec"]["metricRelabelings"],
+        )
+
+        dashboard_resource = load(APP / "grafana-dashboard-home-network.yaml")
+        dashboard = json.loads(dashboard_resource["data"]["home-network.json"])
+        self.assertEqual("home-network-health", dashboard["uid"])
+        self.assertGreaterEqual(len(dashboard["panels"]), 5)
+        for panel in dashboard["panels"]:
+            for target in panel["targets"]:
+                expression = target["expr"]
+                if "lan_monitor_" in expression:
+                    self.assertIn('job="home-network"', expression)
+                legend = target.get("legendFormat", "")
+                self.assertNotRegex(legend, r"address|hostname|mac|device", panel["title"])
+        variable = dashboard["templating"]["list"][0]
+        self.assertIn('lan_monitor_target_up{job="home-network"}', variable["definition"])
 
     def test_external_secrets_emit_only_required_keys(self):
         contracts = {
@@ -154,6 +192,12 @@ class MonitoringStackTests(unittest.TestCase):
             "CertificateExpiringSoon",
             "CloudflareTunnelUnavailable",
             "CriticalWorkloadUnavailable",
+            "HomeNetworkExporterDown",
+            "HomeNetworkProbeStale",
+            "HomeNetworkInventoryInvalid",
+            "HomeNetworkTargetMetricsMissing",
+            "HomeNetworkCriticalTargetUnavailable",
+            "HomeNetworkManagedTargetUnavailable",
         }
         self.assertTrue(expected <= {rule["alert"] for rule in alerts})
         for rule in alerts:
@@ -166,12 +210,27 @@ class MonitoringStackTests(unittest.TestCase):
 
     def test_public_files_contain_no_private_literals(self):
         private_ipv4 = re.compile(r"\b(?:10(?:\.\d{1,3}){3}|192\.168(?:\.\d{1,3}){2}|172\.(?:1[6-9]|2\d|3[01])(?:\.\d{1,3}){2})(?:/\d{1,2})?\b")
+        private_ipv6 = re.compile(r"\b(?:fc|fd)[0-9a-f]{2}(?::[0-9a-f]{0,4}){2,7}\b", re.I)
+        mac_address = re.compile(r"\b(?:[0-9a-f]{2}[:-]){5}[0-9a-f]{2}\b", re.I)
         personal_email = re.compile(r"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b", re.I)
-        for path in [*MONITORING.rglob("*.yaml"), *MONITORING.rglob("*.md"), ROOT / "docs/runbooks/monitoring/README.md"]:
+        public_paths = [
+            *MONITORING.rglob("*.yaml"),
+            *MONITORING.rglob("*.md"),
+            ROOT / "docs/runbooks/monitoring/README.md",
+            ROOT / "scripts/prepare-flux-diff-bootstrap.py",
+            ROOT / "scripts/test-monitoring-stack.py",
+            ROOT / "scripts/test-sops-retirement.py",
+            ROOT / "scripts/tests/monitoring-rules.test.yaml",
+        ]
+        for path in public_paths:
             text = path.read_text()
             self.assertIsNone(private_ipv4.search(text), path)
+            self.assertIsNone(private_ipv6.search(text), path)
+            self.assertIsNone(mac_address.search(text), path)
             self.assertIsNone(personal_email.search(text), path)
-            self.assertNotIn("TELEGRAM_BOT_TOKEN", text)
+            self.assertNotIn("/" + "home/", text)
+            self.assertNotIn(".ts" + ".net", text)
+            self.assertNotIn("TELEGRAM_" + "BOT_TOKEN", text)
             self.assertIsNone(re.search(r"chat_id:\s*[\"']?-?\d{7,}", text, re.I), path)
 
     def test_promtool_validation_is_required_by_ci(self):

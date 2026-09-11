@@ -34,7 +34,7 @@ spec:
             severity: critical
           annotations:
             summary: A Tailscale access resource is not Ready.
-            description: A Connector or API proxy group has remained non-Ready for more than ten minutes.
+            description: A Tailscale access resource has remained non-Ready for more than ten minutes.
             runbook_url: https://github.com/nhudson/pik8s/blob/main/docs/runbooks/monitoring/README.md#tailscale-resource-not-ready
     - name: storage-and-backups
       rules:
