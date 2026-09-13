@@ -39,7 +39,7 @@ jobs:
           fi
 
       - name: Setup Homebrew
-        uses: Homebrew/actions/setup-homebrew@master
+        uses: Homebrew/actions/setup-homebrew@main
 
       - name: Setup validation tools
         run: brew install fluxcd/tap/flux kubeconform kustomize prometheus
