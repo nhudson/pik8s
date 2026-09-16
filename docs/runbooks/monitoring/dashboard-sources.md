@@ -9,7 +9,7 @@ The immutable references below define locally authored metric contracts and the 
 | Producers | Deployed/pinned source | Immutable reference | License | Imported checksum | Local patch |
 | --- | --- | --- | --- | --- | --- |
 | CloudNativePG and Barman Cloud | CloudNativePG chart 0.29.0; official dashboard chart cluster-v0.0.5 | [`cececeb393fb7c5400b4fa290aca68041293a127`](https://github.com/cloudnative-pg/grafana-dashboards/commit/cececeb393fb7c5400b4fa290aca68041293a127) | Apache-2.0 | Supplied by pinned Helm dependency | Namespace and sidecar labels configured locally |
-| Cilium and Hubble | Cilium chart v1.20.1; official Cilium Metrics dashboard | [`2428bc06f693c9ccde087c8901ebd291941262b6`](https://github.com/cilium/cilium/commit/2428bc06f693c9ccde087c8901ebd291941262b6) | Apache-2.0 | Chart package `sha256:06210eef7c23d15f7699c79e2fe3a1ec9c389024c5c5c006ea04022d322449a2` | Agent dashboard namespace and folder configured locally |
+| Cilium and Hubble | Cilium chart v1.20.2; official Cilium Metrics dashboard | [`2428bc06f693c9ccde087c8901ebd291941262b6`](https://github.com/cilium/cilium/commit/2428bc06f693c9ccde087c8901ebd291941262b6) | Apache-2.0 | Chart package `sha256:b2afd87b7f75f875f92a14559f14f59b7babbb479d968e3fd625a20bf30ec20e` | Agent dashboard namespace and folder configured locally |
 | Flux | flux-mixin alert intent; current Flux Cluster Stats dashboard | [`5f69de628466706e76d71ce2ba588d40530d5818`](https://github.com/fluxcd-community/flux-mixin/commit/5f69de628466706e76d71ce2ba588d40530d5818); [`7ab65dc8b90f7a6751d88f18bbb4e1bee33bf334`](https://github.com/fluxcd/flux2-monitoring-example/commit/7ab65dc8b90f7a6751d88f18bbb4e1bee33bf334) | Apache-2.0 | Alert source `sha256:ea6b9f79f62c271b33561ca4c73db1ccf36a850534f96397e8d741e2a8e24af4`; dashboard source `sha256:2a52d416ca7fee166c7703524332d3c8e586808c21ff5679a259c9dd744ed309` | Replace retired `gotk_reconcile_condition` with `gotk_resource_info`, preserve the existing alert identity/severity/ten-minute state, and make the dashboard non-editable |
 | cert-manager | cert-manager v1.21.1; mixin v1.6.0 | [`a5f74ad0`](https://github.com/imusmanmalik/cert-manager-mixin/commit/a5f74ad0) | Apache-2.0 | N/A — locally authored | N/A |
 | External Secrets | Helm chart 2.9.0 | [`cc5bfbc2`](https://github.com/external-secrets/external-secrets/commit/cc5bfbc2) | Apache-2.0 | N/A — locally authored | N/A |
@@ -26,7 +26,7 @@ The immutable references below define locally authored metric contracts and the 
 | --- | --- |
 | Platform / Database | `cnpg_collector_*`, `cnpg_pg_replication_*`, `cnpg_pg_database_*`, `cnpg_backends_*`, `cnpg_pg_stat_archiver_*` |
 | CloudNativePG | Full official `cluster-v0.0.5` dashboard supplied by the CloudNativePG chart dependency |
-| Cilium Metrics | Official Cilium Agent dashboard supplied by chart `1.20.1` |
+| Cilium Metrics | Official Cilium Agent dashboard supplied by chart `1.20.2` |
 | Flux Control Plane | Current official Flux controller-runtime dashboard pinned from `flux2-monitoring-example` |
 | Flux Cluster Stats | Current official Flux resource-readiness and reconciliation-duration dashboard, paired with the pinned mixin-derived alert |
 | Platform / Network and Flows | `cilium_drop_*`, `cilium_endpoint_*`, `cilium_controllers_*`, `hubble_flows_*`, `hubble_lost_events_*`, `hubble_http_*` |
