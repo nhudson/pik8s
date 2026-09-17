@@ -125,6 +125,18 @@
       commitMessageTopic: 'chart {{depName}}',
     },
     {
+      description: [
+        'Block Cilium 1.20.2 BTF regression',
+      ],
+      matchDatasources: [
+        'helm',
+      ],
+      matchPackageNames: [
+        'cilium',
+      ],
+      allowedVersions: '!/^1\\.20\\.2$/',
+    },
+    {
       matchDatasources: [
         'docker',
       ],
