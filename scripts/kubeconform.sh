@@ -9,6 +9,7 @@ KUBERNETES_DIR=$1
 ruby ./scripts/test-external-secret-finalized.rb "${KUBERNETES_DIR}"
 python3 ./scripts/test-bootstrap-secrets.py
 python3 ./scripts/test-sops-retirement.py
+python3 ./scripts/test-external-secrets-recovery.py
 python3 ./scripts/test-github-protection.py
 python3 ./scripts/test-monitoring-stack.py
 python3 ./scripts/test-grafana-stack.py

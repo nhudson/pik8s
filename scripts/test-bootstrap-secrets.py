@@ -134,7 +134,7 @@ class BootstrapSecretTests(unittest.TestCase):
         root_resources = yaml.safe_load((ROOT / "kubernetes/flux/vars/kustomization.yaml").read_text())["resources"]
         self.assertEqual(["./cluster-settings.yaml"], root_resources)
         provider_resources = yaml.safe_load((ROOT / "kubernetes/apps/security/external-secrets/app/kustomization.yaml").read_text())["resources"]
-        self.assertEqual(["./helmrelease.yaml"], provider_resources)
+        self.assertEqual(["./helmrelease.yaml", "./recovery.yaml"], provider_resources)
 
         security_namespaces = [
             document["metadata"]["name"]

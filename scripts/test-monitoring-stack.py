@@ -138,12 +138,11 @@ class MonitoringStackTests(unittest.TestCase):
             'namespace="monitoring"',
             'container="grafana-sc-dashboard"',
         }
-        matches = [route for route in routes if set(route.get("matchers", [])) == noisy_matchers]
-        self.assertEqual(1, len(matches))
-        self.assertEqual(3, len(matches[0]["matchers"]))
-        self.assertEqual(matches[0], routes[0])
-        self.assertEqual("discard", matches[0]["receiver"])
-        self.assertFalse(matches[0].get("continue", False))
+        self.assertFalse(any(set(route.get("matchers", [])) == noisy_matchers for route in routes))
+        self.assertEqual(
+            [{"receiver": "discard", "matchers": ['alertname=~"Watchdog|InfoInhibitor"']}],
+            routes,
+        )
 
     def test_relay_is_replicated_hardened_and_network_restricted(self):
         deployment = load(APP / "relay-deployment.yaml")
