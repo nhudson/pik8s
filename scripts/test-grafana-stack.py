@@ -58,6 +58,10 @@ class GrafanaStackTests(unittest.TestCase):
 
     def test_dashboards_and_prometheus_datasource_are_chart_owned(self):
         values = load(APP / "helmrelease.yaml")["spec"]["values"]["grafana"]
+        sidecar_resources = values["sidecar"]["resources"]
+        self.assertEqual("10m", sidecar_resources["requests"]["cpu"])
+        self.assertNotIn("cpu", sidecar_resources["limits"])
+        self.assertEqual("128Mi", sidecar_resources["limits"]["memory"])
         self.assertTrue(values["defaultDashboardsEnabled"])
         self.assertFalse(values["forceDeployDatasources"])
         self.assertFalse(values["forceDeployDashboards"])

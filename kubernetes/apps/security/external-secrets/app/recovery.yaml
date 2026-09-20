@@ -1,0 +1,224 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: external-secrets-sdk-recovery
+  namespace: security
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: external-secrets-sdk-recovery
+  namespace: security
+data:
+  recover.sh: |-
+    #!/bin/sh
+    set -eu
+
+    events_json="$(
+      kubectl get events --all-namespaces \
+        --field-selector=involvedObject.kind=ExternalSecret \
+        --output=json
+    )"
+    event="$(
+      printf '%s' "$events_json" |
+        jq -c '
+          [
+            .items[]
+            | select(.type == "Warning")
+            | select((.message // "") | contains("out of bounds memory access"))
+            | {
+                fingerprint: ((.metadata.uid // "") + ":" + (.metadata.resourceVersion // "")),
+                observed: (.series.lastObservedTime // .lastTimestamp // .eventTime // .metadata.creationTimestamp // "")
+              }
+            | select(.fingerprint != ":" and .observed != "")
+          ]
+          | if length == 0 then empty else max_by(.observed) end
+        '
+    )"
+
+    if [ -z "$event" ]; then
+      echo "no unrecoverable SDK failure detected"
+      exit 0
+    fi
+
+    fingerprint="$(printf '%s' "$event" | jq -r '.fingerprint')"
+    deployment="$(
+      kubectl -n "$POD_NAMESPACE" get deployment external-secrets-operator --output=json
+    )"
+    last_event="$(
+      printf '%s' "$deployment" |
+        jq -r '.metadata.annotations["external-secrets-sdk-recovery/last-event"] // ""'
+    )"
+    last_restart="$(
+      printf '%s' "$deployment" |
+        jq -r '.metadata.annotations["external-secrets-sdk-recovery/last-restart"] // "0"'
+    )"
+
+    if [ "$fingerprint" = "$last_event" ]; then
+      echo "unrecoverable SDK failure event was already handled"
+      exit 0
+    fi
+
+    now="${NOW_EPOCH:-$(date +%s)}"
+    case "$now" in
+      ''|*[!0-9]*) echo "invalid current timestamp" >&2; exit 1 ;;
+    esac
+    case "$last_restart" in
+      ''|*[!0-9]*) last_restart=0 ;;
+    esac
+
+    elapsed=$((now - last_restart))
+    if [ "$elapsed" -lt 0 ]; then
+      elapsed=0
+    fi
+
+    if [ "$last_restart" -ne 0 ] && [ "$elapsed" -lt 600 ]; then
+      patch="$(
+        jq -cn --arg event "$fingerprint" '
+          {metadata: {annotations: {"external-secrets-sdk-recovery/last-event": $event}}}
+        '
+      )"
+      kubectl -n "$POD_NAMESPACE" patch deployment external-secrets-operator \
+        --type=merge --patch "$patch" >/dev/null
+      echo "unseen SDK failure recorded during recovery cooldown"
+      exit 0
+    fi
+
+    patch="$(
+      jq -cn --arg event "$fingerprint" --arg now "$now" '
+        {
+          metadata: {
+            annotations: {
+              "external-secrets-sdk-recovery/last-event": $event,
+              "external-secrets-sdk-recovery/last-restart": $now
+            }
+          },
+          spec: {
+            template: {
+              metadata: {
+                annotations: {"external-secrets-sdk-recovery/trigger": $now}
+              }
+            }
+          }
+        }
+      '
+    )"
+    kubectl -n "$POD_NAMESPACE" patch deployment external-secrets-operator \
+      --type=merge --patch "$patch" >/dev/null
+    echo "external-secrets controller restarted after unrecoverable SDK failure"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: external-secrets-sdk-recovery
+rules:
+  - apiGroups: [""]
+    resources: [events]
+    verbs: [list]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: external-secrets-sdk-recovery
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: external-secrets-sdk-recovery
+subjects:
+  - kind: ServiceAccount
+    name: external-secrets-sdk-recovery
+    namespace: security
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: external-secrets-sdk-recovery
+  namespace: security
+rules:
+  - apiGroups: [apps]
+    resources: [deployments]
+    resourceNames: [external-secrets-operator]
+    verbs: [get, patch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: external-secrets-sdk-recovery
+  namespace: security
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: external-secrets-sdk-recovery
+subjects:
+  - kind: ServiceAccount
+    name: external-secrets-sdk-recovery
+    namespace: security
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: external-secrets-sdk-recovery
+  namespace: security
+spec:
+  schedule: "*/2 * * * *"
+  startingDeadlineSeconds: 120
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      activeDeadlineSeconds: 180
+      backoffLimit: 1
+      ttlSecondsAfterFinished: 300
+      template:
+        spec:
+          automountServiceAccountToken: true
+          enableServiceLinks: false
+          restartPolicy: Never
+          serviceAccountName: external-secrets-sdk-recovery
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65532
+            runAsGroup: 65532
+            seccompProfile:
+              type: RuntimeDefault
+          containers:
+            - name: recovery
+              # renovate: datasource=docker depName=alpine/k8s
+              image: docker.io/alpine/k8s:1.37.0@sha256:b421c2e9419edb98db39b6ab641669f4db7bb2acf354f22450c6b7e7176d1ff4
+              imagePullPolicy: IfNotPresent
+              command: [/bin/sh, /scripts/recover.sh]
+              env:
+                - name: HOME
+                  value: /tmp
+                - name: POD_NAMESPACE
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.namespace
+              resources:
+                requests:
+                  cpu: 5m
+                  memory: 16Mi
+                limits:
+                  cpu: 50m
+                  memory: 64Mi
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: [ALL]
+                readOnlyRootFilesystem: true
+              volumeMounts:
+                - name: script
+                  mountPath: /scripts
+                  readOnly: true
+                - name: tmp
+                  mountPath: /tmp
+          volumes:
+            - name: script
+              configMap:
+                name: external-secrets-sdk-recovery
+                defaultMode: 0555
+            - name: tmp
+              emptyDir:
+                sizeLimit: 16Mi

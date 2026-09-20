@@ -84,7 +84,7 @@ class SopsRetirementTests(unittest.TestCase):
         root_resources = yaml.safe_load((ROOT / "kubernetes/flux/vars/kustomization.yaml").read_text())["resources"]
         provider_resources = yaml.safe_load((ROOT / "kubernetes/apps/security/external-secrets/app/kustomization.yaml").read_text())["resources"]
         self.assertEqual(["./cluster-settings.yaml"], root_resources)
-        self.assertEqual(["./helmrelease.yaml"], provider_resources)
+        self.assertEqual(["./helmrelease.yaml", "./recovery.yaml"], provider_resources)
 
     def test_flux_diff_generates_value_free_bootstrap_substitution_stubs(self):
         script = ROOT / "scripts/prepare-flux-diff-bootstrap.py"
