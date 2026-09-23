@@ -164,6 +164,7 @@ class MonitoringStackTests(unittest.TestCase):
         source = load(APP / "relay-configmap.yaml")["data"]["relay.py"]
         disruption = load(APP / "relay-poddisruptionbudget.yaml")
         self.assertEqual(1, disruption["spec"]["minAvailable"])
+        self.assertEqual("hermes-alert-relay", deployment["metadata"]["annotations"]["configmap.reloader.stakater.com/reload"])
         for required in (
             "X-Webhook-Signature-V2",
             "X-Webhook-Timestamp",
