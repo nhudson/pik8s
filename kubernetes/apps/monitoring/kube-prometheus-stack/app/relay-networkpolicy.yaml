@@ -40,14 +40,6 @@ spec:
         - protocol: TCP
           port: 53
     - to:
-        - ipBlock:
-            cidr: 0.0.0.0/0
-      ports:
-        - protocol: TCP
-          port: 443
-    # Temporary overlap: the relay now connects through this proxy. Remove
-    # public egress only after signed delivery succeeds through the new path.
-    - to:
         - namespaceSelector:
             matchLabels:
               kubernetes.io/metadata.name: network
