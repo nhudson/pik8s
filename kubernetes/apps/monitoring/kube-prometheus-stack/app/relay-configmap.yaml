@@ -10,6 +10,7 @@ data:
     import hmac
     import json
     import os
+    import sys
     import time
     import urllib.error
     import urllib.request
@@ -81,7 +82,14 @@ data:
                 with urllib.request.urlopen(request, timeout=15) as response:
                     if response.status < 200 or response.status >= 300:
                         raise RuntimeError("unexpected webhook response")
-            except (OSError, urllib.error.HTTPError, RuntimeError):
+            except urllib.error.HTTPError as error:
+                # HTTPError includes the URL and response body: log only its status.
+                print(f"upstream_http_error status={error.code}", file=sys.stderr, flush=True)
+                self.reply(502, {"status": "upstream-failed"})
+                return
+            except (OSError, RuntimeError) as error:
+                # Exception messages can contain private endpoints and credentials.
+                print(f"upstream_transport_error type={type(error).__name__}", file=sys.stderr, flush=True)
                 self.reply(502, {"status": "upstream-failed"})
                 return
             self.reply(202, {"status": "accepted"})
