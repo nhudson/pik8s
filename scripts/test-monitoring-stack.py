@@ -4,9 +4,12 @@ from __future__ import annotations
 
 import ipaddress
 import json
+import os
 import pathlib
 import re
+import types
 import unittest
+from unittest import mock
 
 import yaml
 
@@ -82,6 +85,7 @@ class MonitoringStackTests(unittest.TestCase):
         self.assertEqual("${HOME_ASSISTANT_TAILNET_FQDN}", scrape["spec"]["tlsConfig"]["serverName"])
         self.assertNotIn("insecureSkipVerify", scrape["spec"]["tlsConfig"])
         self.assertEqual(1, scrape["spec"]["targetLimit"])
+
         self.assertEqual(
             [{"action": "labelkeep", "regex": "^(__name__|job|instance|target_id|network|role|alert)$"}],
             scrape["spec"]["metricRelabelings"],
@@ -100,6 +104,14 @@ class MonitoringStackTests(unittest.TestCase):
                 self.assertNotRegex(legend, r"address|hostname|mac|device", panel["title"])
         variable = dashboard["templating"]["list"][0]
         self.assertIn('lan_monitor_target_up{job="home-network"}', variable["definition"])
+
+    def test_alert_receiver_private_egress_is_prepared_before_relay_cutover(self):
+        service = load(APP / "relay-egress-service.yaml")
+        self.assertEqual("ExternalName", service["spec"]["type"])
+        self.assertEqual("placeholder", service["spec"]["externalName"])
+        self.assertEqual("${HOME_ASSISTANT_TAILNET_FQDN}", service["metadata"]["annotations"]["tailscale.com/tailnet-fqdn"])
+        self.assertEqual([443], [port["port"] for port in service["spec"]["ports"]])
+        self.assertIn("./relay-egress-service.yaml", load(APP / "kustomization.yaml")["resources"])
 
     def test_external_secrets_emit_only_required_keys(self):
         contracts = {
@@ -176,6 +188,48 @@ class MonitoringStackTests(unittest.TestCase):
             self.assertIn(required, source)
         self.assertNotIn("print(body", source)
         self.assertNotIn("X-Webhook-Delivery", source)
+
+    def test_relay_uses_private_tcp_while_verifying_original_tls_hostname(self):
+        deployment = load(APP / "relay-deployment.yaml")
+        env = {entry["name"]: entry for entry in deployment["spec"]["template"]["spec"]["containers"][0]["env"]}
+        self.assertEqual("hermes-alert-webhook-egress.monitoring.svc.cluster.local", env["HERMES_WEBHOOK_CONNECT_HOST"]["value"])
+        self.assertEqual("${HOME_ASSISTANT_TAILNET_FQDN}", env["HERMES_WEBHOOK_EXPECTED_HOST"]["value"])
+        policies = documents(APP / "relay-networkpolicy.yaml")
+        egress = next(p for p in policies if "Egress" in p["spec"]["policyTypes"])["spec"]["egress"]
+        self.assertFalse(any("ipBlock" in peer for rule in egress for peer in rule.get("to", [])))
+        self.assertTrue(any(
+            peer.get("namespaceSelector", {}).get("matchLabels", {}).get("kubernetes.io/metadata.name") == "network"
+            and peer.get("podSelector", {}).get("matchLabels", {}).get("tailscale.com/parent-resource") == "hermes-alert-webhook-egress"
+            and any(port.get("port") == 443 for port in rule.get("ports", []))
+            for rule in egress for peer in rule.get("to", [])
+        ))
+        source = load(APP / "relay-configmap.yaml")["data"]["relay.py"]
+        self.assertNotIn("urllib.request.urlopen", source)
+        module = types.ModuleType("relay_test")
+        exec(source.replace('ThreadingHTTPServer(("0.0.0.0", 8080), Handler).serve_forever()', ''), module.__dict__)
+        response = mock.Mock(status=202)
+        connection = mock.Mock()
+        connection.getresponse.return_value = response
+        with mock.patch.dict(os.environ, {
+            "HERMES_WEBHOOK_URL": "https://receiver.example.invalid/webhooks/alertmanager",
+            "HERMES_WEBHOOK_EXPECTED_HOST": "receiver.example.invalid",
+            "HERMES_WEBHOOK_CONNECT_HOST": "hermes-alert-webhook-egress.monitoring.svc.cluster.local",
+        }), mock.patch.object(module.http.client, "HTTPSConnection", return_value=connection) as factory, mock.patch.object(module.socket, "create_connection", return_value=mock.sentinel.private_socket) as connect:
+            module.forward_to_hermes(b'{"alerts":[]}', {"X-Request-ID": "test"})
+            factory.assert_called_once()
+            self.assertEqual("receiver.example.invalid", factory.call_args.args[0])
+            connection._create_connection(("receiver.example.invalid", 443), 15)
+            self.assertEqual("hermes-alert-webhook-egress.monitoring.svc.cluster.local", connect.call_args.args[0][0])
+            connection.request.assert_called_once_with("POST", "/webhooks/alertmanager", body=b'{"alerts":[]}', headers={"X-Request-ID": "test"})
+            connection.close.assert_called_once()
+
+        with mock.patch.dict(os.environ, {
+            "HERMES_WEBHOOK_URL": "https://wrong.example.invalid/webhooks/alertmanager",
+            "HERMES_WEBHOOK_EXPECTED_HOST": "receiver.example.invalid",
+        }):
+            self.assertFalse(module.receiver_host_matches())
+            with self.assertRaises(ValueError):
+                module.forward_to_hermes(b'{}', {})
 
     def test_alert_rules_have_runbooks_and_recovery_signals(self):
         alerts = []

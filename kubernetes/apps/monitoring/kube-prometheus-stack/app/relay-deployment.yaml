@@ -47,6 +47,10 @@ spec:
                 secretKeyRef:
                   name: hermes-alert-relay
                   key: webhook_secret
+            - name: HERMES_WEBHOOK_CONNECT_HOST
+              value: hermes-alert-webhook-egress.monitoring.svc.cluster.local
+            - name: HERMES_WEBHOOK_EXPECTED_HOST
+              value: "${HOME_ASSISTANT_TAILNET_FQDN}"
             - name: RELAY_BEARER_TOKEN
               valueFrom:
                 secretKeyRef:

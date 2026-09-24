@@ -40,8 +40,14 @@ spec:
         - protocol: TCP
           port: 53
     - to:
-        - ipBlock:
-            cidr: 0.0.0.0/0
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: network
+          podSelector:
+            matchLabels:
+              tailscale.com/managed: "true"
+              tailscale.com/parent-resource: hermes-alert-webhook-egress
+              tailscale.com/parent-resource-ns: monitoring
       ports:
         - protocol: TCP
           port: 443

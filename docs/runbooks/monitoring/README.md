@@ -72,6 +72,12 @@ Notification credentials are synchronized into separate least-privilege Secrets.
 3. Do not restart or reconfigure routers, appliances, safety systems, or device credentials during triage.
 4. Recovery signal: the local probe succeeds continuously for a complete alert window.
 
+## Private alert webhook transport
+
+The relay connects to the operator-managed egress Service, not directly to the public internet. The original vault-backed HTTPS URL still supplies the TLS hostname, Host header, and webhook path; only the TCP destination changes. The certificate remains verified. Its egress NetworkPolicy permits DNS and only the named Tailscale proxy pod on port 443.
+
+Before rollout, verify in memory (without printing either value) that the webhook URL hostname matches the existing private `HOME_ASSISTANT_TAILNET_FQDN` substitution. Do not deploy if the two hosts diverge. Preflight a temporary egress Service for that target, check that HTTPS `/health` returns 200 with normal certificate validation, and remove the preflight resources. Reconcile the monitoring stack; wait for the dedicated egress proxy, relay replicas, and ExternalSecret to be Ready. Send a signed synthetic event through the relay, inspect the actual agent session, and require human/agent delivery with no new failures. Roll back the commit if the relay cannot reach the receiver. Only after the private transport works, disable any pre-existing Funnel exposure for this webhook and repeat the signed test; do not disable the direct Telegram receiver.
+
 ## Home network monitoring rollout and rollback
 
 Before rollout, verify that the optional private substitution source `cluster-secrets-user` exists in `flux-system` and contains a non-empty `HOME_ASSISTANT_TAILNET_FQDN` key. Check only key presence and non-emptiness; never print the value. CI injects only a reserved example-domain value. A missing runtime value leaves the committed placeholder unusable, so this prerequisite and the readiness gate below are mandatory.
