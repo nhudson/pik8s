@@ -22,6 +22,7 @@ resources:
   - ./prometheusrule.yaml
   - ./relay-configmap.yaml
   - ./relay-deployment.yaml
+  - ./relay-egress-service.yaml
   - ./relay-networkpolicy.yaml
   - ./relay-poddisruptionbudget.yaml
   - ./relay-service.yaml

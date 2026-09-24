@@ -82,6 +82,7 @@ class MonitoringStackTests(unittest.TestCase):
         self.assertEqual("${HOME_ASSISTANT_TAILNET_FQDN}", scrape["spec"]["tlsConfig"]["serverName"])
         self.assertNotIn("insecureSkipVerify", scrape["spec"]["tlsConfig"])
         self.assertEqual(1, scrape["spec"]["targetLimit"])
+
         self.assertEqual(
             [{"action": "labelkeep", "regex": "^(__name__|job|instance|target_id|network|role|alert)$"}],
             scrape["spec"]["metricRelabelings"],
@@ -100,6 +101,14 @@ class MonitoringStackTests(unittest.TestCase):
                 self.assertNotRegex(legend, r"address|hostname|mac|device", panel["title"])
         variable = dashboard["templating"]["list"][0]
         self.assertIn('lan_monitor_target_up{job="home-network"}', variable["definition"])
+
+    def test_alert_receiver_private_egress_is_prepared_before_relay_cutover(self):
+        service = load(APP / "relay-egress-service.yaml")
+        self.assertEqual("ExternalName", service["spec"]["type"])
+        self.assertEqual("placeholder", service["spec"]["externalName"])
+        self.assertEqual("${HOME_ASSISTANT_TAILNET_FQDN}", service["metadata"]["annotations"]["tailscale.com/tailnet-fqdn"])
+        self.assertEqual([443], [port["port"] for port in service["spec"]["ports"]])
+        self.assertIn("./relay-egress-service.yaml", load(APP / "kustomization.yaml")["resources"])
 
     def test_external_secrets_emit_only_required_keys(self):
         contracts = {

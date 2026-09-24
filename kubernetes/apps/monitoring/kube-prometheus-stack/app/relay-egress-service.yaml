@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hermes-alert-webhook-egress
+  annotations:
+    # The alert receiver currently shares the private tailnet host with the
+    # existing home-network exporter. The operator replaces this placeholder.
+    tailscale.com/tailnet-fqdn: "${HOME_ASSISTANT_TAILNET_FQDN}"
+spec:
+  type: ExternalName
+  externalName: placeholder
+  ports:
+    - name: https-webhook
+      port: 443
+      protocol: TCP
