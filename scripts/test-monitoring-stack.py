@@ -194,6 +194,14 @@ class MonitoringStackTests(unittest.TestCase):
         env = {entry["name"]: entry for entry in deployment["spec"]["template"]["spec"]["containers"][0]["env"]}
         self.assertEqual("hermes-alert-webhook-egress.monitoring.svc.cluster.local", env["HERMES_WEBHOOK_CONNECT_HOST"]["value"])
         self.assertEqual("${HOME_ASSISTANT_TAILNET_FQDN}", env["HERMES_WEBHOOK_EXPECTED_HOST"]["value"])
+        policies = documents(APP / "relay-networkpolicy.yaml")
+        egress = next(p for p in policies if "Egress" in p["spec"]["policyTypes"])["spec"]["egress"]
+        self.assertTrue(any(
+            peer.get("namespaceSelector", {}).get("matchLabels", {}).get("kubernetes.io/metadata.name") == "network"
+            and peer.get("podSelector", {}).get("matchLabels", {}).get("tailscale.com/parent-resource") == "hermes-alert-webhook-egress"
+            and any(port.get("port") == 443 for port in rule.get("ports", []))
+            for rule in egress for peer in rule.get("to", [])
+        ))
         source = load(APP / "relay-configmap.yaml")["data"]["relay.py"]
         self.assertNotIn("urllib.request.urlopen", source)
         module = types.ModuleType("relay_test")
