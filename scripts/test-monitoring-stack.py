@@ -4,9 +4,12 @@ from __future__ import annotations
 
 import ipaddress
 import json
+import os
 import pathlib
 import re
+import types
 import unittest
+from unittest import mock
 
 import yaml
 
@@ -185,6 +188,39 @@ class MonitoringStackTests(unittest.TestCase):
             self.assertIn(required, source)
         self.assertNotIn("print(body", source)
         self.assertNotIn("X-Webhook-Delivery", source)
+
+    def test_relay_uses_private_tcp_while_verifying_original_tls_hostname(self):
+        deployment = load(APP / "relay-deployment.yaml")
+        env = {entry["name"]: entry for entry in deployment["spec"]["template"]["spec"]["containers"][0]["env"]}
+        self.assertEqual("hermes-alert-webhook-egress.monitoring.svc.cluster.local", env["HERMES_WEBHOOK_CONNECT_HOST"]["value"])
+        self.assertEqual("${HOME_ASSISTANT_TAILNET_FQDN}", env["HERMES_WEBHOOK_EXPECTED_HOST"]["value"])
+        source = load(APP / "relay-configmap.yaml")["data"]["relay.py"]
+        self.assertNotIn("urllib.request.urlopen", source)
+        module = types.ModuleType("relay_test")
+        exec(source.replace('ThreadingHTTPServer(("0.0.0.0", 8080), Handler).serve_forever()', ''), module.__dict__)
+        response = mock.Mock(status=202)
+        connection = mock.Mock()
+        connection.getresponse.return_value = response
+        with mock.patch.dict(os.environ, {
+            "HERMES_WEBHOOK_URL": "https://receiver.example.invalid/webhooks/alertmanager",
+            "HERMES_WEBHOOK_EXPECTED_HOST": "receiver.example.invalid",
+            "HERMES_WEBHOOK_CONNECT_HOST": "hermes-alert-webhook-egress.monitoring.svc.cluster.local",
+        }), mock.patch.object(module.http.client, "HTTPSConnection", return_value=connection) as factory, mock.patch.object(module.socket, "create_connection", return_value=mock.sentinel.private_socket) as connect:
+            module.forward_to_hermes(b'{"alerts":[]}', {"X-Request-ID": "test"})
+            factory.assert_called_once()
+            self.assertEqual("receiver.example.invalid", factory.call_args.args[0])
+            connection._create_connection(("receiver.example.invalid", 443), 15)
+            self.assertEqual("hermes-alert-webhook-egress.monitoring.svc.cluster.local", connect.call_args.args[0][0])
+            connection.request.assert_called_once_with("POST", "/webhooks/alertmanager", body=b'{"alerts":[]}', headers={"X-Request-ID": "test"})
+            connection.close.assert_called_once()
+
+        with mock.patch.dict(os.environ, {
+            "HERMES_WEBHOOK_URL": "https://wrong.example.invalid/webhooks/alertmanager",
+            "HERMES_WEBHOOK_EXPECTED_HOST": "receiver.example.invalid",
+        }):
+            self.assertFalse(module.receiver_host_matches())
+            with self.assertRaises(ValueError):
+                module.forward_to_hermes(b'{}', {})
 
     def test_alert_rules_have_runbooks_and_recovery_signals(self):
         alerts = []

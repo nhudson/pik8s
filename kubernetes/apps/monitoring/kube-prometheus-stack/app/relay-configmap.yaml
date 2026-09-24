@@ -8,15 +8,48 @@ data:
     #!/usr/bin/env python3
     import hashlib
     import hmac
+    import http.client
     import json
     import os
+    import socket
     import sys
     import time
-    import urllib.error
-    import urllib.request
+    import urllib.parse
     from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
     MAX_BODY = 1_048_576
+
+    class UpstreamHTTPError(Exception):
+        def __init__(self, status):
+            self.status = status
+
+    def receiver_host_matches():
+        try:
+            url = urllib.parse.urlsplit(os.environ["HERMES_WEBHOOK_URL"])
+            return (url.scheme == "https" and url.hostname == os.environ["HERMES_WEBHOOK_EXPECTED_HOST"]
+                    and url.port in (None, 443) and not url.username and not url.password
+                    and not url.query and not url.fragment and url.path.startswith("/webhooks/"))
+        except (KeyError, ValueError):
+            return False
+
+    def forward_to_hermes(body, headers):
+        # Keep the URL's hostname as the TLS SNI/verification and Host header.
+        # Only the TCP destination changes to the operator-managed tailnet proxy.
+        if not receiver_host_matches():
+            raise ValueError("receiver target mismatch")
+        url = urllib.parse.urlsplit(os.environ["HERMES_WEBHOOK_URL"])
+        host = os.environ["HERMES_WEBHOOK_CONNECT_HOST"]
+        connection = http.client.HTTPSConnection(url.hostname, 443, timeout=15)
+        connection._create_connection = lambda address, timeout, source_address=None: socket.create_connection(
+            (host, address[1]), timeout, source_address
+        )
+        try:
+            connection.request("POST", url.path, body=body, headers=headers)
+            response = connection.getresponse()
+            if not 200 <= response.status < 300:
+                raise UpstreamHTTPError(response.status)
+        finally:
+            connection.close()
 
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, _format, *_args):
@@ -33,6 +66,9 @@ data:
         def do_GET(self):
             if self.path != "/health":
                 self.reply(404, {"status": "not-found"})
+                return
+            if not receiver_host_matches():
+                self.reply(503, {"status": "not-ready"})
                 return
             self.reply(200, {"status": "ok"})
 
@@ -67,27 +103,19 @@ data:
                 os.environ["HERMES_WEBHOOK_SECRET"].encode(), signed, hashlib.sha256
             ).hexdigest()
             delivery = hashlib.sha256(body).hexdigest()
-            request = urllib.request.Request(
-                os.environ["HERMES_WEBHOOK_URL"],
-                data=body,
-                method="POST",
-                headers={
+            headers = {
                     "Content-Type": "application/json",
                     "X-Webhook-Timestamp": timestamp,
                     "X-Webhook-Signature-V2": signature,
                     "X-Request-ID": delivery,
-                },
-            )
+                }
             try:
-                with urllib.request.urlopen(request, timeout=15) as response:
-                    if response.status < 200 or response.status >= 300:
-                        raise RuntimeError("unexpected webhook response")
-            except urllib.error.HTTPError as error:
-                # HTTPError includes the URL and response body: log only its status.
-                print(f"upstream_http_error status={error.code}", file=sys.stderr, flush=True)
+                forward_to_hermes(body, headers)
+            except UpstreamHTTPError as error:
+                print(f"upstream_http_error status={error.status}", file=sys.stderr, flush=True)
                 self.reply(502, {"status": "upstream-failed"})
                 return
-            except (OSError, RuntimeError) as error:
+            except (OSError, ValueError, RuntimeError) as error:
                 # Exception messages can contain private endpoints and credentials.
                 print(f"upstream_transport_error type={type(error).__name__}", file=sys.stderr, flush=True)
                 self.reply(502, {"status": "upstream-failed"})

@@ -4,9 +4,10 @@ import contextlib
 import io
 import os
 import pathlib
+import ssl
 import unittest
-import urllib.error
-from unittest.mock import patch
+from typing import Any, cast
+from unittest.mock import Mock, patch
 
 import yaml
 
@@ -30,14 +31,15 @@ class RelayDiagnosticsTest(unittest.TestCase):
             "RELAY_BEARER_TOKEN": "dummy-token",
             "HERMES_WEBHOOK_SECRET": "dummy-secret",
             "HERMES_WEBHOOK_URL": "https://invalid.example/webhooks/dummy-private-route",
+            "HERMES_WEBHOOK_EXPECTED_HOST": "invalid.example",
         })
         self.env.start()
         self.addCleanup(self.env.stop)
 
     def test_http_failure_logs_only_status_not_upstream_details(self):
-        error = urllib.error.HTTPError(os.environ["HERMES_WEBHOOK_URL"], 503, "dummy-token", {}, None)
+        error = cast(Any, namespace["UpstreamHTTPError"])(503)
         output = io.StringIO()
-        with patch.object(namespace["urllib"].request, "urlopen", side_effect=error), contextlib.redirect_stderr(output):
+        with patch.dict(namespace, {"forward_to_hermes": Mock(side_effect=error)}), contextlib.redirect_stderr(output):
             self.handler.do_POST()
         self.assertEqual(502, self.replies[0][0])
         self.assertIn("upstream_http_error status=503", output.getvalue())
@@ -45,14 +47,23 @@ class RelayDiagnosticsTest(unittest.TestCase):
             self.assertNotIn(private, output.getvalue())
 
     def test_network_failure_logs_class_not_message(self):
-        error = urllib.error.URLError("dummy-token cannot reach dummy-private-route")
+        error = ssl.SSLError("dummy-token cannot reach dummy-private-route")
         output = io.StringIO()
-        with patch.object(namespace["urllib"].request, "urlopen", side_effect=error), contextlib.redirect_stderr(output):
+        with patch.dict(namespace, {"forward_to_hermes": Mock(side_effect=error)}), contextlib.redirect_stderr(output):
             self.handler.do_POST()
         self.assertEqual(502, self.replies[0][0])
-        self.assertIn("upstream_transport_error type=URLError", output.getvalue())
+        self.assertIn("upstream_transport_error type=SSLError", output.getvalue())
         self.assertNotIn("dummy-token", output.getvalue())
         self.assertNotIn("dummy-private-route", output.getvalue())
+
+    def test_readiness_fails_closed_when_receiver_host_drifts(self):
+        self.handler.path = "/health"
+        self.handler.do_GET()
+        self.assertEqual(200, self.replies[-1][0])
+        with patch.dict(os.environ, {"HERMES_WEBHOOK_EXPECTED_HOST": "other.example"}):
+            self.handler.do_GET()
+        self.assertEqual(503, self.replies[-1][0])
+        self.assertNotIn("other.example", str(self.replies[-1]))
 
 
 if __name__ == "__main__":
