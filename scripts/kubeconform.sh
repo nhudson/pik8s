@@ -12,6 +12,7 @@ python3 ./scripts/test-sops-retirement.py
 python3 ./scripts/test-external-secrets-recovery.py
 python3 ./scripts/test-github-protection.py
 python3 ./scripts/test-monitoring-stack.py
+python3 ./scripts/test-alert-relay.py
 python3 ./scripts/test-grafana-stack.py
 python3 ./scripts/test-cnpg-dashboard.py
 python3 ./scripts/test-cilium-dashboard.py
