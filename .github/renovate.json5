@@ -59,6 +59,25 @@
   packageRules: [
     {
       description: [
+        'Hold the controller image until the cordoned upgrade node is recovered',
+      ],
+      matchDatasources: ['docker'],
+      matchPackageNames: [
+        'docker.io/rancher/system-upgrade-controller',
+      ],
+      enabled: false,
+    },
+    {
+      description: [
+        'Hold the job-kubectl image until the cordoned upgrade node is recovered',
+      ],
+      matchDatasources: ['docker'],
+      matchPackageNames: ['registry.k8s.io/kubectl'],
+      matchFileNames: ['**/system-upgrade-controller/app/**'],
+      enabled: false,
+    },
+    {
+      description: [
         'Auto merge Github Actions',
       ],
       matchManagers: [

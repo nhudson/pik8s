@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import pathlib
 import os
+import re
 import subprocess
 import tempfile
 
@@ -62,6 +63,19 @@ def simulate_upgrade(script: str, *, moves_current: bool) -> None:
 
 def main() -> None:
     errors: list[str] = []
+    controller_paths = [
+        ROOT / "kubernetes/apps/system-upgrade/system-upgrade-controller/app/helmrelease.yaml",
+        ROOT / "kubernetes/apps/system-upgrade/system-upgrade-controller/app/values.yaml",
+        ROOT / "bootstrap/templates/kubernetes/apps/system-upgrade/system-upgrade-controller/app/helmrelease.yaml.j2",
+    ]
+    for path in controller_paths:
+        content = path.read_text()
+        if "tag: v0.20.1" not in content or "SYSTEM_UPGRADE_JOB_KUBECTL_IMAGE: registry.k8s.io/kubectl:v1.37.0" not in content:
+            errors.append(f"{path.relative_to(ROOT)} must preserve the last deployed image and job values")
+    renovate = (ROOT / ".github/renovate.json5").read_text()
+    for package in ("docker.io/rancher/system-upgrade-controller", "registry.k8s.io/kubectl"):
+        if not re.search(r"\{[^{}]*matchPackageNames:\s*\[[^]]*'" + re.escape(package) + r"'[^]]*\],[^{}]*enabled:\s*false,[^{}]*\}", renovate):
+            errors.append(f"Renovate must hold {package} while the upgrade node is cordoned")
     plans = [doc for doc in yaml.safe_load_all(PLANS.read_text()) if doc]
     if {plan["metadata"]["name"] for plan in plans} != {"controllers", "workers"}:
         errors.append("expected controller and worker K3s upgrade plans")
