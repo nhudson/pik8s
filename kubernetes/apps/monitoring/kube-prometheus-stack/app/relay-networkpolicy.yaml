@@ -45,3 +45,17 @@ spec:
       ports:
         - protocol: TCP
           port: 443
+    # Temporary overlap: the relay now connects through this proxy. Remove
+    # public egress only after signed delivery succeeds through the new path.
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: network
+          podSelector:
+            matchLabels:
+              tailscale.com/managed: "true"
+              tailscale.com/parent-resource: hermes-alert-webhook-egress
+              tailscale.com/parent-resource-ns: monitoring
+      ports:
+        - protocol: TCP
+          port: 443
