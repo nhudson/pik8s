@@ -196,6 +196,7 @@ class MonitoringStackTests(unittest.TestCase):
         self.assertEqual("${HOME_ASSISTANT_TAILNET_FQDN}", env["HERMES_WEBHOOK_EXPECTED_HOST"]["value"])
         policies = documents(APP / "relay-networkpolicy.yaml")
         egress = next(p for p in policies if "Egress" in p["spec"]["policyTypes"])["spec"]["egress"]
+        self.assertFalse(any("ipBlock" in peer for rule in egress for peer in rule.get("to", [])))
         self.assertTrue(any(
             peer.get("namespaceSelector", {}).get("matchLabels", {}).get("kubernetes.io/metadata.name") == "network"
             and peer.get("podSelector", {}).get("matchLabels", {}).get("tailscale.com/parent-resource") == "hermes-alert-webhook-egress"
