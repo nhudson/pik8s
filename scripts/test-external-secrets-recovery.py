@@ -21,7 +21,13 @@ def documents() -> list[dict]:
     return [doc for doc in yaml.safe_load_all(RECOVERY.read_text()) if doc]
 
 
-def events_fixture(message: str, uid: str = "event-uid", resource_version: str = "7") -> str:
+def events_fixture(
+    message: str,
+    uid: str = "event-uid",
+    resource_version: str = "7",
+    kind: str = "ExternalSecret",
+    name: str = "example",
+) -> str:
     return json.dumps(
         {
             "apiVersion": "v1",
@@ -32,7 +38,7 @@ def events_fixture(message: str, uid: str = "event-uid", resource_version: str =
                         "resourceVersion": resource_version,
                         "uid": uid,
                     },
-                    "involvedObject": {"kind": "ExternalSecret"},
+                    "involvedObject": {"kind": kind, "name": name},
                     "lastTimestamp": "2026-09-19T01:01:00Z",
                     "message": message,
                     "reason": "UpdateFailed",
@@ -180,7 +186,7 @@ class ExternalSecretsRecoveryTests(unittest.TestCase):
         completed, log = self._run_script(events_fixture("provider request timed out"))
         self.assertEqual(1, len(log))
         self.assertEqual(
-            "get events --all-namespaces --field-selector=involvedObject.kind=ExternalSecret --output=json",
+            "get events --all-namespaces --output=json",
             log[0],
         )
         self.assertIn("no unrecoverable SDK failure detected", completed.stdout)
@@ -208,6 +214,35 @@ class ExternalSecretsRecoveryTests(unittest.TestCase):
         )
         self.assertIn("controller restarted after unrecoverable SDK failure", completed.stdout)
         self.assertNotIn("out of bounds memory access", completed.stdout)
+
+    def test_cluster_store_warning_triggers_recovery(self):
+        completed, log = self._run_script(events_fixture(
+            "wasm error: out of bounds memory access",
+            kind="ClusterSecretStore",
+            name="1password",
+        ))
+        self.assertEqual("get events --all-namespaces --output=json", log[0])
+        self.assertEqual("event-uid:7", self._patch_payload(log)["metadata"]["annotations"]["external-secrets-sdk-recovery/last-event"])
+        self.assertIn("controller restarted", completed.stdout)
+
+    def test_unrelated_store_warning_does_not_restart(self):
+        completed, log = self._run_script(events_fixture(
+            "wasm error: out of bounds memory access",
+            kind="ClusterSecretStore",
+            name="other-provider",
+        ))
+        self.assertEqual(1, len(log))
+        self.assertIn("no unrecoverable SDK failure detected", completed.stdout)
+
+    def test_store_warning_during_cooldown_records_without_rollout(self):
+        completed, log = self._run_script(
+            events_fixture("wasm error: out of bounds memory access", kind="ClusterSecretStore", name="1password", resource_version="8"),
+            deployment_fixture(last_event="event-uid:7", last_restart="950"),
+        )
+        payload = self._patch_payload(log)
+        self.assertNotIn("spec", payload)
+        self.assertEqual("event-uid:8", payload["metadata"]["annotations"]["external-secrets-sdk-recovery/last-event"])
+        self.assertIn("cooldown", completed.stdout)
 
     def test_already_seen_event_does_not_restart(self):
         completed, log = self._run_script(
