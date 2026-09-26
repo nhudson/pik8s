@@ -16,9 +16,7 @@ data:
     set -eu
 
     events_json="$(
-      kubectl get events --all-namespaces \
-        --field-selector=involvedObject.kind=ExternalSecret \
-        --output=json
+      kubectl get events --all-namespaces --output=json
     )"
     event="$(
       printf '%s' "$events_json" |
@@ -26,6 +24,8 @@ data:
           [
             .items[]
             | select(.type == "Warning")
+            | select(.involvedObject.kind == "ExternalSecret" or
+                (.involvedObject.kind == "ClusterSecretStore" and .involvedObject.name == "1password"))
             | select((.message // "") | contains("out of bounds memory access"))
             | {
                 fingerprint: ((.metadata.uid // "") + ":" + (.metadata.resourceVersion // "")),
