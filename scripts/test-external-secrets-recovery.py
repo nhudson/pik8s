@@ -109,7 +109,7 @@ class ExternalSecretsRecoveryTests(unittest.TestCase):
         container = pod["containers"][0]
         self.assertRegex(
             container["image"],
-            r"^docker\.io/alpine/k8s:1\.37\.0@sha256:[a-f0-9]{64}$",
+            r"^docker\.io/alpine/k8s:1\.37\.1@sha256:[a-f0-9]{64}$",
         )
         self.assertFalse(container["securityContext"]["allowPrivilegeEscalation"])
         self.assertTrue(container["securityContext"]["readOnlyRootFilesystem"])
