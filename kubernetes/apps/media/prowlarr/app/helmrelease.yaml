@@ -45,9 +45,10 @@ spec:
               PROWLARR__LOG__DBENABLED: "False"
               PROWLARR__LOG__LEVEL: info
               PROWLARR__SERVER__PORT: &port 9696
-              # Cilium gateway Envoy proxies from node IPs; trust its X-Forwarded-Proto so
-              # generated NZB download links use https, not http on :80 (the gateway only serves 443)
-              PROWLARR__SERVER__TRUSTEDNETWORKS: "${NODE_CIDR}"
+              # Cilium gateway Envoy proxies from node IPs and per-node ingress IPs, which are
+              # IPAM-allocated from the pod CIDR, so trust both ranges. Without this, NZB links
+              # use http on :80, which the gateway does not serve (443 only)
+              PROWLARR__SERVER__TRUSTEDNETWORKS: "${NODE_CIDR},${CLUSTER_CIDR}"
               PROWLARR__UPDATE__BRANCH: develop
               PROWLARR__POSTGRES__HOST: pik8s-postgres-pooler.postgres.svc.cluster.local
               PROWLARR__POSTGRES__MAIN_DB: prowlarr-main
