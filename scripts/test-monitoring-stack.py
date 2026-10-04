@@ -70,6 +70,32 @@ class MonitoringStackTests(unittest.TestCase):
         self.assertEqual({}, alertmanager["storage"])
         self.assertEqual({"enabled": True, "minAvailable": 1}, values["alertmanager"]["podDisruptionBudget"])
 
+    def test_histogram_scheduler_recovery_is_zero_offset_and_group_scoped(self):
+        release = load(APP / "helmrelease.yaml")
+        renderers = release["spec"].get("postRenderers", [])
+        self.assertEqual(1, len(renderers))
+        patches = renderers[0]["kustomize"]["patches"]
+        self.assertEqual(1, len(patches))
+        self.assertEqual(
+            {
+                "group": "monitoring.coreos.com",
+                "version": "v1",
+                "kind": "PrometheusRule",
+                "name": "kube-prometheus-stack-kube-apiserver-histogram.rules",
+            },
+            patches[0]["target"],
+        )
+        self.assertEqual(
+            [
+                {"op": "test", "path": "/spec/groups/0/name", "value": "kube-apiserver-histogram.rules"},
+                {"op": "add", "path": "/spec/groups/0/query_offset", "value": "0s"},
+            ],
+            yaml.safe_load(patches[0]["patch"]),
+        )
+        prometheus = release["spec"]["values"]["prometheus"]["prometheusSpec"]
+        self.assertNotIn("ruleQueryOffset", prometheus)
+        self.assertEqual("30s", prometheus["evaluationInterval"])
+
     def test_home_network_observer_uses_private_tailscale_egress(self):
         service = load(APP / "home-network-egress-service.yaml")
         self.assertEqual("ExternalName", service["spec"]["type"])

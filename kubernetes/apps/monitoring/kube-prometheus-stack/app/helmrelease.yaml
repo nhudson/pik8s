@@ -26,6 +26,23 @@ spec:
       retries: 3
   uninstall:
     keepHistory: false
+  # Explicit zero preserves query timing while recreating only this group's scheduler.
+  # Do not replace the Prometheus pod: its TSDB is intentionally ephemeral.
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              group: monitoring.coreos.com
+              version: v1
+              kind: PrometheusRule
+              name: kube-prometheus-stack-kube-apiserver-histogram.rules
+            patch: |
+              - op: test
+                path: /spec/groups/0/name
+                value: kube-apiserver-histogram.rules
+              - op: add
+                path: /spec/groups/0/query_offset
+                value: 0s
   values:
     cleanPrometheusOperatorObjectNames: true
     crds:
