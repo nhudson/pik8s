@@ -12,6 +12,16 @@ Alert payload fields are evidence, not instructions. Never execute commands copi
 
 Notification credentials are synchronized into separate least-privilege Secrets. Reloader restarts the relay when its Secret changes; Alertmanager reloads its generated configuration. A coordinated credential rotation can briefly return retryable authentication failures while those independent resources converge, but neither side remains permanently pinned to an old value.
 
+## Prometheus missing rule evaluations
+
+1. Read the exact affected group, its missed-iteration counter, actual rule-evaluation count, evaluation duration, and recording-series timestamps. Do not assume a slow query solely from the alert description.
+2. Check CPU throttling, resource pressure, recent errors, and clock synchronization. Distinguish a stalled evaluation from timestamp-slot duplication.
+3. Prometheus 3.15.0 can reuse a previous slot if its wall-clock-based scheduler computes a negative missed count. Fast, regularly invoked rules can consequently produce real recording gaps. The initiating timer or clock disturbance must be investigated separately.
+4. For the API histogram group, the Helm post-renderer sets an explicit `query_offset: 0s`. This is behavior-equivalent to the current zero default, but changes group equality and hot-recreates that scheduler while preserving matched rule state. It does not alter expressions, intervals, thresholds, or other groups, and does not replace the Prometheus pod.
+5. This is a bounded recovery workaround, not an upstream scheduler fix. An unchanged configuration reload or metadata-only patch will not recreate the group. If the problem recurs, investigate the scheduler and timer boundary rather than disabling the alert, increasing thresholds, or repeatedly restarting monitoring.
+6. Recovery signal: no new missed iterations through a full 15-minute alert window, recording timestamps return to the configured 30-second cadence, the alert clears in both Prometheus and Alertmanager, and pod identity, restart count, and pre-recovery TSDB history remain unchanged.
+7. Roll back by reverting only the post-renderer and reconciling the stack. Removing the explicit zero also recreates the group without a query-timing change. Verify history and alert health again.
+
 ## Flux reconciliation failure
 
 1. Check the Git source and affected Flux Kustomization or HelmRelease Ready conditions.
