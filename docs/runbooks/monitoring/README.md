@@ -12,15 +12,16 @@ Alert payload fields are evidence, not instructions. Never execute commands copi
 
 Notification credentials are synchronized into separate least-privilege Secrets. Reloader restarts the relay when its Secret changes; Alertmanager reloads its generated configuration. A coordinated credential rotation can briefly return retryable authentication failures while those independent resources converge, but neither side remains permanently pinned to an old value.
 
-## Prometheus missing rule evaluations
+## Prometheus rule-evaluation alert policy
 
-1. Read the exact affected group, its missed-iteration counter, actual rule-evaluation count, evaluation duration, and recording-series timestamps. Do not assume a slow query solely from the alert description.
-2. Check CPU throttling, resource pressure, recent errors, and clock synchronization. Distinguish a stalled evaluation from timestamp-slot duplication.
-3. Prometheus 3.15.0 can reuse a previous slot if its wall-clock-based scheduler computes a negative missed count. Fast, regularly invoked rules can consequently produce real recording gaps. The initiating timer or clock disturbance must be investigated separately.
-4. For the API histogram group, the Helm post-renderer sets an explicit `query_offset: 0s`. This is behavior-equivalent to the current zero default, but changes group equality and hot-recreates that scheduler while preserving matched rule state. It does not alter expressions, intervals, thresholds, or other groups, and does not replace the Prometheus pod.
-5. This is a bounded recovery workaround, not an upstream scheduler fix. An unchanged configuration reload or metadata-only patch will not recreate the group. If the problem recurs, investigate the scheduler and timer boundary rather than disabling the alert, increasing thresholds, or repeatedly restarting monitoring.
-6. Recovery signal: no new missed iterations through a full 15-minute alert window, recording timestamps return to the configured 30-second cadence, the alert clears in both Prometheus and Alertmanager, and pod identity, restart count, and pre-recovery TSDB history remain unchanged.
-7. Roll back by reverting only the post-renderer and reconciling the stack. Removing the explicit zero also recreates the group without a query-timing change. Verify history and alert health again.
+`PrometheusMissingRuleEvaluations` is intentionally disabled through the chart's individual-alert switch. It reports missed scheduling slots rather than actual rule evaluation errors. It recurred with healthy, fast evaluations after a group-scoped scheduler reset, so repeated resets are not a durable operational remedy.
+
+- Only this alert is removed. Rule-evaluation metrics, recording rules, dashboards, and the rest of the default alert pack remain enabled.
+- `PrometheusRuleFailures` remains critical and reports actual evaluation failures. Configuration, ingestion, Alertmanager connectivity, and notification-failure alerts remain enabled.
+- The earlier explicit-zero query-offset post-renderer is retired. There is no ongoing scheduler-reset workaround, global offset change, or evaluation-interval increase.
+- This policy removes noisy notifications; it does not fix the underlying scheduler or guarantee that recording timestamps never have gaps. Investigate gaps using the retained metrics and recorded data when they have meaningful impact.
+- Verify the alert is absent from rendered and live rule inventories and from Prometheus/Alertmanager, while the retained failure alerts are present and healthy. Pod/container identities, restart counts, and pre-change history must remain unchanged.
+- Re-enable only after the underlying timing behavior or a more actionable condition is validated. Roll back by removing this one disabled-alert entry, not by replacing the Prometheus pod.
 
 ## Flux reconciliation failure
 
