@@ -145,7 +145,7 @@
     },
     {
       description: [
-        'Block Cilium 1.20.2 BTF regression',
+        'Block Cilium 1.20.2 and 1.20.3 BTF regression',
       ],
       matchDatasources: [
         'helm',
@@ -153,7 +153,7 @@
       matchPackageNames: [
         'cilium',
       ],
-      allowedVersions: '!/^1\\.20\\.2$/',
+      allowedVersions: '!/^1\\.20\\.[23]$/',
     },
     {
       matchDatasources: [
