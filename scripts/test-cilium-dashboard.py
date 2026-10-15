@@ -16,9 +16,9 @@ import yaml
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 RELEASE = ROOT / "kubernetes/apps/kube-system/cilium/app/helmrelease.yaml"
 RENOVATE = ROOT / ".github/renovate.json5"
-KNOWN_GOOD_CHART_VERSION = "1.20.1"
-CHART_URL = "https://helm.cilium.io/cilium-1.20.1.tgz"
-CHART_SHA256 = "06210eef7c23d15f7699c79e2fe3a1ec9c389024c5c5c006ea04022d322449a2"
+KNOWN_GOOD_CHART_VERSION = "1.20.3"
+CHART_URL = "https://helm.cilium.io/cilium-1.20.3.tgz"
+CHART_SHA256 = "0805a5273118c436c9772bb9566d87ec558d8b25cc2ce5dc32918ecdd36f2c7c"
 
 
 class UniqueKeyLoader(yaml.SafeLoader):
@@ -69,7 +69,7 @@ class CiliumDashboardTests(unittest.TestCase):
         self.assertEqual("Cilium", dashboard["annotations"]["grafana_folder"])
 
     def test_exact_chart_renders_only_the_agent_dashboard_into_monitoring(self):
-        archive = pathlib.Path(tempfile.gettempdir()) / "cilium-1.20.1.tgz"
+        archive = pathlib.Path(tempfile.gettempdir()) / "cilium-1.20.3.tgz"
         if not archive.exists() or hashlib.sha256(archive.read_bytes()).hexdigest() != CHART_SHA256:
             with urllib.request.urlopen(CHART_URL, timeout=30) as response:
                 archive.write_bytes(response.read())
