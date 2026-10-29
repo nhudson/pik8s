@@ -35,6 +35,8 @@ spec:
       disabled:
         # Retain actual rule failures; missed-slot warnings recur without slow evaluations.
         PrometheusMissingRuleEvaluations: true
+        # Owner opt-out: throttling alone is not an actionable workload-health signal.
+        CPUThrottlingHigh: true
       rules:
         etcd: false
         kubeControllerManager: false
