@@ -72,11 +72,14 @@ class MonitoringStackTests(unittest.TestCase):
         self.assertEqual({}, alertmanager["storage"])
         self.assertEqual({"enabled": True, "minAvailable": 1}, values["alertmanager"]["podDisruptionBudget"])
 
-    def test_only_noisy_missed_evaluation_alert_is_disabled(self):
+    def test_only_owner_selected_noisy_alerts_are_disabled(self):
         release = load(APP / "helmrelease.yaml")
         defaults = release["spec"]["values"]["defaultRules"]
         self.assertTrue(defaults["create"])
-        self.assertEqual({"PrometheusMissingRuleEvaluations": True}, defaults.get("disabled", {}))
+        self.assertEqual(
+            {"PrometheusMissingRuleEvaluations": True, "CPUThrottlingHigh": True},
+            defaults.get("disabled", {}),
+        )
         self.assertNotIn("postRenderers", release["spec"])
         prometheus = release["spec"]["values"]["prometheus"]["prometheusSpec"]
         self.assertNotIn("ruleQueryOffset", prometheus)
@@ -89,17 +92,23 @@ class MonitoringStackTests(unittest.TestCase):
                  "oci://ghcr.io/prometheus-community/charts/kube-prometheus-stack",
                  "--version", release["spec"]["chart"]["spec"]["version"],
                  "--namespace", "monitoring", "--values", values.name,
-                 "--show-only", "templates/prometheus/rules-1.14/prometheus.yaml"],
+                 "--show-only", "templates/prometheus/rules-1.14/prometheus.yaml",
+                 "--show-only", "templates/prometheus/rules-1.14/kubernetes-resources.yaml"],
                 text=True, capture_output=True, timeout=120,
             )
         self.assertEqual(0, completed.returncode, completed.stdout + completed.stderr)
         # Helm OCI pull metadata may precede the Kubernetes YAML document.
         resources = [item for item in yaml.safe_load_all(completed.stdout)
                      if isinstance(item, dict) and item.get("kind")]
-        self.assertEqual(1, len(resources))
-        self.assertEqual("PrometheusRule", resources[0]["kind"])
-        rules = {rule["alert"]: rule for group in resources[0]["spec"]["groups"] for rule in group["rules"]}
+        self.assertEqual(2, len(resources))
+        self.assertTrue(all(resource["kind"] == "PrometheusRule" for resource in resources))
+        rules = {rule["alert"]: rule for resource in resources
+                 for group in resource["spec"]["groups"] for rule in group["rules"] if "alert" in rule}
         self.assertNotIn("PrometheusMissingRuleEvaluations", rules)
+        self.assertNotIn("CPUThrottlingHigh", rules)
+        for name in ("KubeCPUOvercommit", "KubeCPUQuotaOvercommit", "KubeMemoryOvercommit",
+                     "KubeMemoryQuotaOvercommit", "KubeQuotaAlmostFull", "KubeQuotaFullyUsed", "KubeQuotaExceeded"):
+            self.assertIn(name, rules)
         self.assertIn("prometheus_rule_evaluation_failures_total", rules["PrometheusRuleFailures"]["expr"])
         self.assertEqual("critical", rules["PrometheusRuleFailures"]["labels"]["severity"])
         for name in ("PrometheusBadConfig", "PrometheusNotIngestingSamples",
