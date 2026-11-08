@@ -9,7 +9,8 @@ spec:
   chart:
     spec:
       chart: kube-prometheus-stack
-      version: 93.1.0
+      # Operator 0.95.1 images lack a usable arm64 platform; retain the healthy release.
+      version: 92.22.0
       sourceRef:
         kind: HelmRepository
         name: prometheus-community-charts

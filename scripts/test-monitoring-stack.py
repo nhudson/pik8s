@@ -72,6 +72,29 @@ class MonitoringStackTests(unittest.TestCase):
         self.assertEqual({}, alertmanager["storage"])
         self.assertEqual({"enabled": True, "minAvailable": 1}, values["alertmanager"]["podDisruptionBudget"])
 
+    def test_operator_image_platform_regressions_are_excluded(self):
+        release = load(APP / "helmrelease.yaml")
+        blocked = ("93.0.0", "93.1.0")
+        self.assertNotIn(release["spec"]["chart"]["spec"]["version"], blocked)
+        config = (ROOT / ".github/renovate.json5").read_text()
+        marker = "'Block charts with malformed Operator 0.95.1 image platforms'"
+        self.assertIn(marker, config)
+        offset = config.index(marker)
+        rule = config[config.rfind("{", 0, offset):config.find("\n    },", offset)]
+        for name in ("helm", "docker", "kube-prometheus-stack",
+                     "ghcr.io/prometheus-community/charts/kube-prometheus-stack"):
+            self.assertIn(f"'{name}'", rule)
+        match = re.search(r"allowedVersions: '([^']+)'", rule)
+        assert match is not None
+        encoded = match.group(1)
+        allowed = json.loads('"' + encoded + '"')
+        self.assertTrue(allowed.startswith("!/") and allowed.endswith("/"))
+        pattern = allowed[2:-1]
+        for version in blocked:
+            self.assertIsNotNone(re.fullmatch(pattern, version))
+        for version in ("92.22.0", "93.0.1", "93.1.1", "93.2.0", "94.0.0"):
+            self.assertIsNone(re.fullmatch(pattern, version))
+
     def test_only_owner_selected_noisy_alerts_are_disabled(self):
         release = load(APP / "helmrelease.yaml")
         defaults = release["spec"]["values"]["defaultRules"]
