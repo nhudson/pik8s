@@ -156,6 +156,20 @@
       allowedVersions: '!/^1\\.20\\.[23]$/',
     },
     {
+      description: [
+        'Block charts with malformed Operator 0.95.1 image platforms',
+      ],
+      matchDatasources: [
+        'helm',
+        'docker',
+      ],
+      matchPackageNames: [
+        'kube-prometheus-stack',
+        'ghcr.io/prometheus-community/charts/kube-prometheus-stack',
+      ],
+      allowedVersions: '!/^93\\.[01]\\.0$/',
+    },
+    {
       matchDatasources: [
         'docker',
       ],
