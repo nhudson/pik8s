@@ -16,8 +16,8 @@ import yaml
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 RELEASE = ROOT / "kubernetes/apps/postgres/cloudnative-pg/app/helmrelease.yaml"
 SOURCE = ROOT / "kubernetes/flux/repositories/helm/cloudnative-pg-charts.yaml"
-CHART_URL = "https://github.com/cloudnative-pg/charts/releases/download/cloudnative-pg-v0.29.1/cloudnative-pg-0.29.1.tgz"
-CHART_SHA256 = "b53d3991fe84bcf38767e7702cae78666265427a127a26fff168ab4207d2b1df"
+CHART_URL = "https://github.com/cloudnative-pg/charts/releases/download/cloudnative-pg-v0.29.2/cloudnative-pg-0.29.2.tgz"
+CHART_SHA256 = "9df3f074ecaa8af10277ad155899470618ea9a565d7c7c48187bdc7887655960"
 
 
 class UniqueKeyLoader(yaml.SafeLoader):
@@ -46,7 +46,7 @@ class CloudNativePGDashboardTests(unittest.TestCase):
             "https://raw.githubusercontent.com/cloudnative-pg/charts/gh-pages",
             source["spec"]["url"],
         )
-        self.assertEqual("0.29.1", release["spec"]["chart"]["spec"]["version"])
+        self.assertEqual("0.29.2", release["spec"]["chart"]["spec"]["version"])
         dashboard = release["spec"]["values"]["monitoring"]["grafanaDashboard"]
         self.assertTrue(dashboard["create"])
         self.assertEqual("monitoring", dashboard["namespace"])
